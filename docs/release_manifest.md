@@ -129,3 +129,12 @@ Generated and suitable for upload:
 6. `results/dryrun/skillsbench_dialogue_timeout4_hydration.json`
 7. `results/dryrun/skillsbench_dialogue_timeout4_execution.json`
 8. `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl`
+
+
+## Publication Sync Note
+
+Current publication expectation:
+
+1. push directly from local `main` to `origin/main`
+2. use SSH transport on this machine
+3. do not assume GitHub CLI or PR automation is available locally

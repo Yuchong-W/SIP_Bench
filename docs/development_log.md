@@ -343,3 +343,26 @@ Observed result:
 2. The second run with `--environment-build-timeout-multiplier 4` completed successfully and imported as a valid SIP `runs.jsonl` row.
 3. The end-to-end chain is now confirmed on real upstream data for both failure and success cases.
 4. The next meaningful work item is multi-phase orchestration, not additional one-off import debugging.
+
+
+### Publication Sync Check
+
+Work completed:
+
+1. Re-checked the repository publication state after the real smoke-chain work.
+2. Confirmed that the local branch is clean and already synchronized with remote `main`.
+3. Recorded the current publication constraint that this machine uses SSH `git push`, not GitHub CLI / PR automation.
+4. Updated the technical design and release tracking docs so the publication path is documented in-repo.
+
+Commands run:
+
+1. `git status --short --branch`
+2. `gh --version`
+3. `gh auth status`
+
+Observed result:
+
+1. `E:\Protocal_Bench` had no uncommitted code changes before the documentation sync.
+2. `gh` is not installed in this environment.
+3. Direct repository synchronization is still possible through `git` over SSH, which is the active supported publication path for this machine.
+4. A documentation-only follow-up commit is therefore the correct way to reflect the current published state.

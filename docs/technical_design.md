@@ -347,3 +347,19 @@ Engineering implication:
 1. the primary remaining blocker is not missing glue code
 2. it is task-level runtime stability and timeout tuning across different SkillsBench environments
 3. future orchestration should therefore treat timeout overrides as benchmark execution policy, not as ad-hoc manual recovery
+
+## Update: Publication Sync
+
+The repository state has been re-checked after the real smoke-chain work and is currently synchronized with GitHub.
+
+Observed publication state:
+
+1. local branch: `main`
+2. working tree: clean
+3. remote publication path: `git@github.com:Yuchong-W/Protocol_Bench.git`
+4. supported transport on this machine: SSH
+
+Operational note:
+
+1. `gh` is not installed in this environment, so repository publication currently uses direct `git` push over SSH rather than a PR-oriented GitHub CLI flow
+2. this does not block repository synchronization, but it does mean PR automation should not be treated as part of the local MVP release path
