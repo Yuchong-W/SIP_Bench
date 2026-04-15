@@ -366,3 +366,50 @@ Observed result:
 2. `gh` is not installed in this environment.
 3. Direct repository synchronization is still possible through `git` over SSH, which is the active supported publication path for this machine.
 4. A documentation-only follow-up commit is therefore the correct way to reflect the current published state.
+
+
+### Config-Driven Protocol Runner
+
+Work completed:
+
+1. Added `src/sip_bench/protocol_runner.py` for config-driven multi-run execution.
+2. Added `scripts\run_protocol.py` as the CLI entrypoint.
+3. Added `schemas\protocol_suite.schema.json` for suite config validation.
+4. Added `protocol\skillsbench_oracle_real_suite.json` as the first real suite config.
+5. Added `tests\test_protocol_runner.py` for explicit-plan and import-only suite regression coverage.
+
+Tests run:
+
+1. `python -m unittest tests.test_protocol_runner -v`
+2. `python -m unittest discover -s tests -p "test_*.py"`
+
+Observed result:
+
+1. The orchestrator can build explicit split plans instead of relying on random manifest sampling.
+2. The suite runner can aggregate imported records into a valid `summary.jsonl`.
+3. Import-only mode gives deterministic regression coverage without requiring live Docker execution.
+
+
+### First Real Protocol Suite Run
+
+Work completed:
+
+1. Hydrated `citation-check` as a second real task candidate.
+2. Fixed suite-config path handling by expressing repo paths relative to `protocol\`.
+3. Fixed orchestrator execution so local launchers are resolved correctly and real runs execute from the repository root.
+4. Ran the first real multi-run suite with `T0 replay`, `T0 heldout`, `T1 replay`, and `T1 heldout`.
+5. Produced `combined_runs.jsonl`, `summary.jsonl`, and `suite_report.json` under `results\protocol_runs\skillsbench_oracle_real_suite`.
+
+Commands run:
+
+1. `git -C benchmarks\skillsbench sparse-checkout add tasks/citation-check`
+2. `python -m unittest tests.test_protocol_runner -v`
+3. `python -m unittest discover -s tests -p "test_*.py"`
+4. `python scripts\run_protocol.py run-skillsbench-suite --config protocol\skillsbench_oracle_real_suite.json --mode subprocess`
+
+Observed result:
+
+1. The suite completed with `4` imported records and valid combined-run schema validation.
+2. `summary.jsonl` was generated and validated successfully.
+3. `dialogue-parser` succeeded in both replay runs.
+4. `citation-check` did not pass in the heldout runs, but both outcomes were still imported correctly and contributed to the protocol summary.

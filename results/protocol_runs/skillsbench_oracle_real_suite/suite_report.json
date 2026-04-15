@@ -1,0 +1,192 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-oracle-real-suite",
+  "benchmark_name": "skillsbench",
+  "config_path": "E:\\Protocal_Bench\\protocol\\skillsbench_oracle_real_suite.json",
+  "out_root": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite",
+  "execute_mode": "subprocess",
+  "run_count": 4,
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "oracle",
+      "seed": 0,
+      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t0_replay.json",
+      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t0_replay.json",
+      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t0_replay.json",
+      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_replay.jsonl",
+      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t0_replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/dialogue-parser"
+      ],
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "records_validation": {
+        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_replay.jsonl",
+        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_heldout",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "path_type": "oracle",
+      "seed": 0,
+      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t0_heldout.json",
+      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t0_heldout.json",
+      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t0_heldout.json",
+      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_heldout.jsonl",
+      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t0_heldout",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/citation-check"
+      ],
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "records_validation": {
+        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_heldout.jsonl",
+        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_replay",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "path_type": "oracle",
+      "seed": 0,
+      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_replay.json",
+      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t1_replay.json",
+      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t1_replay.json",
+      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_replay.jsonl",
+      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t1_replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/dialogue-parser"
+      ],
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "records_validation": {
+        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_replay.jsonl",
+        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_heldout",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "path_type": "oracle",
+      "seed": 0,
+      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_heldout.json",
+      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t1_heldout.json",
+      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t1_heldout.json",
+      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_heldout.jsonl",
+      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t1_heldout",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/citation-check"
+      ],
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "records_validation": {
+        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_heldout.jsonl",
+        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    }
+  ],
+  "combined_runs_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\combined_runs.jsonl",
+  "runs_validation": {
+    "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\combined_runs.jsonl",
+    "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+    "input_format": "jsonl",
+    "records_checked": 4,
+    "valid": true,
+    "error_count": 0,
+    "errors": []
+  },
+  "summary": {
+    "attempted": true,
+    "summary_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\summary.jsonl",
+    "generated": true,
+    "records": 1,
+    "validation": {
+      "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\summary.jsonl",
+      "schema_path": "E:\\Protocal_Bench\\schemas\\summary.schema.json",
+      "input_format": "jsonl",
+      "records_checked": 1,
+      "valid": true,
+      "error_count": 0,
+      "errors": []
+    }
+  }
+}

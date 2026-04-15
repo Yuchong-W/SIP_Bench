@@ -363,3 +363,45 @@ Operational note:
 
 1. `gh` is not installed in this environment, so repository publication currently uses direct `git` push over SSH rather than a PR-oriented GitHub CLI flow
 2. this does not block repository synchronization, but it does mean PR automation should not be treated as part of the local MVP release path
+
+## Update: Real Protocol Suite Runner
+
+The project now has a config-driven multi-run orchestrator for real `SkillsBench` protocol tests.
+
+New capability:
+
+1. a suite config can declare multiple phase/split runs explicitly
+2. each run is materialized into its own `plan`, `hydrate`, `execute`, and `import` outputs
+3. the suite runner combines imported run records into a shared `combined_runs.jsonl`
+4. when the suite is complete enough, it automatically aggregates `summary.jsonl`
+
+Engineering choices:
+
+1. suite config paths are resolved relative to the config file location
+2. the runner supports an import-only mode so regression tests do not need live Docker execution
+3. explicit split assignment is now a first-class plan-construction path, rather than overloading random split sampling
+
+## Update: First Real Multi-Run Protocol Test
+
+The first real multi-run protocol test has now completed successfully.
+
+Suite:
+
+1. config: `protocol/skillsbench_oracle_real_suite.json`
+2. benchmark: `skillsbench`
+3. path type: `oracle`
+4. phases: `T0`, `T1`
+5. splits executed: `replay`, `heldout`
+
+Observed output:
+
+1. `combined_runs.jsonl` was generated and validates against `runs.schema.json`
+2. `summary.jsonl` was generated and validates against `summary.schema.json`
+3. `dialogue-parser` succeeded in both `T0 replay` and `T1 replay`
+4. `citation-check` failed in both `heldout` runs, but those failures were still imported correctly into protocol records
+
+Engineering implication:
+
+1. the project has moved from single-run real smoke testing to true multi-run protocol execution
+2. the remaining bottleneck is no longer orchestration glue
+3. it is benchmark-task stability and adaptation-path implementation for non-oracle runs

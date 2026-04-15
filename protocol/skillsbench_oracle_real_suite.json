@@ -1,0 +1,57 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-oracle-real-suite",
+  "benchmark_name": "skillsbench",
+  "repo_root": "../benchmarks/skillsbench",
+  "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "out_root": "../results/protocol_runs/skillsbench_oracle_real_suite",
+  "execution": {
+    "agent": "oracle",
+    "model": null,
+    "harbor_bin": "../scripts/harbor312.cmd",
+    "jobs_dir": "../results/real_jobs_protocol",
+    "path_type": "oracle",
+    "agent_version": "harbor312-oracle-protocol-v0",
+    "seed": 0,
+    "extra_args": [
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4"
+    ]
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ]
+    },
+    {
+      "run_name": "t0_heldout",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "citation-check"
+      ]
+    },
+    {
+      "run_name": "t1_replay",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ]
+    },
+    {
+      "run_name": "t1_heldout",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "citation-check"
+      ]
+    }
+  ]
+}

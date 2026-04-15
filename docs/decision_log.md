@@ -174,3 +174,16 @@ Why:
 2. the failure mode was environmental and machine-specific, not protocol-specific
 3. if timeout policy remains implicit, repeated real-run failures will look like unstable benchmark logic instead of a reproducible execution configuration issue
 4. future orchestration code should therefore surface timeout overrides as first-class plan inputs for slow Docker tasks
+
+### D014
+
+Decision:
+
+Multi-run protocol testing should be driven by an explicit suite config instead of by ad-hoc shell choreography.
+
+Why:
+
+1. real protocol tests require multiple coordinated runs across `phase` and `benchmark_split`
+2. that coordination needs stable metadata so the final aggregation step can produce a valid `summary.jsonl`
+3. explicit suite configs make run intent reviewable and reproducible
+4. the same format also enables an import-only regression mode for deterministic tests

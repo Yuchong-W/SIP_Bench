@@ -20,6 +20,7 @@ Core protocol and schemas:
 1. `protocol/protocol_spec_v0.md`
 2. `schemas/runs.schema.json`
 3. `schemas/summary.schema.json`
+4. `schemas/protocol_suite.schema.json`
 
 Core source:
 
@@ -38,9 +39,10 @@ CLI and repository docs:
 2. `scripts/README.md`
 3. `scripts/aggregate_metrics.py`
 4. `scripts/run_eval.py`
-5. `scripts/smoke_adapters.py`
-6. `scripts/validate_records.py`
-7. `.gitignore`
+5. `scripts/run_protocol.py`
+6. `scripts/smoke_adapters.py`
+7. `scripts/validate_records.py`
+8. `.gitignore`
 
 Engineering docs:
 
@@ -64,6 +66,7 @@ Tests and fixtures:
 8. `tests/fixtures/mock_execute_plan.json`
 9. `tests/fixtures/skillsbench_registry_sample.json`
 10. `tests/fixtures/tau_results_sample.json`
+11. `tests/test_protocol_runner.py`
 
 Sample outputs:
 
@@ -75,6 +78,9 @@ Sample outputs:
 6. `results/dryrun/mock_subprocess_execution.json`
 7. `results/dryrun/skillsbench_runs_sample.jsonl`
 8. `results/dryrun/skillsbench_upstream_withskills.jsonl`
+9. `results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl`
+10. `results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl`
+11. `results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json`
 
 ## Files Intentionally Excluded From Upload
 
@@ -129,6 +135,32 @@ Generated and suitable for upload:
 6. `results/dryrun/skillsbench_dialogue_timeout4_hydration.json`
 7. `results/dryrun/skillsbench_dialogue_timeout4_execution.json`
 8. `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl`
+
+
+## Real Protocol Suite Outputs
+
+Generated and suitable for upload:
+
+1. `protocol/skillsbench_oracle_real_suite.json`
+2. `results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl`
+3. `results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl`
+4. `results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json`
+5. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_replay.json`
+6. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_heldout.json`
+7. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_replay.json`
+8. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_heldout.json`
+9. `results/protocol_runs/skillsbench_oracle_real_suite/hydration/t0_replay.json`
+10. `results/protocol_runs/skillsbench_oracle_real_suite/hydration/t0_heldout.json`
+11. `results/protocol_runs/skillsbench_oracle_real_suite/hydration/t1_replay.json`
+12. `results/protocol_runs/skillsbench_oracle_real_suite/hydration/t1_heldout.json`
+13. `results/protocol_runs/skillsbench_oracle_real_suite/execution/t0_replay.json`
+14. `results/protocol_runs/skillsbench_oracle_real_suite/execution/t0_heldout.json`
+15. `results/protocol_runs/skillsbench_oracle_real_suite/execution/t1_replay.json`
+16. `results/protocol_runs/skillsbench_oracle_real_suite/execution/t1_heldout.json`
+17. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_replay.jsonl`
+18. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_heldout.jsonl`
+19. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_replay.jsonl`
+20. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_heldout.jsonl`
 
 
 ## Publication Sync Note

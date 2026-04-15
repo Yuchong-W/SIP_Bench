@@ -1,0 +1,94 @@
+{
+  "benchmark_name": "skillsbench",
+  "registry_path": "E:\\Protocal_Bench\\benchmarks\\skillsbench\\website\\src\\data\\tasks-registry.json",
+  "repo_root": "E:\\Protocal_Bench\\benchmarks\\skillsbench",
+  "selection": {
+    "total_tasks": 86,
+    "filtered_tasks": 1,
+    "categories": [],
+    "difficulties": [],
+    "task_ids": {
+      "replay": [],
+      "adapt": [],
+      "heldout": [
+        "citation-check"
+      ],
+      "drift": []
+    },
+    "seed": null,
+    "selection_mode": "explicit"
+  },
+  "execution": {
+    "agent": "oracle",
+    "model": null,
+    "harbor_bin": "E:\\Protocal_Bench\\scripts\\harbor312.cmd",
+    "extra_args": [
+      "--jobs-dir",
+      "E:\\Protocal_Bench\\results\\real_jobs_protocol",
+      "--job-name",
+      "skillsbench-oracle-real-suite-t0_heldout",
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4"
+    ]
+  },
+  "manifest": {
+    "counts": {
+      "replay": 0,
+      "adapt": 0,
+      "heldout": 1,
+      "drift": 0
+    },
+    "replay": [],
+    "adapt": [],
+    "heldout": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "citation-check",
+        "source_path": "tasks/citation-check",
+        "title": "citation-check",
+        "category": "research",
+        "difficulty": "medium",
+        "metadata": {
+          "tags": [
+            "citation",
+            "bibtex",
+            "academic",
+            "verification",
+            "api",
+            "crossref",
+            "semantic-scholar"
+          ],
+          "author_name": "Xuandong Zhao",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:09.819Z"
+        }
+      }
+    ],
+    "drift": []
+  },
+  "commands": {
+    "replay": [],
+    "adapt": [],
+    "heldout": [
+      [
+        "E:\\Protocal_Bench\\scripts\\harbor312.cmd",
+        "run",
+        "-p",
+        "E:\\Protocal_Bench\\benchmarks\\skillsbench\\tasks\\citation-check",
+        "-a",
+        "oracle",
+        "--jobs-dir",
+        "E:\\Protocal_Bench\\results\\real_jobs_protocol",
+        "--job-name",
+        "skillsbench-oracle-real-suite-t0_heldout",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4"
+      ]
+    ],
+    "drift": []
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_hydration",
+  "plan_source": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_replay.json",
+  "repo_root": "E:\\Protocal_Bench\\benchmarks\\skillsbench",
+  "split": "replay",
+  "selected_splits": [
+    "replay"
+  ],
+  "git_bin": "git",
+  "command": [
+    "git",
+    "-C",
+    "E:\\Protocal_Bench\\benchmarks\\skillsbench",
+    "sparse-checkout",
+    "add",
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "before_patterns": [
+    "tasks/citation-check",
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "after_patterns": [
+    "tasks/citation-check",
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "hydrated_paths": [
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "tasks": [
+    {
+      "task_id": "dialogue-parser",
+      "title": "dialogue-parser",
+      "source_path": "tasks/dialogue-parser",
+      "exists": true
+    }
+  ],
+  "generated_at": "2026-04-15T12:26:05Z"
+}
