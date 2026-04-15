@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "results\\dryrun\\skillsbench_real_smoke_plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "subprocess",
+  "split": "replay",
+  "cwd": "E:\\Protocal_Bench",
+  "artifacts_dir": "results\\dryrun\\artifacts",
+  "summary": {
+    "executed": 1,
+    "status_counts": {
+      "success": 1
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "replay",
+      "task_id": "offer-letter-generator",
+      "task_title": "offer-letter-generator",
+      "command": [
+        "scripts\\harbor312.cmd",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\offer-letter-generator",
+        "-a",
+        "oracle",
+        "--jobs-dir",
+        "results\\real_jobs_e2e",
+        "--job-name",
+        "skillsbench-e2e-offer-letter",
+        "--artifact",
+        "/logs/verifier"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 53.14225740000256,
+      "started_at": "2026-04-15T08:59:41Z",
+      "finished_at": "2026-04-15T09:00:34Z",
+      "stdout_path": "results\\dryrun\\artifacts\\replay\\000_offer-letter-generator\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\replay\\000_offer-letter-generator\\stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-15T09:00:34Z"
+}

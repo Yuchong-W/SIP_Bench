@@ -1,0 +1,31 @@
+{
+  "id": "job-fixture-001",
+  "started_at": "2026-04-15T07:54:12.055743",
+  "finished_at": "2026-04-15T07:59:07.195318",
+  "n_total_trials": 2,
+  "stats": {
+    "n_trials": 2,
+    "n_errors": 1,
+    "evals": {
+      "oracle__adhoc": {
+        "n_trials": 1,
+        "n_errors": 1,
+        "metrics": [
+          {
+            "mean": 0.5
+          }
+        ],
+        "reward_stats": {
+          "reward": {
+            "mean": 1.0
+          }
+        },
+        "exception_stats": {
+          "RuntimeError": [
+            "court-form-filling__fixture002"
+          ]
+        }
+      }
+    }
+  }
+}

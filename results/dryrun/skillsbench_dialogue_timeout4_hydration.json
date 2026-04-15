@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_hydration",
+  "plan_source": "results\\dryrun\\skillsbench_dialogue_timeout4_plan.json",
+  "repo_root": "benchmarks\\skillsbench",
+  "split": "replay",
+  "selected_splits": [
+    "replay"
+  ],
+  "git_bin": "git",
+  "command": [
+    "git",
+    "-C",
+    "benchmarks\\skillsbench",
+    "sparse-checkout",
+    "add",
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "before_patterns": [
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "after_patterns": [
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "hydrated_paths": [
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "tasks": [
+    {
+      "task_id": "dialogue-parser",
+      "title": "dialogue-parser",
+      "source_path": "tasks/dialogue-parser",
+      "exists": true
+    }
+  ],
+  "generated_at": "2026-04-15T09:44:13Z"
+}

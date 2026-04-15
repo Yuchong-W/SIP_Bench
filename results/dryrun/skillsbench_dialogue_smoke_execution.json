@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "results\\dryrun\\skillsbench_dialogue_smoke_plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "subprocess",
+  "split": "replay",
+  "cwd": "E:\\Protocal_Bench",
+  "artifacts_dir": "results\\dryrun\\artifacts",
+  "summary": {
+    "executed": 1,
+    "status_counts": {
+      "success": 1
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "replay",
+      "task_id": "dialogue-parser",
+      "task_title": "dialogue-parser",
+      "command": [
+        "scripts\\harbor312.cmd",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\dialogue-parser",
+        "-a",
+        "oracle",
+        "--jobs-dir",
+        "results\\real_jobs_e2e",
+        "--job-name",
+        "skillsbench-e2e-dialogue-parser",
+        "--artifact",
+        "/logs/verifier"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 1240.1975935999944,
+      "started_at": "2026-04-15T09:11:28Z",
+      "finished_at": "2026-04-15T09:32:08Z",
+      "stdout_path": "results\\dryrun\\artifacts\\replay\\000_dialogue-parser\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\replay\\000_dialogue-parser\\stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-15T09:32:08Z"
+}

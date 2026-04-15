@@ -13,6 +13,8 @@ if str(SRC) not in sys.path:
 from sip_bench.runner import (
     build_skillsbench_plan,
     execute_command_plan,
+    hydrate_skillsbench_checkout,
+    import_skillsbench_job,
     import_skillsbench_results,
     import_tau_results,
     write_json,
@@ -41,8 +43,20 @@ def parse_args() -> argparse.Namespace:
     skillsbench.add_argument("--harbor-bin", default="harbor")
     skillsbench.add_argument("--category", action="append", default=[], help="Repeatable category filter.")
     skillsbench.add_argument("--difficulty", action="append", default=[], help="Repeatable difficulty filter.")
+    skillsbench.add_argument("--task-id", action="append", default=[], help="Repeatable task-id filter.")
     skillsbench.add_argument("--extra-arg", action="append", default=[], help="Repeatable extra Harbor argument.")
     skillsbench.add_argument("--out", required=True, help="Path to write plan JSON.")
+
+    hydrate = subparsers.add_parser(
+        "hydrate-skillsbench",
+        help="Expand a sparse SkillsBench checkout so the tasks referenced by a plan exist locally.",
+    )
+    hydrate.add_argument("--plan", required=True, help="Path to SkillsBench plan JSON.")
+    hydrate.add_argument("--repo-root", required=True, help="Path to local SkillsBench checkout root.")
+    hydrate.add_argument("--out", required=True, help="Path to write hydration report JSON.")
+    hydrate.add_argument("--split", default="all", choices=["all", "replay", "adapt", "heldout", "drift"])
+    hydrate.add_argument("--git-bin", default="git")
+    hydrate.add_argument("--no-include-registry", action="store_true")
 
     execute_plan = subparsers.add_parser(
         "execute-plan",
@@ -105,6 +119,27 @@ def parse_args() -> argparse.Namespace:
         help="Optional repeatable filter over SkillsBench conditions such as noskills, withskills, gen.",
     )
 
+    skillsbench_job = subparsers.add_parser(
+        "import-skillsbench-job",
+        help="Convert a Harbor job directory from a SkillsBench run into SIP-Bench runs.jsonl records.",
+    )
+    skillsbench_job.add_argument("--job-dir", required=True, help="Path to Harbor job directory.")
+    skillsbench_job.add_argument("--out", required=True, help="Path to output runs.jsonl.")
+    skillsbench_job.add_argument(
+        "--benchmark-split",
+        required=True,
+        choices=["replay", "adapt", "heldout", "drift", "smoke", "golden"],
+    )
+    skillsbench_job.add_argument("--phase", required=True, choices=["T0", "T1", "T2"])
+    skillsbench_job.add_argument("--path-type", required=True, choices=["frozen", "external", "parameter", "oracle"])
+    skillsbench_job.add_argument("--seed", required=True, type=int)
+    skillsbench_job.add_argument("--registry", help="Optional explicit path to tasks-registry.json.")
+    skillsbench_job.add_argument("--repo-root", help="Optional SkillsBench checkout root for registry and git revision discovery.")
+    skillsbench_job.add_argument("--model-name", help="Optional override for model_name.")
+    skillsbench_job.add_argument("--agent-name", help="Optional override for agent_name.")
+    skillsbench_job.add_argument("--agent-version", default="harbor-job-import")
+    skillsbench_job.add_argument("--benchmark-version", help="Optional override for benchmark_version.")
+
     return parser.parse_args()
 
 
@@ -124,6 +159,7 @@ def main() -> int:
             harbor_bin=args.harbor_bin,
             categories=set(args.category) if args.category else None,
             difficulties=set(args.difficulty) if args.difficulty else None,
+            task_ids=set(args.task_id) if args.task_id else None,
             extra_args=args.extra_arg or None,
         )
         write_json(args.out, payload)
@@ -134,6 +170,31 @@ def main() -> int:
                     "out": args.out,
                     "counts": payload["manifest"]["counts"],
                     "filtered_tasks": payload["selection"]["filtered_tasks"],
+                    "task_ids": payload["selection"]["task_ids"],
+                },
+                indent=2,
+            )
+        )
+        return 0
+
+    if args.command == "hydrate-skillsbench":
+        report = hydrate_skillsbench_checkout(
+            plan_source=args.plan,
+            repo_root=args.repo_root,
+            out=args.out,
+            split=args.split,
+            git_bin=args.git_bin,
+            include_registry=not args.no_include_registry,
+        )
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "out": args.out,
+                    "hydrated_paths": len(report["hydrated_paths"]),
+                    "task_count": len(report["tasks"]),
+                    "returncode": report["returncode"],
+                    "split": args.split,
                 },
                 indent=2,
             )
@@ -219,6 +280,37 @@ def main() -> int:
                     "benchmark_split": args.benchmark_split,
                     "phase": args.phase,
                     "conditions": args.condition,
+                },
+                indent=2,
+            )
+        )
+        return 0
+
+    if args.command == "import-skillsbench-job":
+        runs = import_skillsbench_job(
+            source=args.job_dir,
+            out=args.out,
+            benchmark_split=args.benchmark_split,
+            phase=args.phase,
+            path_type=args.path_type,
+            seed=args.seed,
+            registry_source=args.registry,
+            repo_root=args.repo_root,
+            model_name=args.model_name,
+            agent_name=args.agent_name,
+            agent_version=args.agent_version,
+            benchmark_version=args.benchmark_version,
+        )
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "out": args.out,
+                    "runs": len(runs),
+                    "successes": sum(1 for run in runs if run["success"]),
+                    "failures": sum(1 for run in runs if not run["success"]),
+                    "benchmark_split": args.benchmark_split,
+                    "phase": args.phase,
                 },
                 indent=2,
             )

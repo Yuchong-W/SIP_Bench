@@ -135,3 +135,42 @@ Why:
 1. `tau-bench` `train/dev/test` are upstream task splits, not SIP `replay/adapt/heldout`
 2. conflating the two would silently write semantically wrong `runs.jsonl`
 3. the same principle applies to SkillsBench condition labels versus SIP `path_type` and protocol `phase`
+
+
+### D011
+
+Decision:
+
+Real SkillsBench execution on this machine should use a repository-local `scripts\harbor312.cmd` launcher instead of the globally installed `harbor.exe`.
+
+Why:
+
+1. the global Harbor install currently runs on Python `3.13` and fails on Windows during subprocess-based Docker orchestration
+2. `uvx --python 3.12 harbor` clears that runtime bug and reaches real environment setup
+3. a repository-local launcher lets plans encode a single stable executable path without teaching the protocol about multi-token shell prefixes
+4. the launcher is also the right place to pin local cache location and Docker-related environment workarounds
+
+### D012
+
+Decision:
+
+Harbor job directories should be treated as first-class import inputs for SkillsBench, even when a trial fails before verifier completion.
+
+Why:
+
+1. real local execution is flaky enough that dropping failed trials would hide the operational bottlenecks this benchmark infrastructure must surface
+2. the Harbor `TrialResult` schema carries enough metadata to write protocol-compliant `runs.jsonl` rows for both successes and failures
+3. separating command execution from job import keeps the execution layer generic and pushes benchmark outcome semantics into the adapter where they belong
+
+### D013
+
+Decision:
+
+Real `SkillsBench` smoke execution on this machine should treat Harbor timeout multipliers as explicit run policy, not as incidental CLI tweaks.
+
+Why:
+
+1. `dialogue-parser` failed under the default environment build timeout but succeeded immediately when rerun with `--environment-build-timeout-multiplier 4`
+2. the failure mode was environmental and machine-specific, not protocol-specific
+3. if timeout policy remains implicit, repeated real-run failures will look like unstable benchmark logic instead of a reproducible execution configuration issue
+4. future orchestration code should therefore surface timeout overrides as first-class plan inputs for slow Docker tasks

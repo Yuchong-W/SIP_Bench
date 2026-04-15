@@ -41,37 +41,46 @@ The primary metrics are:
 ## Repository Layout
 
 1. [protocol/protocol_spec_v0.md](E:\Protocal_Bench\protocol\protocol_spec_v0.md)
-2. [schemas/runs.schema.json](E:\Protocal_Bench\schemas\runs.schema.json)
+2. [schemas/runs.schema.json](E:\Protocal_Bench\schemasuns.schema.json)
 3. [schemas/summary.schema.json](E:\Protocal_Bench\schemas\summary.schema.json)
 4. [docs/decision_log.md](E:\Protocal_Bench\docs\decision_log.md)
 5. [docs/known_limitations.md](E:\Protocal_Bench\docs\known_limitations.md)
-6. [docs/technical_design.md](E:\Protocal_Bench\docs\technical_design.md)
+6. [docs/technical_design.md](E:\Protocal_Bench\docs	echnical_design.md)
 7. [docs/development_log.md](E:\Protocal_Bench\docs\development_log.md)
 8. `scripts/`
 9. `results/`
 10. `tests/`
 
-## Immediate Milestones
-
-1. Finalize `protocol_spec_v0`.
-2. Implement `SkillsBench` adapter.
-3. Implement `tau-bench` adapter.
-4. Produce the first `runs.jsonl` and `summary.jsonl`.
-
 ## Status
 
-This repository is now beyond pure scaffold status. The protocol, schemas, metric engine, aggregation CLI, and adapter layer are in place, `tau-bench` is checked out locally over SSH, `SkillsBench` is available as a sparse SSH checkout, and both adapters can import real upstream-style result artifacts into SIP `runs.jsonl`.
+This repository is now beyond pure scaffold status. The protocol, schemas, metric engine, aggregation CLI, sparse SkillsBench hydration, real SkillsBench Harbor-job import, and real upstream checkout strategy are in place. `tau-bench` is checked out locally over SSH, `SkillsBench` is maintained as a sparse SSH checkout, and the real execution path now prefers `scripts\harbor312.cmd` so Harbor runs under Python `3.12` with Docker BuildKit disabled.
+
+## Real SkillsBench Flow
+
+The current real SkillsBench smoke path is:
+
+1. `plan-skillsbench`
+2. `hydrate-skillsbench`
+3. `execute-plan --mode subprocess`
+4. `import-skillsbench-job`
+5. `validate_records`
+
+Notes:
+
+1. The execution bridge now consumes real Harbor job directories even when a trial fails during Docker build or verifier setup.
+2. The benchmark outcome is recorded in imported `runs.jsonl`; `execute-plan` only reports whether the command launched successfully.
+3. On this machine, the global `harbor.exe` installed under Python `3.13` is not reliable for Windows subprocess orchestration, so `scripts\harbor312.cmd` is the supported launcher.
+4. The first fully successful real smoke run on this machine used `dialogue-parser` with `--environment-build-timeout-multiplier 4`; the default `600` second build timeout was too low for that Docker task.
 
 ## First Commands
 
 ```powershell
 python -m unittest discover -s tests -p "test_*.py"
-python scripts\aggregate_metrics.py --runs results\dryrun\sample_runs.jsonl --out results\dryrun\summary.jsonl
+python scriptsggregate_metrics.py --runs results\dryrun\sample_runs.jsonl --out results\dryrun\summary.jsonl
 python scripts\smoke_adapters.py
-python scripts\run_eval.py plan-skillsbench --registry tests\fixtures\skillsbench_registry_sample.json --repo-root benchmarks\skillsbench --replay-count 2 --adapt-count 1 --heldout-count 2 --out results\dryrun\skillsbench_plan.json
-python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.json --out results\dryrun\skillsbench_execution.json --mode mock
-python scripts\run_eval.py import-skillsbench-results --source tests\fixtures\skillsbench_results_sample.json --out results\dryrun\skillsbench_runs_sample.jsonl --benchmark-split golden --phase T1 --seed 3 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-fixture
-python scripts\run_eval.py import-tau-results --source tests\fixtures\tau_results_sample.json --out results\dryrun\tau_runs.jsonl --env retail --task-split test --benchmark-split heldout --phase T1 --path-type external --model-name gpt-5-mini --agent-name tau-import --agent-version 0.1.0 --seed 9
-python scripts\validate_records.py --data results\dryrun\sample_runs.jsonl --schema runs
-python scripts\validate_records.py --data results\dryrun\summary.jsonl --schema summary
+python scriptsun_eval.py plan-skillsbench --registry testsixtures\skillsbench_registry_sample.json --repo-root benchmarks\skillsbench --task-id court-form-filling --replay-count 1 --adapt-count 0 --heldout-count 0 --harbor-bin scripts\harbor312.cmd --out results\dryrun\skillsbench_plan.json
+python scriptsun_eval.py hydrate-skillsbench --plan results\dryrun\skillsbench_plan.json --repo-root benchmarks\skillsbench --split replay --out results\dryrun\skillsbench_hydration.json
+python scriptsun_eval.py execute-plan --plan results\dryrun\skillsbench_plan.json --split replay --mode subprocess --cwd E:\Protocal_Bench --out results\dryrun\skillsbench_execution.json
+python scriptsun_eval.py import-skillsbench-job --job-dir testsixtures\skillsbench_harbor_job_sample --out results\dryrun\skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry testsixtures\skillsbench_registry_sample.json --agent-version job-fixture-import --benchmark-version skillsbench-harbor-fixture
+python scriptsalidate_records.py --data results\dryrun\skillsbench_job_runs.jsonl --schema runs
 ```

@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_hydration",
+  "plan_source": "results\\dryrun\\skillsbench_real_smoke_plan.json",
+  "repo_root": "benchmarks\\skillsbench",
+  "split": "replay",
+  "selected_splits": [
+    "replay"
+  ],
+  "git_bin": "git",
+  "command": [
+    "git",
+    "-C",
+    "benchmarks\\skillsbench",
+    "sparse-checkout",
+    "add",
+    "website/src/data",
+    "tasks/offer-letter-generator"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "before_patterns": [
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "after_patterns": [
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "hydrated_paths": [
+    "website/src/data",
+    "tasks/offer-letter-generator"
+  ],
+  "tasks": [
+    {
+      "task_id": "offer-letter-generator",
+      "title": "offer-letter-generator",
+      "source_path": "tasks/offer-letter-generator",
+      "exists": true
+    }
+  ],
+  "generated_at": "2026-04-15T08:44:28Z"
+}

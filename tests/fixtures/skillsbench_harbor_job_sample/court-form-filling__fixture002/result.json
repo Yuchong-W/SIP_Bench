@@ -1,0 +1,77 @@
+{
+  "id": "trial-fixture-002",
+  "task_name": "court-form-filling",
+  "trial_name": "court-form-filling__fixture002",
+  "trial_uri": "file:///fixtures/skillsbench/court-form-filling__fixture002",
+  "task_id": {
+    "path": "benchmarks\\skillsbench\\tasks\\court-form-filling"
+  },
+  "source": null,
+  "task_checksum": "court-form-filling-checksum-fixture",
+  "config": {
+    "task": {
+      "path": "benchmarks\\skillsbench\\tasks\\court-form-filling",
+      "git_url": null,
+      "git_commit_id": null,
+      "name": null,
+      "ref": null,
+      "overwrite": false,
+      "download_dir": null,
+      "source": null
+    },
+    "trial_name": "court-form-filling__fixture002",
+    "trials_dir": "results\\fixture_jobs\\skillsbench-court-form-filling",
+    "timeout_multiplier": 1.0,
+    "agent_timeout_multiplier": null,
+    "verifier_timeout_multiplier": null,
+    "agent_setup_timeout_multiplier": null,
+    "environment_build_timeout_multiplier": null,
+    "agent": {
+      "name": "oracle",
+      "import_path": null,
+      "model_name": null,
+      "override_timeout_sec": null,
+      "override_setup_timeout_sec": null,
+      "max_timeout_sec": null,
+      "kwargs": {},
+      "env": {}
+    },
+    "environment": {
+      "type": "docker",
+      "force_build": false,
+      "delete": true,
+      "mounts_json": null,
+      "env": {},
+      "kwargs": {}
+    },
+    "verifier": {
+      "disable": false
+    },
+    "artifacts": [
+      "/logs/verifier"
+    ],
+    "job_id": "job-fixture-001"
+  },
+  "agent_info": {
+    "name": "oracle",
+    "version": "1.0.0",
+    "model_info": null
+  },
+  "agent_result": null,
+  "verifier_result": null,
+  "exception_info": {
+    "exception_type": "RuntimeError",
+    "exception_message": "docker build failed",
+    "exception_traceback": "Traceback (most recent call last): RuntimeError: docker build failed",
+    "occurred_at": "2026-04-15T07:59:05Z"
+  },
+  "started_at": "2026-04-15T07:57:01Z",
+  "finished_at": "2026-04-15T07:59:06Z",
+  "environment_setup": {
+    "started_at": "2026-04-15T07:57:01Z",
+    "finished_at": "2026-04-15T07:59:05Z"
+  },
+  "agent_setup": null,
+  "agent_execution": null,
+  "verifier": null
+}

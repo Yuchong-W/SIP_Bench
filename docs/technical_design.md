@@ -274,19 +274,32 @@ As a result, upstream integration currently uses:
 
 Not finished yet:
 
-1. direct `SkillsBench` execution import from Harbor-produced result directories
-2. direct subprocess execution against a real Harbor install
-3. direct subprocess execution against a real tau checkout
-4. leaderboard rendering
-5. regression test harness
-6. sparse task hydration for selected SkillsBench tasks before real execution
+1. direct subprocess execution against a real `tau-bench` checkout with live model credentials
+2. leaderboard rendering
+3. regression test harness over a frozen real-run corpus
+4. automatic aggregation over real `T0/T1/T2` SkillsBench jobs once multiple phases have been collected
+5. environment-level retries for flaky Docker build and package-network failures during real Harbor runs
 
 ## Next Engineering Steps
 
-1. Add a `SkillsBench` execution importer from Harbor result directories to SIP runs.
-2. Add a leaderboard builder from `summary.jsonl`.
-3. Add a regression suite over frozen plan fixtures.
-4. Add a task-hydration helper that expands the sparse `SkillsBench` checkout for selected manifests.
+1. Add a leaderboard builder from `summary.jsonl`.
+2. Add a regression suite over frozen Harbor job fixtures.
+3. Add multi-phase real-run orchestration so `FG/BR/IE` can be computed from imported job outputs.
+4. Add retry and failure-taxonomy reporting for Docker build and dependency-download errors.
+
+## Update: Real SkillsBench Bridge
+
+Resolved in the current revision:
+
+1. `SkillsBench` plans can now be constrained by explicit `task_id` values.
+2. Sparse checkout hydration is now a first-class CLI step driven from the generated plan.
+3. A dedicated `scripts\harbor312.cmd` launcher now runs Harbor on Python `3.12`, forces UTF-8 console output, and disables Docker BuildKit on this machine.
+4. Harbor job directories are now importable into SIP `runs.jsonl`, including failed trials that never reached agent execution.
+
+Current environment-specific blockers:
+
+1. The globally installed `harbor.exe` still uses a Python `3.13` runtime that fails during Windows subprocess orchestration with `NotImplementedError`.
+2. Some real SkillsBench Docker builds still fail due network or Docker-builder instability, so the importer must treat Harbor job output as the source of truth instead of assuming successful benchmark completion.
 
 ## Publication State
 
@@ -304,3 +317,33 @@ As a result, the publication workflow is currently split into two layers:
 
 1. keep repository content in a clean upload-ready shape locally
 2. prefer SSH remote publishing when HTTPS transport is blocked
+
+
+## Update: Execution Output Decoding
+
+A real Harbor smoke run exposed an additional Windows-specific issue in the generic executor: `subprocess.run(..., text=True)` can fail when the child emits bytes that are not decodable under the local GBK code page. The executor now captures raw bytes and decodes with UTF-8 replacement before writing stdout and stderr artifacts. This keeps the execution report path stable even when third-party tools print mixed or invalid console encodings.
+
+## Update: First Real Successful SkillsBench Run
+
+The real `SkillsBench` chain has now produced a fully successful imported SIP record on this machine.
+
+Successful path:
+
+1. selected task: `dialogue-parser`
+2. protocol steps: `plan -> hydrate -> execute -> import -> validate`
+3. agent path: `oracle`
+4. launcher: `scripts\harbor312.cmd`
+5. additional Harbor override: `--environment-build-timeout-multiplier 4`
+
+Observed outcome:
+
+1. the original `dialogue-parser` smoke run failed with `EnvironmentStartTimeoutError` after the default `600` second build timeout
+2. rerunning the same task with an explicit environment-build timeout multiplier completed successfully
+3. the imported SIP record in `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl` validates against `runs.schema.json`
+4. the protocol bridge is therefore no longer only "able to import failed Harbor jobs"; it can now import a real successful upstream run as well
+
+Engineering implication:
+
+1. the primary remaining blocker is not missing glue code
+2. it is task-level runtime stability and timeout tuning across different SkillsBench environments
+3. future orchestration should therefore treat timeout overrides as benchmark execution policy, not as ad-hoc manual recovery

@@ -1,7 +1,9 @@
 __pycache__/
 *.pyc
+.uv-cache/
 results/dryrun/artifacts/
 results/dryrun/mock_replay.txt
 results/dryrun/mock_heldout.txt
+results/real_jobs*/
 benchmarks/skillsbench/
 benchmarks/tau-bench/

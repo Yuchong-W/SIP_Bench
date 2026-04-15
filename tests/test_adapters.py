@@ -29,6 +29,14 @@ class SkillsBenchAdapterTests(unittest.TestCase):
         self.assertEqual(manifest.counts()["heldout"], 2)
         self.assertEqual(len(manifest.all_task_ids()), 6)
 
+    def test_filter_tasks_by_task_ids(self) -> None:
+        adapter = SkillsBenchAdapter()
+        tasks = adapter.discover_tasks(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json")
+        filtered = adapter.filter_tasks(tasks, task_ids={"citation-check", "court-form-filling"})
+        self.assertEqual({task.task_id for task in filtered}, {"citation-check", "court-form-filling"})
+        with self.assertRaises(ValueError):
+            adapter.filter_tasks(tasks, task_ids={"missing-task"})
+
     def test_build_harbor_command(self) -> None:
         adapter = SkillsBenchAdapter()
         task = adapter.discover_tasks(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json")[0]
@@ -78,6 +86,27 @@ class SkillsBenchAdapterTests(unittest.TestCase):
         self.assertTrue(all(run["path_type"] == "external" for run in runs))
         self.assertEqual(runs[0]["started_at"], "2026-01-29T08:00:00Z")
         self.assertEqual(runs[0]["finished_at"], "2026-01-29T08:00:30Z")
+
+    def test_parse_harbor_job_dir_maps_success_and_failure(self) -> None:
+        adapter = SkillsBenchAdapter()
+        runs = adapter.parse_harbor_job_dir(
+            ROOT / "tests" / "fixtures" / "skillsbench_harbor_job_sample",
+            benchmark_split="smoke",
+            phase="T0",
+            path_type="oracle",
+            seed=19,
+            registry_source=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",
+            benchmark_version="skillsbench-harbor-fixture",
+        )
+        self.assertEqual(len(runs), 2)
+        by_task = {run["task_id"]: run for run in runs}
+        self.assertTrue(by_task["citation-check"]["success"])
+        self.assertEqual(by_task["citation-check"]["score"], 1.0)
+        self.assertEqual(by_task["citation-check"]["token_total"], 42)
+        self.assertEqual(by_task["citation-check"]["tool_calls_total"], 3)
+        self.assertFalse(by_task["court-form-filling"]["success"])
+        self.assertEqual(by_task["court-form-filling"]["score"], 0.0)
+        self.assertEqual(by_task["court-form-filling"]["metadata"]["exception_type"], "RuntimeError")
 
 
 class TauBenchAdapterTests(unittest.TestCase):

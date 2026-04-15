@@ -83,3 +83,49 @@ Sample outputs:
 3. transient mock text outputs under `results/dryrun/`
 4. local upstream checkouts under `benchmarks/skillsbench/` and `benchmarks/tau-bench/`
 5. broken local `.git/` residue
+
+
+## Update 2026-04-15
+
+Additional source and script files now intended for upload:
+
+1. `scripts/harbor312.cmd`
+2. `tests/fixtures/skillsbench_harbor_job_sample/result.json`
+3. `tests/fixtures/skillsbench_harbor_job_sample/citation-check__fixture001/result.json`
+4. `tests/fixtures/skillsbench_harbor_job_sample/court-form-filling__fixture002/result.json`
+
+Additional sample outputs expected after the next real smoke run:
+
+1. `results/dryrun/skillsbench_hydration.json`
+2. `results/dryrun/skillsbench_execution.json`
+3. `results/dryrun/skillsbench_job_runs.jsonl`
+
+Additional local-only exclusions:
+
+1. `.uv-cache/`
+2. `results/real_jobs*/`
+
+
+## Real Smoke Outputs
+
+Generated and suitable for upload:
+
+1. `results/dryrun/skillsbench_real_smoke_plan.json`
+2. `results/dryrun/skillsbench_real_smoke_hydration.json`
+3. `results/dryrun/skillsbench_real_smoke_execution.json`
+4. `results/dryrun/skillsbench_real_smoke_runs.jsonl`
+5. `results/dryrun/skillsbench_job_runs.jsonl`
+
+
+## Real Successful Smoke Outputs
+
+Generated and suitable for upload:
+
+1. `results/dryrun/skillsbench_dialogue_smoke_plan.json`
+2. `results/dryrun/skillsbench_dialogue_smoke_hydration.json`
+3. `results/dryrun/skillsbench_dialogue_smoke_execution.json`
+4. `results/dryrun/skillsbench_dialogue_smoke_runs.jsonl`
+5. `results/dryrun/skillsbench_dialogue_timeout4_plan.json`
+6. `results/dryrun/skillsbench_dialogue_timeout4_hydration.json`
+7. `results/dryrun/skillsbench_dialogue_timeout4_execution.json`
+8. `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl`

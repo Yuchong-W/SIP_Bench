@@ -1,0 +1,82 @@
+{
+  "benchmark_name": "skillsbench",
+  "registry_path": "benchmarks\\skillsbench\\website\\src\\data\\tasks-registry.json",
+  "repo_root": "benchmarks\\skillsbench",
+  "selection": {
+    "total_tasks": 86,
+    "filtered_tasks": 1,
+    "categories": [],
+    "difficulties": [],
+    "task_ids": [
+      "offer-letter-generator"
+    ],
+    "seed": 0
+  },
+  "execution": {
+    "agent": "oracle",
+    "model": null,
+    "harbor_bin": "scripts\\harbor312.cmd",
+    "extra_args": [
+      "--jobs-dir",
+      "results\\real_jobs_e2e",
+      "--job-name",
+      "skillsbench-e2e-offer-letter",
+      "--artifact",
+      "/logs/verifier"
+    ]
+  },
+  "manifest": {
+    "counts": {
+      "replay": 1,
+      "adapt": 0,
+      "heldout": 0,
+      "drift": 0
+    },
+    "replay": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "offer-letter-generator",
+        "source_path": "tasks/offer-letter-generator",
+        "title": "offer-letter-generator",
+        "category": "document-generation",
+        "difficulty": "easy",
+        "metadata": {
+          "tags": [
+            "docx",
+            "word",
+            "template",
+            "office",
+            "mail-merge"
+          ],
+          "author_name": "Yueqian Lin",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:10.247Z"
+        }
+      }
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  },
+  "commands": {
+    "replay": [
+      [
+        "scripts\\harbor312.cmd",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\offer-letter-generator",
+        "-a",
+        "oracle",
+        "--jobs-dir",
+        "results\\real_jobs_e2e",
+        "--job-name",
+        "skillsbench-e2e-offer-letter",
+        "--artifact",
+        "/logs/verifier"
+      ]
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  }
+}

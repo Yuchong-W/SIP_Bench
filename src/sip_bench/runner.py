@@ -35,11 +35,17 @@ def build_skillsbench_plan(
     harbor_bin: str = "harbor",
     categories: set[str] | None = None,
     difficulties: set[str] | None = None,
+    task_ids: set[str] | None = None,
     extra_args: list[str] | None = None,
 ) -> dict[str, Any]:
     adapter = SkillsBenchAdapter()
     tasks = adapter.discover_tasks(registry_path)
-    filtered_tasks = adapter.filter_tasks(tasks, categories=categories, difficulties=difficulties)
+    filtered_tasks = adapter.filter_tasks(
+        tasks,
+        categories=categories,
+        difficulties=difficulties,
+        task_ids=task_ids,
+    )
     manifest = adapter.build_manifest(
         filtered_tasks,
         replay_count=replay_count,
@@ -74,6 +80,7 @@ def build_skillsbench_plan(
             "filtered_tasks": len(filtered_tasks),
             "categories": sorted(categories) if categories else [],
             "difficulties": sorted(difficulties) if difficulties else [],
+            "task_ids": sorted(task_ids) if task_ids else [],
             "seed": seed,
         },
         "execution": {
@@ -85,6 +92,72 @@ def build_skillsbench_plan(
         "manifest": manifest.to_dict(),
         "commands": commands,
     }
+
+
+def hydrate_skillsbench_checkout(
+    *,
+    plan_source: str | Path,
+    repo_root: str | Path,
+    out: str | Path,
+    split: str = "all",
+    git_bin: str = "git",
+    include_registry: bool = True,
+) -> dict[str, Any]:
+    plan = load_json(plan_source)
+    if plan.get("benchmark_name") != "skillsbench":
+        raise ValueError("hydrate_skillsbench_checkout expects a SkillsBench plan")
+
+    selected_splits = _select_splits_from_manifest(plan["manifest"], split)
+    task_records = _unique_manifest_tasks(plan["manifest"], selected_splits)
+    if not task_records:
+        raise ValueError("No SkillsBench tasks were selected for hydration")
+
+    patterns: list[str] = []
+    if include_registry:
+        patterns.append("website/src/data")
+    patterns.extend(sorted({str(task["source_path"]).replace("\\", "/") for task in task_records}))
+
+    before_patterns = _read_sparse_patterns(repo_root=repo_root, git_bin=git_bin)
+    command = [git_bin, "-C", str(repo_root), "sparse-checkout", "add", *patterns]
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    after_patterns = _read_sparse_patterns(repo_root=repo_root, git_bin=git_bin)
+    report = {
+        "schema_version": "0.1.0",
+        "action": "skillsbench_hydration",
+        "plan_source": str(plan_source),
+        "repo_root": str(repo_root),
+        "split": split,
+        "selected_splits": selected_splits,
+        "git_bin": git_bin,
+        "command": command,
+        "returncode": completed.returncode,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+        "before_patterns": before_patterns,
+        "after_patterns": after_patterns,
+        "hydrated_paths": patterns,
+        "tasks": [
+            {
+                "task_id": task["task_id"],
+                "title": task.get("title"),
+                "source_path": task["source_path"],
+                "exists": (Path(repo_root) / task["source_path"]).exists(),
+            }
+            for task in task_records
+        ],
+        "generated_at": _now_utc(),
+    }
+    write_json(out, report)
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"SkillsBench sparse hydration failed with exit code {completed.returncode}: {completed.stderr.strip()}"
+        )
+    return report
 
 
 def import_tau_results(
@@ -157,6 +230,48 @@ def import_skillsbench_results(
         agent_version=agent_version,
         benchmark_version=resolved_benchmark_version,
         conditions=conditions,
+    )
+    write_jsonl(out, runs)
+    return runs
+
+
+def import_skillsbench_job(
+    *,
+    source: str | Path,
+    out: str | Path,
+    benchmark_split: str,
+    phase: str,
+    path_type: str,
+    seed: int,
+    registry_source: str | Path | None = None,
+    repo_root: str | Path | None = None,
+    model_name: str | None = None,
+    agent_name: str | None = None,
+    agent_version: str = "harbor-job-import",
+    benchmark_version: str | None = None,
+) -> list[dict[str, Any]]:
+    adapter = SkillsBenchAdapter()
+    resolved_registry_source = registry_source
+    if resolved_registry_source is None and repo_root is not None:
+        resolved_registry_source = adapter.default_registry_path(repo_root)
+
+    resolved_benchmark_version = benchmark_version
+    if resolved_benchmark_version is None:
+        resolved_benchmark_version = _resolve_git_revision(repo_root) if repo_root else None
+    if resolved_benchmark_version is None:
+        resolved_benchmark_version = "skillsbench-upstream"
+
+    runs = adapter.parse_harbor_job_dir(
+        source,
+        benchmark_split=benchmark_split,
+        phase=phase,
+        path_type=path_type,
+        seed=seed,
+        registry_source=resolved_registry_source,
+        model_name=model_name,
+        agent_name=agent_name,
+        agent_version=agent_version,
+        benchmark_version=resolved_benchmark_version,
     )
     write_jsonl(out, runs)
     return runs
@@ -239,6 +354,28 @@ def _select_splits(plan: dict[str, Any], split: str) -> list[str]:
     return [split]
 
 
+def _select_splits_from_manifest(manifest: dict[str, Any], split: str) -> list[str]:
+    available = ["replay", "adapt", "heldout", "drift"]
+    if split == "all":
+        return [name for name in available if manifest.get(name)]
+    if split not in available:
+        raise ValueError(f"Unknown split: {split}")
+    return [split]
+
+
+def _unique_manifest_tasks(manifest: dict[str, Any], splits: list[str]) -> list[dict[str, Any]]:
+    unique: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for split_name in splits:
+        for task in manifest.get(split_name, []):
+            task_id = str(task["task_id"])
+            if task_id in seen:
+                continue
+            seen.add(task_id)
+            unique.append(task)
+    return unique
+
+
 def _execute_one(
     *,
     split_name: str,
@@ -286,11 +423,13 @@ def _execute_one(
             command,
             cwd=str(cwd) if cwd else None,
             capture_output=True,
-            text=True,
+            text=False,
             check=False,
         )
-        stdout_path.write_text(completed.stdout, encoding="utf-8")
-        stderr_path.write_text(completed.stderr, encoding="utf-8")
+        stdout_text = completed.stdout.decode("utf-8", errors="replace") if completed.stdout is not None else ""
+        stderr_text = completed.stderr.decode("utf-8", errors="replace") if completed.stderr is not None else ""
+        stdout_path.write_text(stdout_text, encoding="utf-8")
+        stderr_path.write_text(stderr_text, encoding="utf-8")
         finished_at = _now_utc()
         duration_seconds = perf_counter() - start_time
         return {
@@ -343,7 +482,10 @@ def _summarize_execution(records: list[dict[str, Any]], *, halted: bool) -> dict
 
 
 def _safe_slug(value: str) -> str:
-    return "".join(character if character.isalnum() or character in {"-", "_"} else "_" for character in value)
+    return "".join(
+        character if character.isalnum() or character in {"-", "_"} else "_"
+        for character in value
+    )
 
 
 def _now_utc() -> str:
@@ -369,3 +511,18 @@ def _resolve_git_revision(repo_root: str | Path | None) -> str | None:
         return None
     revision = completed.stdout.strip()
     return revision or None
+
+
+def _read_sparse_patterns(*, repo_root: str | Path, git_bin: str = "git") -> list[str]:
+    try:
+        completed = subprocess.run(
+            [git_bin, "-C", str(repo_root), "sparse-checkout", "list"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        return []
+    if completed.returncode != 0:
+        return []
+    return [line.strip() for line in completed.stdout.splitlines() if line.strip()]
