@@ -190,3 +190,8 @@ Observed result:
 Current blocker:
 
 1. final publication is blocked only by outbound GitHub connectivity from this environment
+
+Follow-up note:
+
+1. a documentation-only follow-up commit was added after the initial scaffold commit so the recorded publish state and release manifest are part of local history
+2. a later retry of `git push origin main` still failed with the same `github.com:443` connectivity error

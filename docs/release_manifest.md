@@ -7,9 +7,10 @@
 ## Local Release State
 
 1. local git repository repaired on `2026-04-15`
-2. local root commit: `cb19fed`
-3. remote configured as `origin = https://github.com/Yuchong-W/Protocol_Bench.git`
-4. remote push currently blocked by failed outbound `github.com:443` connectivity
+2. local history includes the initial scaffold commit `cb19fed`
+3. release-engineering documentation updates are also committed locally
+4. remote configured as `origin = https://github.com/Yuchong-W/Protocol_Bench.git`
+5. remote push currently blocked by failed outbound `github.com:443` connectivity
 
 ## Files Intended For Upload
 
