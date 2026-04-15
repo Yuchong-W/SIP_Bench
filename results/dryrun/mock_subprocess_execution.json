@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "tests\\fixtures\\mock_execute_plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "subprocess",
+  "split": "all",
+  "cwd": "E:\\Protocal_Bench",
+  "artifacts_dir": "results\\dryrun\\artifacts",
+  "summary": {
+    "executed": 2,
+    "status_counts": {
+      "success": 2
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "replay",
+      "task_id": "mock-replay",
+      "task_title": "mock-replay",
+      "command": [
+        "python",
+        "tests/fixtures/echo_task.py",
+        "--task-id",
+        "mock-replay",
+        "--out",
+        "results/dryrun/mock_replay.txt",
+        "--message",
+        "replay"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.3531516000002739,
+      "started_at": "2026-04-14T15:23:09Z",
+      "finished_at": "2026-04-14T15:23:10Z",
+      "stdout_path": "results\\dryrun\\artifacts\\replay\\000_mock-replay\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\replay\\000_mock-replay\\stderr.txt",
+      "error": null
+    },
+    {
+      "split": "heldout",
+      "task_id": "mock-heldout",
+      "task_title": "mock-heldout",
+      "command": [
+        "python",
+        "tests/fixtures/echo_task.py",
+        "--task-id",
+        "mock-heldout",
+        "--out",
+        "results/dryrun/mock_heldout.txt",
+        "--message",
+        "heldout"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.3181844999999157,
+      "started_at": "2026-04-14T15:23:10Z",
+      "finished_at": "2026-04-14T15:23:10Z",
+      "stdout_path": "results\\dryrun\\artifacts\\heldout\\000_mock-heldout\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\heldout\\000_mock-heldout\\stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-14T15:23:10Z"
+}

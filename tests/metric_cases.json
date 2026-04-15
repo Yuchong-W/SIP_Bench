@@ -1,0 +1,105 @@
+[
+  {
+    "case_id": "fg_positive_br_positive",
+    "inputs": {
+      "t0_replay": 0.40,
+      "t1_replay": 0.55,
+      "t0_heldout": 0.30,
+      "t1_heldout": 0.50,
+      "t2_target": 0.48,
+      "cost": 100.0,
+      "lambda": 1.0
+    },
+    "expected": {
+      "fg": 0.20,
+      "br": 0.15,
+      "br_ratio": 1.375,
+      "ie": 0.002,
+      "pds": -0.02,
+      "nis": 0.20
+    }
+  },
+  {
+    "case_id": "fg_positive_br_negative",
+    "inputs": {
+      "t0_replay": 0.80,
+      "t1_replay": 0.50,
+      "t0_heldout": 0.20,
+      "t1_heldout": 0.35,
+      "t2_target": 0.33,
+      "cost": 50.0,
+      "lambda": 1.0
+    },
+    "expected": {
+      "fg": 0.15,
+      "br": -0.30,
+      "br_ratio": 0.625,
+      "ie": 0.003,
+      "pds": -0.02,
+      "nis": -0.15
+    }
+  },
+  {
+    "case_id": "fg_zero",
+    "inputs": {
+      "t0_replay": 0.60,
+      "t1_replay": 0.60,
+      "t0_heldout": 0.40,
+      "t1_heldout": 0.40,
+      "t2_target": 0.40,
+      "cost": 10.0,
+      "lambda": 1.0
+    },
+    "expected": {
+      "fg": 0.0,
+      "br": 0.0,
+      "br_ratio": 1.0,
+      "ie": 0.0,
+      "pds": 0.0,
+      "nis": 0.0
+    }
+  },
+  {
+    "case_id": "zero_replay_guard",
+    "inputs": {
+      "t0_replay": 0.0,
+      "t1_replay": 0.20,
+      "t0_heldout": 0.10,
+      "t1_heldout": 0.30,
+      "t2_target": 0.25,
+      "cost": 25.0,
+      "lambda": 1.0,
+      "eps": 0.000001
+    },
+    "expected": {
+      "fg": 0.20,
+      "br": 0.20,
+      "br_ratio": 200000.0,
+      "ie": 0.008,
+      "pds": -0.05,
+      "nis": 0.20
+    },
+    "note": "BR_ratio is intentionally large because replay denominator falls back to eps."
+  },
+  {
+    "case_id": "zero_cost_guard",
+    "inputs": {
+      "t0_replay": 0.30,
+      "t1_replay": 0.35,
+      "t0_heldout": 0.30,
+      "t1_heldout": 0.40,
+      "t2_target": 0.39,
+      "cost": 0.0,
+      "lambda": 1.0
+    },
+    "expected": {
+      "fg": 0.10,
+      "br": 0.05,
+      "br_ratio": 1.1666666667,
+      "ie": null,
+      "pds": -0.01,
+      "nis": 0.10
+    },
+    "note": "IE should be treated as undefined or guarded when cost is zero."
+  }
+]

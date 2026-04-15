@@ -1,0 +1,34 @@
+[
+  {
+    "task_id": 4,
+    "reward": 1.0,
+    "info": {
+      "source": "transfer_to_human_agents"
+    },
+    "traj": [
+      {
+        "role": "user",
+        "content": "Please help me find my order."
+      },
+      {
+        "role": "assistant",
+        "content": "I can help with that."
+      }
+    ],
+    "trial": 0
+  },
+  {
+    "task_id": 5,
+    "reward": 0.0,
+    "info": {
+      "error": "Wrong tool selected"
+    },
+    "traj": [
+      {
+        "role": "user",
+        "content": "I want to return an item."
+      }
+    ],
+    "trial": 0
+  }
+]

@@ -1,0 +1,129 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "results\\dryrun\\skillsbench_plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "mock",
+  "split": "all",
+  "cwd": null,
+  "artifacts_dir": "results\\dryrun\\artifacts",
+  "summary": {
+    "executed": 5,
+    "status_counts": {
+      "success": 5
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "replay",
+      "task_id": "travel-planning",
+      "task_title": "travel-planning",
+      "command": [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\travel-planning",
+        "-a",
+        "oracle"
+      ],
+      "mode": "mock",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.0013476999956765212,
+      "started_at": "2026-04-14T15:22:41Z",
+      "finished_at": "2026-04-14T15:22:41Z",
+      "stdout_path": "results\\dryrun\\artifacts\\replay\\000_travel-planning\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\replay\\000_travel-planning\\stderr.txt",
+      "error": null
+    },
+    {
+      "split": "replay",
+      "task_id": "citation-check",
+      "task_title": "citation-check",
+      "command": [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\citation-check",
+        "-a",
+        "oracle"
+      ],
+      "mode": "mock",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.0013431999977910891,
+      "started_at": "2026-04-14T15:22:41Z",
+      "finished_at": "2026-04-14T15:22:41Z",
+      "stdout_path": "results\\dryrun\\artifacts\\replay\\001_citation-check\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\replay\\001_citation-check\\stderr.txt",
+      "error": null
+    },
+    {
+      "split": "adapt",
+      "task_id": "video-filler-word-remover",
+      "task_title": "video-filler-word-remover",
+      "command": [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\video-filler-word-remover",
+        "-a",
+        "oracle"
+      ],
+      "mode": "mock",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.011174200000823475,
+      "started_at": "2026-04-14T15:22:41Z",
+      "finished_at": "2026-04-14T15:22:41Z",
+      "stdout_path": "results\\dryrun\\artifacts\\adapt\\000_video-filler-word-remover\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\adapt\\000_video-filler-word-remover\\stderr.txt",
+      "error": null
+    },
+    {
+      "split": "heldout",
+      "task_id": "court-form-filling",
+      "task_title": "court-form-filling",
+      "command": [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\court-form-filling",
+        "-a",
+        "oracle"
+      ],
+      "mode": "mock",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.005808800000522751,
+      "started_at": "2026-04-14T15:22:41Z",
+      "finished_at": "2026-04-14T15:22:41Z",
+      "stdout_path": "results\\dryrun\\artifacts\\heldout\\000_court-form-filling\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\heldout\\000_court-form-filling\\stderr.txt",
+      "error": null
+    },
+    {
+      "split": "heldout",
+      "task_id": "weighted-gdp-calc",
+      "task_title": "weighted-gdp-calc",
+      "command": [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\weighted-gdp-calc",
+        "-a",
+        "oracle"
+      ],
+      "mode": "mock",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 0.0014635999978054315,
+      "started_at": "2026-04-14T15:22:41Z",
+      "finished_at": "2026-04-14T15:22:41Z",
+      "stdout_path": "results\\dryrun\\artifacts\\heldout\\001_weighted-gdp-calc\\stdout.txt",
+      "stderr_path": "results\\dryrun\\artifacts\\heldout\\001_weighted-gdp-calc\\stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-14T15:22:41Z"
+}

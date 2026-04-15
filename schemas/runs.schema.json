@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sip-bench.local/schemas/runs.schema.json",
+  "title": "SIP-Bench Run Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "benchmark_name",
+    "benchmark_split",
+    "phase",
+    "path_type",
+    "model_name",
+    "agent_name",
+    "agent_version",
+    "task_id",
+    "attempt_index",
+    "score",
+    "success",
+    "token_input",
+    "token_output",
+    "token_total",
+    "tool_calls_total",
+    "wall_clock_seconds",
+    "memory_reads",
+    "memory_writes",
+    "human_interventions",
+    "seed",
+    "started_at",
+    "finished_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "benchmark_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Example: skillsbench, tau-bench, swe-bench-live"
+    },
+    "benchmark_version": {
+      "type": "string"
+    },
+    "benchmark_split": {
+      "type": "string",
+      "enum": [
+        "replay",
+        "adapt",
+        "heldout",
+        "drift",
+        "smoke",
+        "golden"
+      ]
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "T0",
+        "T1",
+        "T2"
+      ]
+    },
+    "path_type": {
+      "type": "string",
+      "enum": [
+        "frozen",
+        "external",
+        "parameter",
+        "oracle"
+      ]
+    },
+    "model_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_template_id": {
+      "type": "string"
+    },
+    "attempt_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "success": {
+      "type": "boolean"
+    },
+    "token_input": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "token_output": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "token_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tool_calls_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "memory_reads": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "memory_writes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wall_clock_seconds": {
+      "type": "number",
+      "minimum": 0.0
+    },
+    "cost_usd": {
+      "type": "number",
+      "minimum": 0.0
+    },
+    "human_interventions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

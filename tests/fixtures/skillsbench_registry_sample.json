@@ -1,0 +1,62 @@
+[
+  {
+    "title": "citation-check",
+    "category": "research",
+    "difficulty": "medium",
+    "path": "tasks/citation-check",
+    "updatedAt": "2026-02-09T08:15:09.819Z",
+    "version": "1.0",
+    "author_name": "Xuandong Zhao",
+    "tags": ["citation", "bibtex", "verification"]
+  },
+  {
+    "title": "court-form-filling",
+    "category": "document-processing",
+    "difficulty": "easy",
+    "path": "tasks/court-form-filling",
+    "updatedAt": "2026-02-09T08:15:09.826Z",
+    "version": "1.0",
+    "author_name": "Yizhuo He",
+    "tags": ["pdf", "form-filling", "legal"]
+  },
+  {
+    "title": "data-to-d3",
+    "category": "Data Visualization",
+    "difficulty": "medium",
+    "path": "tasks/data-to-d3",
+    "updatedAt": "2026-02-09T08:15:09.895Z",
+    "version": "1.0",
+    "author_name": "Yizhuo He",
+    "tags": ["d3.js", "interactive-charts"]
+  },
+  {
+    "title": "travel-planning",
+    "category": "travel-planning",
+    "difficulty": "medium",
+    "path": "tasks/travel-planning",
+    "updatedAt": "2026-02-09T08:15:10.704Z",
+    "version": "1.0",
+    "author_name": "Jiahao Liu",
+    "tags": ["travel", "constraints"]
+  },
+  {
+    "title": "video-filler-word-remover",
+    "category": "media-processing",
+    "difficulty": "medium",
+    "path": "tasks/video-filler-word-remover",
+    "updatedAt": "2026-02-09T08:15:10.740Z",
+    "version": "1.0",
+    "author_name": "Ze Ma",
+    "tags": ["video", "audio", "editing"]
+  },
+  {
+    "title": "weighted-gdp-calc",
+    "category": "financial-analysis",
+    "difficulty": "medium",
+    "path": "tasks/weighted-gdp-calc",
+    "updatedAt": "2026-02-09T08:15:10.863Z",
+    "version": "1.0",
+    "author_name": "Xiangyi Li",
+    "tags": ["excel", "finance", "statistics"]
+  }
+]

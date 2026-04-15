@@ -1,0 +1,304 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+from time import perf_counter
+from typing import Any
+
+from sip_bench.adapters import SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.metrics import write_jsonl
+
+
+def write_json(path: str | Path, payload: dict[str, Any]) -> None:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+
+
+def load_json(path: str | Path) -> dict[str, Any]:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def build_skillsbench_plan(
+    *,
+    registry_path: str | Path,
+    repo_root: str | Path,
+    replay_count: int,
+    adapt_count: int,
+    heldout_count: int,
+    drift_count: int = 0,
+    seed: int = 0,
+    agent: str = "oracle",
+    model: str | None = None,
+    harbor_bin: str = "harbor",
+    categories: set[str] | None = None,
+    difficulties: set[str] | None = None,
+    extra_args: list[str] | None = None,
+) -> dict[str, Any]:
+    adapter = SkillsBenchAdapter()
+    tasks = adapter.discover_tasks(registry_path)
+    filtered_tasks = adapter.filter_tasks(tasks, categories=categories, difficulties=difficulties)
+    manifest = adapter.build_manifest(
+        filtered_tasks,
+        replay_count=replay_count,
+        adapt_count=adapt_count,
+        heldout_count=heldout_count,
+        drift_count=drift_count,
+        seed=seed,
+    )
+    adapter.validate_manifest(manifest)
+
+    commands: dict[str, list[list[str]]] = {}
+    for split_name in ("replay", "adapt", "heldout", "drift"):
+        tasks_for_split = getattr(manifest, split_name)
+        commands[split_name] = [
+            adapter.build_harbor_command(
+                repo_root=repo_root,
+                task=task,
+                agent=agent,
+                model=model,
+                harbor_bin=harbor_bin,
+                extra_args=extra_args,
+            )
+            for task in tasks_for_split
+        ]
+
+    return {
+        "benchmark_name": adapter.benchmark_name,
+        "registry_path": str(registry_path),
+        "repo_root": str(repo_root),
+        "selection": {
+            "total_tasks": len(tasks),
+            "filtered_tasks": len(filtered_tasks),
+            "categories": sorted(categories) if categories else [],
+            "difficulties": sorted(difficulties) if difficulties else [],
+            "seed": seed,
+        },
+        "execution": {
+            "agent": agent,
+            "model": model,
+            "harbor_bin": harbor_bin,
+            "extra_args": extra_args or [],
+        },
+        "manifest": manifest.to_dict(),
+        "commands": commands,
+    }
+
+
+def import_tau_results(
+    *,
+    source: str | Path,
+    out: str | Path,
+    env: str,
+    task_split: str,
+    phase: str,
+    path_type: str,
+    model_name: str,
+    agent_name: str,
+    agent_version: str,
+    seed: int,
+) -> list[dict[str, Any]]:
+    adapter = TauBenchAdapter()
+    runs = adapter.parse_result_file(
+        source,
+        env=env,
+        task_split=task_split,
+        phase=phase,
+        path_type=path_type,
+        model_name=model_name,
+        agent_name=agent_name,
+        agent_version=agent_version,
+        seed=seed,
+    )
+    write_jsonl(out, runs)
+    return runs
+
+
+def execute_command_plan(
+    *,
+    plan_source: str | Path,
+    out: str | Path,
+    split: str = "all",
+    mode: str = "mock",
+    artifacts_dir: str | Path | None = None,
+    fail_fast: bool = False,
+    cwd: str | Path | None = None,
+    max_tasks: int | None = None,
+) -> dict[str, Any]:
+    if mode not in {"mock", "subprocess"}:
+        raise ValueError(f"Unsupported mode: {mode}")
+
+    plan = load_json(plan_source)
+    selected_splits = _select_splits(plan, split)
+    output_path = Path(out)
+    artifacts_root = Path(artifacts_dir) if artifacts_dir else output_path.parent / "artifacts"
+    execution_root = Path(cwd) if cwd else None
+
+    records: list[dict[str, Any]] = []
+    executed = 0
+    halted = False
+
+    for split_name in selected_splits:
+        tasks = plan["manifest"][split_name]
+        commands = plan["commands"][split_name]
+        if len(tasks) != len(commands):
+            raise ValueError(
+                f"Split {split_name} has {len(tasks)} tasks but {len(commands)} commands"
+            )
+        for index, (task, command) in enumerate(zip(tasks, commands)):
+            if max_tasks is not None and executed >= max_tasks:
+                halted = True
+                break
+            record = _execute_one(
+                split_name=split_name,
+                index=index,
+                task=task,
+                command=command,
+                mode=mode,
+                artifacts_root=artifacts_root,
+                cwd=execution_root,
+            )
+            records.append(record)
+            executed += 1
+            if fail_fast and record["status"] != "success":
+                halted = True
+                break
+        if halted:
+            break
+
+    report = {
+        "schema_version": "0.1.0",
+        "plan_source": str(plan_source),
+        "benchmark_name": plan["benchmark_name"],
+        "mode": mode,
+        "split": split,
+        "cwd": str(execution_root) if execution_root else None,
+        "artifacts_dir": str(artifacts_root),
+        "summary": _summarize_execution(records, halted=halted),
+        "records": records,
+        "generated_at": _now_utc(),
+    }
+    write_json(out, report)
+    return report
+
+
+def _select_splits(plan: dict[str, Any], split: str) -> list[str]:
+    available = ["replay", "adapt", "heldout", "drift"]
+    if split == "all":
+        return [name for name in available if plan["commands"].get(name)]
+    if split not in available:
+        raise ValueError(f"Unknown split: {split}")
+    return [split]
+
+
+def _execute_one(
+    *,
+    split_name: str,
+    index: int,
+    task: dict[str, Any],
+    command: list[str],
+    mode: str,
+    artifacts_root: Path,
+    cwd: Path | None,
+) -> dict[str, Any]:
+    task_stub = _safe_slug(task["task_id"])
+    task_dir = artifacts_root / split_name / f"{index:03d}_{task_stub}"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    stdout_path = task_dir / "stdout.txt"
+    stderr_path = task_dir / "stderr.txt"
+
+    started_at = _now_utc()
+    start_time = perf_counter()
+    if mode == "mock":
+        stdout_path.write_text(
+            "MOCK EXECUTION\n" + " ".join(command) + "\n",
+            encoding="utf-8",
+        )
+        stderr_path.write_text("", encoding="utf-8")
+        finished_at = _now_utc()
+        duration_seconds = perf_counter() - start_time
+        return {
+            "split": split_name,
+            "task_id": task["task_id"],
+            "task_title": task["title"],
+            "command": command,
+            "mode": mode,
+            "status": "success",
+            "exit_code": 0,
+            "duration_seconds": duration_seconds,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "stdout_path": str(stdout_path),
+            "stderr_path": str(stderr_path),
+            "error": None,
+        }
+
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=str(cwd) if cwd else None,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        stdout_path.write_text(completed.stdout, encoding="utf-8")
+        stderr_path.write_text(completed.stderr, encoding="utf-8")
+        finished_at = _now_utc()
+        duration_seconds = perf_counter() - start_time
+        return {
+            "split": split_name,
+            "task_id": task["task_id"],
+            "task_title": task["title"],
+            "command": command,
+            "mode": mode,
+            "status": "success" if completed.returncode == 0 else "failed",
+            "exit_code": completed.returncode,
+            "duration_seconds": duration_seconds,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "stdout_path": str(stdout_path),
+            "stderr_path": str(stderr_path),
+            "error": None,
+        }
+    except FileNotFoundError as exc:
+        stdout_path.write_text("", encoding="utf-8")
+        stderr_path.write_text(str(exc), encoding="utf-8")
+        finished_at = _now_utc()
+        duration_seconds = perf_counter() - start_time
+        return {
+            "split": split_name,
+            "task_id": task["task_id"],
+            "task_title": task["title"],
+            "command": command,
+            "mode": mode,
+            "status": "missing_executable",
+            "exit_code": None,
+            "duration_seconds": duration_seconds,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "stdout_path": str(stdout_path),
+            "stderr_path": str(stderr_path),
+            "error": str(exc),
+        }
+
+
+def _summarize_execution(records: list[dict[str, Any]], *, halted: bool) -> dict[str, Any]:
+    status_counts: dict[str, int] = {}
+    for record in records:
+        status = record["status"]
+        status_counts[status] = status_counts.get(status, 0) + 1
+    return {
+        "executed": len(records),
+        "status_counts": status_counts,
+        "halted_early": halted,
+    }
+
+
+def _safe_slug(value: str) -> str:
+    return "".join(character if character.isalnum() or character in {"-", "_"} else "_" for character in value)
+
+
+def _now_utc() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")

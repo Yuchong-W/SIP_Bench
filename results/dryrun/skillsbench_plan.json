@@ -1,0 +1,171 @@
+{
+  "benchmark_name": "skillsbench",
+  "registry_path": "tests\\fixtures\\skillsbench_registry_sample.json",
+  "repo_root": "benchmarks\\skillsbench",
+  "selection": {
+    "total_tasks": 6,
+    "filtered_tasks": 6,
+    "categories": [],
+    "difficulties": [],
+    "seed": 13
+  },
+  "execution": {
+    "agent": "oracle",
+    "model": null,
+    "harbor_bin": "harbor",
+    "extra_args": []
+  },
+  "manifest": {
+    "counts": {
+      "replay": 2,
+      "adapt": 1,
+      "heldout": 2,
+      "drift": 0
+    },
+    "replay": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "travel-planning",
+        "source_path": "tasks/travel-planning",
+        "title": "travel-planning",
+        "category": "travel-planning",
+        "difficulty": "medium",
+        "metadata": {
+          "tags": [
+            "travel",
+            "constraints"
+          ],
+          "author_name": "Jiahao Liu",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:10.704Z"
+        }
+      },
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "citation-check",
+        "source_path": "tasks/citation-check",
+        "title": "citation-check",
+        "category": "research",
+        "difficulty": "medium",
+        "metadata": {
+          "tags": [
+            "citation",
+            "bibtex",
+            "verification"
+          ],
+          "author_name": "Xuandong Zhao",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:09.819Z"
+        }
+      }
+    ],
+    "adapt": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "video-filler-word-remover",
+        "source_path": "tasks/video-filler-word-remover",
+        "title": "video-filler-word-remover",
+        "category": "media-processing",
+        "difficulty": "medium",
+        "metadata": {
+          "tags": [
+            "video",
+            "audio",
+            "editing"
+          ],
+          "author_name": "Ze Ma",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:10.740Z"
+        }
+      }
+    ],
+    "heldout": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "court-form-filling",
+        "source_path": "tasks/court-form-filling",
+        "title": "court-form-filling",
+        "category": "document-processing",
+        "difficulty": "easy",
+        "metadata": {
+          "tags": [
+            "pdf",
+            "form-filling",
+            "legal"
+          ],
+          "author_name": "Yizhuo He",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:09.826Z"
+        }
+      },
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "weighted-gdp-calc",
+        "source_path": "tasks/weighted-gdp-calc",
+        "title": "weighted-gdp-calc",
+        "category": "financial-analysis",
+        "difficulty": "medium",
+        "metadata": {
+          "tags": [
+            "excel",
+            "finance",
+            "statistics"
+          ],
+          "author_name": "Xiangyi Li",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:10.863Z"
+        }
+      }
+    ],
+    "drift": []
+  },
+  "commands": {
+    "replay": [
+      [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\travel-planning",
+        "-a",
+        "oracle"
+      ],
+      [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\citation-check",
+        "-a",
+        "oracle"
+      ]
+    ],
+    "adapt": [
+      [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\video-filler-word-remover",
+        "-a",
+        "oracle"
+      ]
+    ],
+    "heldout": [
+      [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\court-form-filling",
+        "-a",
+        "oracle"
+      ],
+      [
+        "harbor",
+        "run",
+        "-p",
+        "benchmarks\\skillsbench\\tasks\\weighted-gdp-calc",
+        "-a",
+        "oracle"
+      ]
+    ],
+    "drift": []
+  }
+}

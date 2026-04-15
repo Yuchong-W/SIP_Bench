@@ -1,0 +1,63 @@
+{
+  "benchmark_name": "skillsbench",
+  "manifest": {
+    "counts": {
+      "replay": 1,
+      "adapt": 0,
+      "heldout": 1,
+      "drift": 0
+    },
+    "replay": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "mock-replay",
+        "source_path": "tasks/mock-replay",
+        "title": "mock-replay",
+        "category": "mock",
+        "difficulty": "easy",
+        "metadata": {}
+      }
+    ],
+    "adapt": [],
+    "heldout": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "mock-heldout",
+        "source_path": "tasks/mock-heldout",
+        "title": "mock-heldout",
+        "category": "mock",
+        "difficulty": "easy",
+        "metadata": {}
+      }
+    ],
+    "drift": []
+  },
+  "commands": {
+    "replay": [
+      [
+        "python",
+        "tests/fixtures/echo_task.py",
+        "--task-id",
+        "mock-replay",
+        "--out",
+        "results/dryrun/mock_replay.txt",
+        "--message",
+        "replay"
+      ]
+    ],
+    "adapt": [],
+    "heldout": [
+      [
+        "python",
+        "tests/fixtures/echo_task.py",
+        "--task-id",
+        "mock-heldout",
+        "--out",
+        "results/dryrun/mock_heldout.txt",
+        "--message",
+        "heldout"
+      ]
+    ],
+    "drift": []
+  }
+}

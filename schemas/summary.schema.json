@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sip-bench.local/schemas/summary.schema.json",
+  "title": "SIP-Bench Summary Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "summary_id",
+    "benchmark_name",
+    "path_type",
+    "model_name",
+    "agent_name",
+    "agent_version",
+    "sample_sizes",
+    "metrics",
+    "costs",
+    "repeats",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "summary_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "benchmark_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "benchmark_version": {
+      "type": "string"
+    },
+    "path_type": {
+      "type": "string",
+      "enum": [
+        "frozen",
+        "external",
+        "parameter",
+        "oracle"
+      ]
+    },
+    "model_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sample_sizes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "replay",
+        "adapt",
+        "heldout",
+        "drift"
+      ],
+      "properties": {
+        "replay": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "adapt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "heldout": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "drift": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "t0_replay_mean",
+        "t1_replay_mean",
+        "t2_replay_mean",
+        "t0_heldout_mean",
+        "t1_heldout_mean",
+        "t2_heldout_mean",
+        "fg_mean",
+        "fg_std",
+        "br_mean",
+        "br_std",
+        "br_ratio_mean",
+        "ie_mean",
+        "ie_std",
+        "pds_mean",
+        "pds_std",
+        "nis_mean",
+        "nis_std"
+      ],
+      "properties": {
+        "t0_replay_mean": {
+          "type": "number"
+        },
+        "t1_replay_mean": {
+          "type": "number"
+        },
+        "t2_replay_mean": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "t0_heldout_mean": {
+          "type": "number"
+        },
+        "t1_heldout_mean": {
+          "type": "number"
+        },
+        "t2_heldout_mean": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "fg_mean": {
+          "type": "number"
+        },
+        "fg_std": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "br_mean": {
+          "type": "number"
+        },
+        "br_std": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "br_ratio_mean": {
+          "type": "number"
+        },
+        "ie_mean": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "ie_std": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0.0
+        },
+        "pds_mean": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pds_std": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0.0
+        },
+        "nis_mean": {
+          "type": "number"
+        },
+        "nis_std": {
+          "type": "number",
+          "minimum": 0.0
+        }
+      }
+    },
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "token_total_mean",
+        "tool_calls_mean",
+        "wall_clock_seconds_mean",
+        "cost_usd_mean",
+        "human_interventions_mean"
+      ],
+      "properties": {
+        "token_total_mean": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "tool_calls_mean": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "wall_clock_seconds_mean": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "cost_usd_mean": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "human_interventions_mean": {
+          "type": "number",
+          "minimum": 0.0
+        }
+      }
+    },
+    "repeats": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "type": "string"
+        },
+        "runs_file": {
+          "type": "string"
+        },
+        "benchmark_config_hash": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
