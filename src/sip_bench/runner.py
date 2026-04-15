@@ -93,6 +93,7 @@ def import_tau_results(
     out: str | Path,
     env: str,
     task_split: str,
+    benchmark_split: str,
     phase: str,
     path_type: str,
     model_name: str,
@@ -105,12 +106,57 @@ def import_tau_results(
         source,
         env=env,
         task_split=task_split,
+        benchmark_split=benchmark_split,
         phase=phase,
         path_type=path_type,
         model_name=model_name,
         agent_name=agent_name,
         agent_version=agent_version,
         seed=seed,
+    )
+    write_jsonl(out, runs)
+    return runs
+
+
+def import_skillsbench_results(
+    *,
+    source: str | Path,
+    out: str | Path,
+    benchmark_split: str,
+    phase: str,
+    seed: int,
+    registry_source: str | Path | None = None,
+    repo_root: str | Path | None = None,
+    path_type: str | None = None,
+    model_name: str | None = None,
+    agent_name: str | None = None,
+    agent_version: str = "upstream-import",
+    benchmark_version: str | None = None,
+    conditions: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    adapter = SkillsBenchAdapter()
+    resolved_registry_source = registry_source
+    if resolved_registry_source is None and repo_root is not None:
+        resolved_registry_source = adapter.default_registry_path(repo_root)
+
+    resolved_benchmark_version = benchmark_version
+    if resolved_benchmark_version is None:
+        resolved_benchmark_version = _resolve_git_revision(repo_root) if repo_root else None
+    if resolved_benchmark_version is None:
+        resolved_benchmark_version = "skillsbench-upstream"
+
+    runs = adapter.parse_result_file(
+        source,
+        benchmark_split=benchmark_split,
+        phase=phase,
+        seed=seed,
+        path_type=path_type,
+        registry_source=resolved_registry_source,
+        model_name=model_name,
+        agent_name=agent_name,
+        agent_version=agent_version,
+        benchmark_version=resolved_benchmark_version,
+        conditions=conditions,
     )
     write_jsonl(out, runs)
     return runs
@@ -302,3 +348,24 @@ def _safe_slug(value: str) -> str:
 
 def _now_utc() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _resolve_git_revision(repo_root: str | Path | None) -> str | None:
+    if repo_root is None:
+        return None
+    candidate = Path(repo_root)
+    if not candidate.exists():
+        return None
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(candidate), "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        return None
+    if completed.returncode != 0:
+        return None
+    revision = completed.stdout.strip()
+    return revision or None

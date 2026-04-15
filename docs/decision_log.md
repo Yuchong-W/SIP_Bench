@@ -110,3 +110,28 @@ Why:
 2. `github.com:22` is reachable
 3. SSH authentication for `git@github.com` succeeds for `Yuchong-W`
 4. the repository push succeeded immediately after switching `origin` to SSH and merging the remote initial commit
+
+### D009
+
+Decision:
+
+`SkillsBench` should be maintained as a sparse SSH checkout rather than a full local clone.
+
+Why:
+
+1. the repository is heavier than `tau-bench`
+2. the importer only needs real registry and trajectory metadata at this stage
+3. sparse checkout keeps the local dependency real without forcing the full task tree into the MVP path
+4. task directories can be hydrated later on demand for selected manifests
+
+### D010
+
+Decision:
+
+Importer contracts must separate upstream dataset splits from SIP protocol splits.
+
+Why:
+
+1. `tau-bench` `train/dev/test` are upstream task splits, not SIP `replay/adapt/heldout`
+2. conflating the two would silently write semantically wrong `runs.jsonl`
+3. the same principle applies to SkillsBench condition labels versus SIP `path_type` and protocol `phase`

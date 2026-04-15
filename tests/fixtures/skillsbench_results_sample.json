@@ -1,0 +1,152 @@
+[
+  {
+    "model": "GPT-5.2",
+    "harness": "Codex",
+    "family": "openai",
+    "taskName": "citation-check",
+    "condition": "noskills",
+    "result": "pass",
+    "duration": 25,
+    "tokens": {
+      "input": 100,
+      "output": 10
+    },
+    "steps": [
+      {
+        "timestamp": "2026-01-29T07:35:49.283Z",
+        "type": "message",
+        "content": "Reading input files."
+      },
+      {
+        "timestamp": "2026-01-29T07:35:50.000Z",
+        "type": "tool_call",
+        "toolName": "read_file",
+        "content": "{\"file_path\":\"citations.bib\"}"
+      },
+      {
+        "timestamp": "2026-01-29T07:36:14.283Z",
+        "type": "final_answer",
+        "content": "Done."
+      }
+    ],
+    "verifier": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    }
+  },
+  {
+    "model": "GPT-5.2",
+    "harness": "Codex",
+    "family": "openai",
+    "taskName": "citation-check",
+    "condition": "withskills",
+    "result": "fail",
+    "duration": 30,
+    "tokens": {
+      "input": 120,
+      "output": 20
+    },
+    "steps": [
+      {
+        "timestamp": "2026-01-29T08:00:00.000Z",
+        "type": "message",
+        "content": "Activating skills."
+      },
+      {
+        "timestamp": "2026-01-29T08:00:02.000Z",
+        "type": "tool_call",
+        "toolName": "activate_skill",
+        "content": "{\"name\":\"citation-audit\"}"
+      },
+      {
+        "timestamp": "2026-01-29T08:00:20.000Z",
+        "type": "tool_call",
+        "toolName": "read_file",
+        "content": "{\"file_path\":\"citations.bib\"}"
+      },
+      {
+        "timestamp": "2026-01-29T08:00:30.000Z",
+        "type": "final_answer",
+        "content": "Partial completion."
+      }
+    ],
+    "verifier": {
+      "tests": 10,
+      "passed": 7,
+      "failed": 3
+    }
+  },
+  {
+    "model": "GPT-5.2",
+    "harness": "Codex",
+    "family": "openai",
+    "taskName": "citation-check",
+    "condition": "withskills",
+    "result": "pass",
+    "duration": 28,
+    "tokens": {
+      "input": 130,
+      "output": 30
+    },
+    "steps": [
+      {
+        "timestamp": "2026-01-29T09:00:00.000Z",
+        "type": "message",
+        "content": "Retrying."
+      },
+      {
+        "timestamp": "2026-01-29T09:00:01.000Z",
+        "type": "tool_call",
+        "toolName": "activate_skill",
+        "content": "{\"name\":\"citation-audit\"}"
+      },
+      {
+        "timestamp": "2026-01-29T09:00:28.000Z",
+        "type": "final_answer",
+        "content": "Done."
+      }
+    ],
+    "verifier": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    }
+  },
+  {
+    "model": "GPT-5.2",
+    "harness": "Codex",
+    "family": "openai",
+    "taskName": "weighted-gdp-calc",
+    "condition": "gen",
+    "result": "pass",
+    "duration": 40,
+    "tokens": {
+      "input": 210,
+      "output": 25
+    },
+    "steps": [
+      {
+        "timestamp": "2026-01-29T10:15:00.000Z",
+        "type": "message",
+        "content": "Loading spreadsheet."
+      },
+      {
+        "timestamp": "2026-01-29T10:15:03.000Z",
+        "type": "tool_call",
+        "toolName": "run_shell_command",
+        "content": "{\"command\":\"python solve.py\"}"
+      },
+      {
+        "timestamp": "2026-01-29T10:15:40.000Z",
+        "type": "final_answer",
+        "content": "Export complete."
+      }
+    ],
+    "verifier": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0
+    }
+  }
+]

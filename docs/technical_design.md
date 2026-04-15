@@ -114,12 +114,25 @@ Current responsibilities:
 2. filter tasks by category and difficulty
 3. build Harbor execution commands
 4. support split planning for `replay/adapt/heldout/drift`
+5. import trajectory/result JSON into normalized SIP run records
 
 Current upstream assumptions:
 
 1. task registry is available as JSON
 2. task directories follow Harbor task layout
 3. execution is performed through `harbor run -p <task> -a <agent>`
+4. trajectory exports contain stable fields such as `taskName`, `condition`, `result`, `duration`, `tokens`, `steps`, and `verifier`
+
+Current importer behavior:
+
+1. joins result rows back to the task registry for category, difficulty, tags, and task version
+2. infers SIP `path_type` from SkillsBench condition labels by default:
+   - `noskills -> frozen`
+   - `withskills -> external`
+   - `gen -> external`
+3. derives `score` from verifier pass ratio when test counts are present
+4. derives `tool_calls_total` from `steps[*].type == tool_call`
+5. derives `started_at` and `finished_at` from step timestamps when available
 
 ## tau-bench Adapter
 
@@ -138,6 +151,7 @@ Current upstream assumptions:
 1. benchmark is organized by `env` and `task_split`
 2. result file is a JSON array of upstream `EnvRunResult`
 3. reward can be normalized directly into SIP `score`
+4. upstream `task_split` must stay in metadata, while SIP `benchmark_split` must be passed explicitly by the caller
 
 ## Runner Layer
 
@@ -151,7 +165,9 @@ Current functions:
 Creates a plan JSON with manifest plus per-task execution commands.
 2. `import_tau_results`
 Converts upstream tau results to SIP runs.
-3. `execute_command_plan`
+3. `import_skillsbench_results`
+Converts SkillsBench trajectories or evaluation rows to SIP runs.
+4. `execute_command_plan`
 Executes or mock-executes plan commands and produces an execution report.
 
 Execution modes:
@@ -184,6 +200,7 @@ Current CLI entrypoints:
 1. `plan-skillsbench`
 2. `execute-plan`
 3. `import-tau-results`
+4. `import-skillsbench-results`
 
 This is enough to exercise a dry-run end-to-end workflow:
 
@@ -224,10 +241,11 @@ The test suite currently covers:
 3. edge cases for `T2` and zero-cost `IE`
 4. adapter discovery and command generation
 5. tau result import
-6. runner planning
-7. mock execution
-8. subprocess execution via a local fixture program
-9. schema validation
+6. SkillsBench result import
+7. runner planning
+8. mock execution
+9. subprocess execution via a local fixture program
+10. schema validation
 
 Primary test command:
 
@@ -240,34 +258,35 @@ python -m unittest discover -s tests -p "test_*.py"
 Observed engineering constraints:
 
 1. current machine is not GPU-first
-2. GitHub `git clone` to public upstream repos failed due to outbound GitHub connection reset / blocked `443`
+2. GitHub HTTPS on port `443` is blocked from this environment
 3. `gh` CLI is not installed
 4. current workspace was not originally a git repository
 5. Windows subprocess output cleanup can hit transient file-lock timing if tests reuse fixed output paths
 
 As a result, upstream integration currently uses:
 
-1. fetched upstream surface notes
-2. local fixtures
-3. placeholder checkout directories under `benchmarks/`
+1. SSH for repository publishing and upstream checkout
+2. a sparse checkout for `SkillsBench`
+3. a full checkout for `tau-bench`
+4. local fixtures for deterministic regression tests
 
 ## Known Gaps
 
 Not finished yet:
 
-1. direct `SkillsBench -> SIP runs.jsonl` conversion
+1. direct `SkillsBench` execution import from Harbor-produced result directories
 2. direct subprocess execution against a real Harbor install
 3. direct subprocess execution against a real tau checkout
 4. leaderboard rendering
 5. regression test harness
-6. real remote GitHub repository binding for this workspace
+6. sparse task hydration for selected SkillsBench tasks before real execution
 
 ## Next Engineering Steps
 
-1. Add a `SkillsBench` execution importer from Harbor results to SIP runs.
+1. Add a `SkillsBench` execution importer from Harbor result directories to SIP runs.
 2. Add a leaderboard builder from `summary.jsonl`.
 3. Add a regression suite over frozen plan fixtures.
-4. Replace placeholder benchmark directories with real upstream checkouts once network allows.
+4. Add a task-hydration helper that expands the sparse `SkillsBench` checkout for selected manifests.
 
 ## Publication State
 

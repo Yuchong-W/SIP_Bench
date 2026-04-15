@@ -13,6 +13,7 @@ if str(SRC) not in sys.path:
 from sip_bench.runner import (
     build_skillsbench_plan,
     execute_command_plan,
+    import_skillsbench_results,
     import_tau_results,
     write_json,
 )
@@ -64,12 +65,45 @@ def parse_args() -> argparse.Namespace:
     tau_import.add_argument("--out", required=True, help="Path to output runs.jsonl.")
     tau_import.add_argument("--env", required=True, choices=["retail", "airline"])
     tau_import.add_argument("--task-split", required=True, choices=["train", "dev", "test"])
+    tau_import.add_argument(
+        "--benchmark-split",
+        required=True,
+        choices=["replay", "adapt", "heldout", "drift", "smoke", "golden"],
+        help="SIP-Bench protocol split label for these imported runs.",
+    )
     tau_import.add_argument("--phase", required=True, choices=["T0", "T1", "T2"])
     tau_import.add_argument("--path-type", required=True, choices=["frozen", "external", "parameter", "oracle"])
     tau_import.add_argument("--model-name", required=True)
     tau_import.add_argument("--agent-name", required=True)
     tau_import.add_argument("--agent-version", required=True)
     tau_import.add_argument("--seed", required=True, type=int)
+
+    skillsbench_import = subparsers.add_parser(
+        "import-skillsbench-results",
+        help="Convert SkillsBench trajectory/result JSON into SIP-Bench runs.jsonl records.",
+    )
+    skillsbench_import.add_argument("--source", required=True, help="Path to SkillsBench trajectories JSON.")
+    skillsbench_import.add_argument("--out", required=True, help="Path to output runs.jsonl.")
+    skillsbench_import.add_argument(
+        "--benchmark-split",
+        required=True,
+        choices=["replay", "adapt", "heldout", "drift", "smoke", "golden"],
+    )
+    skillsbench_import.add_argument("--phase", required=True, choices=["T0", "T1", "T2"])
+    skillsbench_import.add_argument("--seed", required=True, type=int)
+    skillsbench_import.add_argument("--registry", help="Optional explicit path to tasks-registry.json.")
+    skillsbench_import.add_argument("--repo-root", help="Optional SkillsBench checkout root for registry and git revision discovery.")
+    skillsbench_import.add_argument("--path-type", choices=["frozen", "external", "parameter", "oracle"])
+    skillsbench_import.add_argument("--model-name", help="Optional override for model_name.")
+    skillsbench_import.add_argument("--agent-name", help="Optional override for agent_name.")
+    skillsbench_import.add_argument("--agent-version", default="upstream-import")
+    skillsbench_import.add_argument("--benchmark-version", help="Optional override for benchmark_version.")
+    skillsbench_import.add_argument(
+        "--condition",
+        action="append",
+        default=[],
+        help="Optional repeatable filter over SkillsBench conditions such as noskills, withskills, gen.",
+    )
 
     return parser.parse_args()
 
@@ -137,6 +171,7 @@ def main() -> int:
             out=args.out,
             env=args.env,
             task_split=args.task_split,
+            benchmark_split=args.benchmark_split,
             phase=args.phase,
             path_type=args.path_type,
             model_name=args.model_name,
@@ -152,6 +187,38 @@ def main() -> int:
                     "runs": len(runs),
                     "env": args.env,
                     "task_split": args.task_split,
+                    "benchmark_split": args.benchmark_split,
+                },
+                indent=2,
+            )
+        )
+        return 0
+
+    if args.command == "import-skillsbench-results":
+        runs = import_skillsbench_results(
+            source=args.source,
+            out=args.out,
+            benchmark_split=args.benchmark_split,
+            phase=args.phase,
+            seed=args.seed,
+            registry_source=args.registry,
+            repo_root=args.repo_root,
+            path_type=args.path_type,
+            model_name=args.model_name,
+            agent_name=args.agent_name,
+            agent_version=args.agent_version,
+            benchmark_version=args.benchmark_version,
+            conditions=set(args.condition) if args.condition else None,
+        )
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "out": args.out,
+                    "runs": len(runs),
+                    "benchmark_split": args.benchmark_split,
+                    "phase": args.phase,
+                    "conditions": args.condition,
                 },
                 indent=2,
             )

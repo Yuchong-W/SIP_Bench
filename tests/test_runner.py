@@ -12,7 +12,12 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from sip_bench.metrics import load_jsonl
-from sip_bench.runner import build_skillsbench_plan, execute_command_plan, import_tau_results
+from sip_bench.runner import (
+    build_skillsbench_plan,
+    execute_command_plan,
+    import_skillsbench_results,
+    import_tau_results,
+)
 
 
 class RunnerTests(unittest.TestCase):
@@ -41,6 +46,7 @@ class RunnerTests(unittest.TestCase):
                 out=output_path,
                 env="retail",
                 task_split="test",
+                benchmark_split="heldout",
                 phase="T1",
                 path_type="external",
                 model_name="gpt-5-mini",
@@ -53,6 +59,27 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(len(written), 2)
             self.assertEqual(written[0]["phase"], "T1")
             self.assertEqual(written[0]["path_type"], "external")
+            self.assertEqual(written[0]["benchmark_split"], "heldout")
+
+    def test_import_skillsbench_results_writes_runs_jsonl(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "skillsbench_runs.jsonl"
+            runs = import_skillsbench_results(
+                source=ROOT / "tests" / "fixtures" / "skillsbench_results_sample.json",
+                out=output_path,
+                benchmark_split="golden",
+                phase="T1",
+                seed=3,
+                registry_source=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",
+                agent_version="fixture-import",
+                benchmark_version="skillsbench-fixture",
+                conditions={"noskills", "withskills"},
+            )
+            self.assertEqual(len(runs), 3)
+            written = load_jsonl(output_path)
+            self.assertEqual(len(written), 3)
+            self.assertEqual(written[0]["benchmark_name"], "skillsbench")
+            self.assertEqual(written[0]["benchmark_split"], "golden")
 
     def test_execute_command_plan_mock(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

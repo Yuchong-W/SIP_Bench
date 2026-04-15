@@ -60,7 +60,7 @@ The primary metrics are:
 
 ## Status
 
-This repository is in Week 1 setup. The protocol, schemas, metric engine, aggregation CLI, and benchmark adapter scaffolds are in place. The next milestone is wiring these adapters to full upstream checkouts or installable benchmark environments.
+This repository is now beyond pure scaffold status. The protocol, schemas, metric engine, aggregation CLI, and adapter layer are in place, `tau-bench` is checked out locally over SSH, `SkillsBench` is available as a sparse SSH checkout, and both adapters can import real upstream-style result artifacts into SIP `runs.jsonl`.
 
 ## First Commands
 
@@ -70,7 +70,8 @@ python scripts\aggregate_metrics.py --runs results\dryrun\sample_runs.jsonl --ou
 python scripts\smoke_adapters.py
 python scripts\run_eval.py plan-skillsbench --registry tests\fixtures\skillsbench_registry_sample.json --repo-root benchmarks\skillsbench --replay-count 2 --adapt-count 1 --heldout-count 2 --out results\dryrun\skillsbench_plan.json
 python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.json --out results\dryrun\skillsbench_execution.json --mode mock
-python scripts\run_eval.py import-tau-results --source tests\fixtures\tau_results_sample.json --out results\dryrun\tau_runs.jsonl --env retail --task-split test --phase T1 --path-type external --model-name gpt-5-mini --agent-name tau-import --agent-version 0.1.0 --seed 9
+python scripts\run_eval.py import-skillsbench-results --source tests\fixtures\skillsbench_results_sample.json --out results\dryrun\skillsbench_runs_sample.jsonl --benchmark-split golden --phase T1 --seed 3 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-fixture
+python scripts\run_eval.py import-tau-results --source tests\fixtures\tau_results_sample.json --out results\dryrun\tau_runs.jsonl --env retail --task-split test --benchmark-split heldout --phase T1 --path-type external --model-name gpt-5-mini --agent-name tau-import --agent-version 0.1.0 --seed 9
 python scripts\validate_records.py --data results\dryrun\sample_runs.jsonl --schema runs
 python scripts\validate_records.py --data results\dryrun\summary.jsonl --schema summary
 ```

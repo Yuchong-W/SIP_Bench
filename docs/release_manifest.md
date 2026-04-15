@@ -73,10 +73,13 @@ Sample outputs:
 4. `results/dryrun/skillsbench_execution.json`
 5. `results/dryrun/tau_runs.jsonl`
 6. `results/dryrun/mock_subprocess_execution.json`
+7. `results/dryrun/skillsbench_runs_sample.jsonl`
+8. `results/dryrun/skillsbench_upstream_withskills.jsonl`
 
 ## Files Intentionally Excluded From Upload
 
 1. `__pycache__/`
 2. `results/dryrun/artifacts/`
 3. transient mock text outputs under `results/dryrun/`
-4. broken local `.git/` residue
+4. local upstream checkouts under `benchmarks/skillsbench/` and `benchmarks/tau-bench/`
+5. broken local `.git/` residue

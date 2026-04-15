@@ -227,3 +227,35 @@ Current status:
 
 1. `E:\Protocal_Bench` is now published to `Yuchong-W/Protocol_Bench`.
 2. The active publication path for this machine should use SSH, not HTTPS.
+
+### Real Upstream Checkout and SkillsBench Importer
+
+Work completed:
+
+1. Replaced the placeholder `tau-bench` directory with a real SSH checkout.
+2. Replaced the placeholder `SkillsBench` directory with a real sparse SSH checkout.
+3. Materialized `SkillsBench` metadata under `website/src/data/`.
+4. Added a real SkillsBench importer that consumes trajectory/result JSON and writes SIP `runs.jsonl`.
+5. Fixed the tau importer contract so upstream `task_split` and SIP `benchmark_split` are no longer conflated.
+6. Added test fixtures and regression coverage for SkillsBench result import.
+7. Imported a real upstream SkillsBench sample trajectory file into `results/dryrun/skillsbench_upstream_withskills.jsonl`.
+
+Tests run:
+
+1. `python -m unittest discover -s tests -p "test_*.py"`
+2. `python scripts\run_eval.py import-skillsbench-results --source tests\fixtures\skillsbench_results_sample.json --out results\dryrun\skillsbench_runs_sample.jsonl --benchmark-split golden --phase T1 --seed 3 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-fixture`
+3. `python scripts\run_eval.py import-tau-results --source tests\fixtures\tau_results_sample.json --out results\dryrun\tau_runs.jsonl --env retail --task-split test --benchmark-split heldout --phase T1 --path-type external --model-name gpt-5-mini --agent-name tau-import --agent-version 0.1.0 --seed 9`
+4. `python scripts\validate_records.py --data results\dryrun\skillsbench_runs_sample.jsonl --schema runs`
+5. `python scripts\validate_records.py --data results\dryrun\tau_runs.jsonl --schema runs`
+6. `python scripts\run_eval.py import-skillsbench-results --source benchmarks\skillsbench\website\src\data\sample-trajectories.json --out results\dryrun\skillsbench_upstream_withskills.jsonl --benchmark-split golden --phase T1 --seed 0 --repo-root benchmarks\skillsbench --agent-version upstream-sample --condition withskills`
+7. `python scripts\validate_records.py --data results\dryrun\skillsbench_upstream_withskills.jsonl --schema runs`
+
+Observed result:
+
+1. The SkillsBench importer now consumes real upstream trajectory format.
+2. Imported rows preserve registry metadata and derive score, timestamps, token counts, and tool-call counts from upstream fields.
+3. The local machine can maintain upstream checkouts through SSH even though GitHub HTTPS remains blocked.
+
+Open follow-up:
+
+1. The sparse SkillsBench checkout still needs a task-hydration helper before real task execution can be driven from a plan.

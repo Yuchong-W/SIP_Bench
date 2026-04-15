@@ -4,13 +4,13 @@ This directory is reserved for upstream benchmark repositories and development s
 
 ## Current State
 
-Direct `git clone` to GitHub failed in this environment because outbound GitHub connections were reset or blocked on port `443`.
+Direct HTTPS `git clone` to GitHub fails in this environment because outbound connections on port `443` are blocked.
 
-To avoid blocking adapter development, the repository currently uses:
+The current workaround is:
 
-1. partial upstream metadata snapshots
-2. adapter scaffolds built against fetched upstream entrypoints
-3. local fixtures for smoke tests
+1. publish and fetch this repository over SSH
+2. use a sparse SSH checkout for `SkillsBench`
+3. use a full SSH checkout for `tau-bench`
 
 ## Intended Upstreams
 
@@ -19,5 +19,7 @@ To avoid blocking adapter development, the repository currently uses:
 
 ## Notes
 
-1. `tau-bench` README currently warns that the repo tasks are outdated and points users to the newer `tau2-bench` / `tau3-bench` line.
-2. The MVP remains adapter-compatible with `tau-bench` style CLI entrypoints first, then can be upgraded once a full upstream checkout is available.
+1. `benchmarks/skillsbench` is intentionally treated as a local dependency checkout and is ignored by the main repository.
+2. `benchmarks/tau-bench` is also treated as a local dependency checkout and is ignored by the main repository.
+3. `SkillsBench` currently materializes real metadata under `website/src/data/` first; task trees can be expanded later via sparse checkout if execution requires them.
+4. `tau-bench` README currently warns that the repo tasks are outdated and points users to the newer `tau2-bench` / `tau3-bench` line.

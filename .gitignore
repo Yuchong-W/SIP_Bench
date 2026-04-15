@@ -3,3 +3,5 @@ __pycache__/
 results/dryrun/artifacts/
 results/dryrun/mock_replay.txt
 results/dryrun/mock_heldout.txt
+benchmarks/skillsbench/
+benchmarks/tau-bench/

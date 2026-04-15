@@ -41,6 +41,44 @@ class SkillsBenchAdapterTests(unittest.TestCase):
         self.assertEqual(command[:3], ["harbor", "run", "-p"])
         self.assertIn("tasks/citation-check", command[3].replace("\\", "/"))
 
+    def test_parse_result_file_infers_path_types_and_registry_metadata(self) -> None:
+        adapter = SkillsBenchAdapter()
+        runs = adapter.parse_result_file(
+            ROOT / "tests" / "fixtures" / "skillsbench_results_sample.json",
+            benchmark_split="golden",
+            phase="T1",
+            seed=5,
+            registry_source=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",
+            agent_version="fixture-import",
+            benchmark_version="skillsbench-fixture",
+        )
+        self.assertEqual(len(runs), 4)
+        self.assertEqual(runs[0]["path_type"], "frozen")
+        self.assertEqual(runs[1]["path_type"], "external")
+        self.assertEqual(runs[3]["path_type"], "external")
+        self.assertEqual(runs[1]["score"], 0.7)
+        self.assertEqual(runs[1]["tool_calls_total"], 2)
+        self.assertEqual(runs[0]["task_template_id"], "1.0")
+        self.assertEqual(runs[0]["metadata"]["category"], "research")
+        self.assertEqual(runs[0]["metadata"]["task_source_path"], "tasks/citation-check")
+
+    def test_parse_result_file_condition_filter_and_attempt_index(self) -> None:
+        adapter = SkillsBenchAdapter()
+        runs = adapter.parse_result_file(
+            ROOT / "tests" / "fixtures" / "skillsbench_results_sample.json",
+            benchmark_split="heldout",
+            phase="T1",
+            seed=7,
+            registry_source=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",
+            conditions={"withskills"},
+        )
+        self.assertEqual(len(runs), 2)
+        self.assertEqual(runs[0]["attempt_index"], 0)
+        self.assertEqual(runs[1]["attempt_index"], 1)
+        self.assertTrue(all(run["path_type"] == "external" for run in runs))
+        self.assertEqual(runs[0]["started_at"], "2026-01-29T08:00:00Z")
+        self.assertEqual(runs[0]["finished_at"], "2026-01-29T08:00:30Z")
+
 
 class TauBenchAdapterTests(unittest.TestCase):
     def test_build_manifest_from_ids(self) -> None:
@@ -78,6 +116,7 @@ class TauBenchAdapterTests(unittest.TestCase):
             ROOT / "tests" / "fixtures" / "tau_results_sample.json",
             env="retail",
             task_split="test",
+            benchmark_split="heldout",
             phase="T0",
             path_type="frozen",
             model_name="gpt-5-mini",
