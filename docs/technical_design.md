@@ -279,9 +279,9 @@ Current publication constraints:
 
 1. Direct `git` access to `github.com:443` fails from this environment even under escalated execution.
 2. The connected GitHub app does not currently expose `Yuchong-W/Protocol_Bench`, so direct connector-side file commits are unavailable.
-3. The local workspace contains a broken `.git` initialization residue and cannot yet be treated as a healthy local clone.
+3. The local workspace has been repaired into a valid git repository and linked to `origin`, but remote push still fails on network transport.
 
 As a result, the publication workflow is currently split into two layers:
 
 1. keep repository content in a clean upload-ready shape locally
-2. repair local git state or bind the target repository through a working GitHub transport before push
+2. wait for a working GitHub transport before push
