@@ -195,3 +195,35 @@ Follow-up note:
 
 1. a documentation-only follow-up commit was added after the initial scaffold commit so the recorded publish state and release manifest are part of local history
 2. a later retry of `git push origin main` still failed with the same `github.com:443` connectivity error
+
+### Network Retry and SSH Publication
+
+Work completed:
+
+1. Re-tested direct HTTPS connectivity to `github.com`.
+2. Verified that `github.com:443` still times out while `github.com:22` is reachable.
+3. Verified SSH authentication with `git@github.com`.
+4. Switched `origin` from HTTPS to SSH.
+5. Fetched remote `main`, inspected the remote initial commit, merged it without rewriting history, and pushed successfully.
+
+Tests run:
+
+1. `curl.exe -I --max-time 20 https://github.com`
+2. `git ls-remote https://github.com/Yuchong-W/Protocol_Bench.git`
+3. `Test-NetConnection github.com -Port 443`
+4. `Test-NetConnection github.com -Port 22`
+5. `ssh -T git@github.com`
+6. `git fetch origin main`
+7. `git push origin main`
+
+Observed result:
+
+1. HTTPS transport remains blocked from this environment.
+2. SSH transport works and authenticates as `Yuchong-W`.
+3. Remote `main` already contained a single `Initial commit` with a one-line `README.md`.
+4. The local branch was merged with `origin/main` and pushed successfully.
+
+Current status:
+
+1. `E:\Protocal_Bench` is now published to `Yuchong-W/Protocol_Bench`.
+2. The active publication path for this machine should use SSH, not HTTPS.

@@ -97,3 +97,16 @@ Why:
 2. this environment still cannot reach `github.com` over direct git transport
 3. the connected GitHub app does not currently expose the target repository
 4. local documentation and release manifests still need to be maintained so publication can happen with minimal manual recovery
+
+### D008
+
+Decision:
+
+Publishing from this machine should use SSH remotes for GitHub instead of HTTPS.
+
+Why:
+
+1. repeated tests show `github.com:443` is blocked from this environment
+2. `github.com:22` is reachable
+3. SSH authentication for `git@github.com` succeeds for `Yuchong-W`
+4. the repository push succeeded immediately after switching `origin` to SSH and merging the remote initial commit

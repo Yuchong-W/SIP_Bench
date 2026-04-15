@@ -9,8 +9,9 @@
 1. local git repository repaired on `2026-04-15`
 2. local history includes the initial scaffold commit `cb19fed`
 3. release-engineering documentation updates are also committed locally
-4. remote configured as `origin = https://github.com/Yuchong-W/Protocol_Bench.git`
-5. remote push currently blocked by failed outbound `github.com:443` connectivity
+4. remote is configured as `origin = git@github.com:Yuchong-W/Protocol_Bench.git`
+5. release branch `main` has been pushed successfully
+6. HTTPS transport is still blocked locally, so future publishing from this machine should prefer SSH
 
 ## Files Intended For Upload
 

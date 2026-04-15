@@ -277,11 +277,11 @@ The intended remote repository is:
 
 Current publication constraints:
 
-1. Direct `git` access to `github.com:443` fails from this environment even under escalated execution.
+1. Direct `git` and `curl` access to `github.com:443` fails from this environment even under escalated execution.
 2. The connected GitHub app does not currently expose `Yuchong-W/Protocol_Bench`, so direct connector-side file commits are unavailable.
-3. The local workspace has been repaired into a valid git repository and linked to `origin`, but remote push still fails on network transport.
+3. SSH transport to `github.com:22` works and is the current publication path for this repository.
 
 As a result, the publication workflow is currently split into two layers:
 
 1. keep repository content in a clean upload-ready shape locally
-2. wait for a working GitHub transport before push
+2. prefer SSH remote publishing when HTTPS transport is blocked
