@@ -187,3 +187,16 @@ Why:
 2. that coordination needs stable metadata so the final aggregation step can produce a valid `summary.jsonl`
 3. explicit suite configs make run intent reviewable and reproducible
 4. the same format also enables an import-only regression mode for deterministic tests
+
+### D015
+
+Decision:
+
+`SkillsBench` real suites may use run-local prepared task copies, including skill stripping and explicit task patches, instead of mutating the upstream checkout.
+
+Why:
+
+1. several upstream tasks currently fail on this machine for environment reasons that are orthogonal to the SIP protocol
+2. `T0` frozen-style runs need a clean way to remove benchmark-provided skills without rewriting upstream sources in place
+3. run-local copies make any deviation explicit, reviewable, and disposable
+4. this keeps the protocol runner honest about what was executed while avoiding accidental contamination of the sparse upstream checkout

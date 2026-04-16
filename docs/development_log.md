@@ -413,3 +413,49 @@ Observed result:
 2. `summary.jsonl` was generated and validated successfully.
 3. `dialogue-parser` succeeded in both replay runs.
 4. `citation-check` did not pass in the heldout runs, but both outcomes were still imported correctly and contributed to the protocol summary.
+
+
+### Task Preparation Layer
+
+Work completed:
+
+1. Extended `protocol_suite.schema.json` with per-run `task_preparation`.
+2. Added run-local task copying to the protocol runner.
+3. Added `skill_mode = strip|keep` handling for copied `SkillsBench` tasks.
+4. Added Dockerfile rewriting so stripped-skill tasks no longer keep broken `COPY skills ...` or skill-only `PYTHONPATH` lines.
+5. Added the first explicit task patch, `offer_letter_generator_system_docx`.
+6. Added a first non-`oracle` suite config: `protocol\skillsbench_codex_external_prepared_suite.json`.
+
+Tests run:
+
+1. `python -m unittest discover -s tests -p "test_*.py"`
+2. `python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import load_protocol_suite_config; cfg = load_protocol_suite_config('protocol/skillsbench_codex_external_prepared_suite.json'); print(cfg['suite_name'], len(cfg['runs']))"`
+
+Observed result:
+
+1. Unit-test coverage increased to `29`.
+2. The suite schema accepts copy-mode task preparation, skill stripping, and patch declarations.
+3. The new prepared external-path suite is loadable through the real runner entrypoint.
+
+
+### Real Task Stability Probes
+
+Work completed:
+
+1. Screened additional upstream `SkillsBench` tasks with `oracle`.
+2. Probed the real `codex` agent on `dialogue-parser`.
+3. Generated a local prepared task copy for `offer-letter-generator` using the new patch path.
+
+Commands run:
+
+1. `scripts\harbor312.cmd run -y -p benchmarks\skillsbench\tasks\court-form-filling -a oracle --jobs-dir results\real_jobs_screen --job-name screen-court-form-filling --artifact /logs/verifier --environment-build-timeout-multiplier 4 -n 1`
+2. `scripts\harbor312.cmd run -y -p benchmarks\skillsbench\tasks\offer-letter-generator -a oracle --jobs-dir results\real_jobs_screen --job-name screen-offer-letter-generator --artifact /logs/verifier --environment-build-timeout-multiplier 4 -n 1`
+3. `scripts\harbor312.cmd run -y -p benchmarks\skillsbench\tasks\dialogue-parser -a codex --jobs-dir results\real_jobs_screen --job-name screen-codex-dialogue-parser --artifact /logs/verifier --environment-build-timeout-multiplier 4 -n 1`
+4. `python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import prepare_skillsbench_tasks; report = prepare_skillsbench_tasks(source_repo_root=Path('benchmarks/skillsbench').resolve(), registry_path=Path('benchmarks/skillsbench/website/src/data/tasks-registry.json').resolve(), split_task_ids={'replay': [], 'adapt': [], 'heldout': ['offer-letter-generator'], 'drift': []}, prepared_root=Path('results/prepared_probes/offer_letter_generator_keep').resolve(), skill_mode='keep', patches={'offer-letter-generator': ['offer_letter_generator_system_docx']}); print(report['prepared_root'])"`
+
+Observed result:
+
+1. `court-form-filling` fails during Docker build because `fillpdf` transitively requires `Pillow`, which the container could not resolve from `pip`.
+2. `offer-letter-generator` fails during Docker build because `python-docx` transitively requires `lxml`, which the container could not resolve from `pip`.
+3. `codex` is reachable through Harbor and does not fail on missing credentials; the first real non-`oracle` failure was `AgentSetupTimeoutError` after `360.0` seconds.
+4. Subsequent Harbor runs also exposed intermittent Docker availability and overlay filesystem instability on this machine, so current blocking risk is runtime stability rather than missing protocol glue.

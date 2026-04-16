@@ -6,5 +6,6 @@ results/protocol_runs/**/artifacts/
 results/dryrun/mock_replay.txt
 results/dryrun/mock_heldout.txt
 results/real_jobs*/
+results/prepared_probes/
 benchmarks/skillsbench/
 benchmarks/tau-bench/

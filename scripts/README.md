@@ -25,6 +25,10 @@ Operational notes:
 1. Slow real SkillsBench Docker tasks may still need explicit Harbor timeout overrides passed through `run_eval.py` or suite config `extra_args`, for example `--environment-build-timeout-multiplier 4`.
 2. Suite config paths are resolved relative to the config file location.
 3. The current real suite is an orchestration validation suite, not a scientific benchmark claim.
+4. `run_protocol.py` now supports per-run task preparation through suite config:
+   - `mode = copy`
+   - `skill_mode = strip|keep`
+   - explicit task patch IDs such as `offer_letter_generator_system_docx`
 
 Planned next:
 
@@ -45,4 +49,5 @@ python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.j
 python scripts\run_eval.py import-skillsbench-job --job-dir tests\fixtures\skillsbench_harbor_job_sample --out results\dryrun\skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version job-fixture-import --benchmark-version skillsbench-harbor-fixture
 python scripts\validate_records.py --data results\dryrun\skillsbench_job_runs.jsonl --schema runs
 python scripts\run_protocol.py run-skillsbench-suite --config protocol\skillsbench_oracle_real_suite.json --mode subprocess
+python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import load_protocol_suite_config; cfg = load_protocol_suite_config('protocol/skillsbench_codex_external_prepared_suite.json'); print(cfg['suite_name'], len(cfg['runs']))"
 ```

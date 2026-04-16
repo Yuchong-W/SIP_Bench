@@ -89,6 +89,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "task_preparation": {
+          "$ref": "#/$defs/taskPreparation"
         }
       }
     },
@@ -190,6 +193,44 @@
             "items": {
               "type": "string"
             }
+          },
+          "task_preparation": {
+            "$ref": "#/$defs/taskPreparation"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "taskPreparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "source",
+            "copy"
+          ]
+        },
+        "skill_mode": {
+          "type": "string",
+          "enum": [
+            "keep",
+            "strip"
+          ]
+        },
+        "patches": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "offer_letter_generator_system_docx"
+              ]
+            },
+            "uniqueItems": true
           }
         }
       }

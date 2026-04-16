@@ -279,6 +279,7 @@ Not finished yet:
 3. regression test harness over a frozen real-run corpus
 4. automatic aggregation over real `T0/T1/T2` SkillsBench jobs once multiple phases have been collected
 5. environment-level retries for flaky Docker build and package-network failures during real Harbor runs
+6. first fully successful non-`oracle` suite with stable Docker service behavior on this machine
 
 ## Next Engineering Steps
 
@@ -405,3 +406,41 @@ Engineering implication:
 1. the project has moved from single-run real smoke testing to true multi-run protocol execution
 2. the remaining bottleneck is no longer orchestration glue
 3. it is benchmark-task stability and adaptation-path implementation for non-oracle runs
+
+## Update: Task Preparation Layer
+
+The suite runner now supports a run-local task-preparation phase before execution.
+
+Current capabilities:
+
+1. copy only the selected `SkillsBench` tasks into a per-run prepared root
+2. strip `environment/skills` for `T0`-style frozen runs without mutating the upstream checkout
+3. rewrite Dockerfiles when skills are stripped so `COPY skills ...` and skill-only `PYTHONPATH` lines do not break Docker build
+4. apply explicit task patches by task ID
+
+Current built-in patch set:
+
+1. `offer_letter_generator_system_docx`
+Rewrites `offer-letter-generator` to use `python3-docx` from the system package manager instead of the unstable `pip python-docx` dependency chain observed on this machine.
+
+Why this exists:
+
+1. several upstream `SkillsBench` tasks currently fail here because transitive `pip` dependencies intermittently resolve as unavailable during Docker build
+2. we need a way to separate protocol logic from machine-local environment noise
+3. preparation happens in a run-local copy and is therefore auditable and reversible
+
+## Update: First Non-Oracle Probe
+
+`Harbor + codex` is now confirmed to be reachable on this machine.
+
+Observed probes:
+
+1. `dialogue-parser` with `-a codex` reaches real task execution setup rather than failing immediately on missing credentials
+2. the first non-`oracle` failure mode was `AgentSetupTimeoutError` at `360.0` seconds, not agent absence
+3. a later retry with increased setup timeout was blocked by Docker environment instability rather than protocol logic
+
+Engineering implication:
+
+1. non-`oracle` execution is now a runtime-stability problem, not a missing-integration problem
+2. timeout policy must remain a first-class suite config input
+3. a prepared external-path suite can now be expressed cleanly even if this machine still needs Docker stabilization for consistent completion

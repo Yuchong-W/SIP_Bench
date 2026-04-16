@@ -28,10 +28,11 @@ Core source:
 2. `src/sip_bench/metrics.py`
 3. `src/sip_bench/runner.py`
 4. `src/sip_bench/validation.py`
-5. `src/sip_bench/adapters/__init__.py`
-6. `src/sip_bench/adapters/base.py`
-7. `src/sip_bench/adapters/skillsbench.py`
-8. `src/sip_bench/adapters/tau_bench.py`
+5. `src/sip_bench/protocol_runner.py`
+6. `src/sip_bench/adapters/__init__.py`
+7. `src/sip_bench/adapters/base.py`
+8. `src/sip_bench/adapters/skillsbench.py`
+9. `src/sip_bench/adapters/tau_bench.py`
 
 CLI and repository docs:
 
@@ -67,6 +68,7 @@ Tests and fixtures:
 9. `tests/fixtures/skillsbench_registry_sample.json`
 10. `tests/fixtures/tau_results_sample.json`
 11. `tests/test_protocol_runner.py`
+12. `protocol/skillsbench_codex_external_prepared_suite.json`
 
 Sample outputs:
 
@@ -89,6 +91,7 @@ Sample outputs:
 3. transient mock text outputs under `results/dryrun/`
 4. local upstream checkouts under `benchmarks/skillsbench/` and `benchmarks/tau-bench/`
 5. broken local `.git/` residue
+6. `results/prepared_probes/`
 
 
 ## Update 2026-04-15
@@ -99,6 +102,7 @@ Additional source and script files now intended for upload:
 2. `tests/fixtures/skillsbench_harbor_job_sample/result.json`
 3. `tests/fixtures/skillsbench_harbor_job_sample/citation-check__fixture001/result.json`
 4. `tests/fixtures/skillsbench_harbor_job_sample/court-form-filling__fixture002/result.json`
+5. `protocol/skillsbench_codex_external_prepared_suite.json`
 
 Additional sample outputs expected after the next real smoke run:
 
@@ -110,6 +114,7 @@ Additional local-only exclusions:
 
 1. `.uv-cache/`
 2. `results/real_jobs*/`
+3. `results/prepared_probes/`
 
 
 ## Real Smoke Outputs

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,11 @@ from jsonschema import Draft202012Validator
 
 SUITE_SCHEMA_VERSION = "0.1.0"
 DEFAULT_SPLITS = ("replay", "adapt", "heldout", "drift")
+DEFAULT_TASK_PREPARATION = {
+    "mode": "source",
+    "skill_mode": "keep",
+    "patches": {},
+}
 
 
 def run_skillsbench_suite(
@@ -184,51 +190,101 @@ def _run_skillsbench_spec(
     agent_version = run_spec.get("agent_version", execution_defaults["agent_version"])
     agent_name = run_spec.get("agent_name")
     model_name = run_spec.get("model_name")
+    task_preparation = _merge_task_preparation(
+        execution_defaults.get("task_preparation"),
+        run_spec.get("task_preparation"),
+    )
 
     split_task_ids = {name: [] for name in DEFAULT_SPLITS}
     split_task_ids[split_name] = list(run_spec["task_ids"])
 
-    plan_payload = build_skillsbench_explicit_plan(
-        registry_path=registry_path,
-        repo_root=repo_root,
-        split_task_ids=split_task_ids,
-        agent=agent,
-        model=model,
-        harbor_bin=harbor_bin,
-        extra_args=[
-            "--jobs-dir",
-            str(jobs_dir),
-            "--job-name",
-            job_name,
-            *extra_args,
-        ],
-    )
-
     plan_path = suite_root / "plans" / f"{run_name}.json"
     hydration_path = suite_root / "hydration" / f"{run_name}.json"
+    preparation_path = suite_root / "preparation" / f"{run_name}.json"
     execution_path = suite_root / "execution" / f"{run_name}.json"
     records_path = suite_root / "runs" / f"{run_name}.jsonl"
 
     source_job_dir_value = run_spec.get("source_job_dir")
-    write_json(plan_path, plan_payload)
     hydration_report: dict[str, Any] | None = None
+    preparation_report: dict[str, Any] | None = None
     job_dir = _resolve_path(base_dir, source_job_dir_value) if source_job_dir_value else jobs_dir / job_name
     execution_report: dict[str, Any] | None = None
 
     if source_job_dir_value:
+        execution_repo_root = repo_root
         hydration_report = {
             "schema_version": SUITE_SCHEMA_VERSION,
             "action": "skipped_hydration",
             "reason": "import-only run",
             "hydrated_paths": [],
         }
+        plan_payload = build_skillsbench_explicit_plan(
+            registry_path=registry_path,
+            repo_root=execution_repo_root,
+            split_task_ids=split_task_ids,
+            agent=agent,
+            model=model,
+            harbor_bin=harbor_bin,
+            extra_args=[
+                "--jobs-dir",
+                str(jobs_dir),
+                "--job-name",
+                job_name,
+                *extra_args,
+            ],
+        )
     else:
+        source_plan_payload = build_skillsbench_explicit_plan(
+            registry_path=registry_path,
+            repo_root=repo_root,
+            split_task_ids=split_task_ids,
+            agent=agent,
+            model=model,
+            harbor_bin=harbor_bin,
+            extra_args=[
+                "--jobs-dir",
+                str(jobs_dir),
+                "--job-name",
+                job_name,
+                *extra_args,
+            ],
+        )
+        source_plan_path = suite_root / "plans" / f"{run_name}.source.json"
+        write_json(source_plan_path, source_plan_payload)
         hydration_report = hydrate_skillsbench_checkout(
-            plan_source=plan_path,
+            plan_source=source_plan_path,
             repo_root=repo_root,
             out=hydration_path,
             split=split_name,
         )
+        execution_repo_root = repo_root
+        if task_preparation["mode"] == "copy":
+            execution_repo_root = suite_root / "prepared" / run_name
+            preparation_report = prepare_skillsbench_tasks(
+                source_repo_root=repo_root,
+                registry_path=registry_path,
+                split_task_ids=split_task_ids,
+                prepared_root=execution_repo_root,
+                skill_mode=task_preparation["skill_mode"],
+                patches=task_preparation["patches"],
+            )
+            write_json(preparation_path, preparation_report)
+        plan_payload = build_skillsbench_explicit_plan(
+            registry_path=registry_path,
+            repo_root=execution_repo_root,
+            split_task_ids=split_task_ids,
+            agent=agent,
+            model=model,
+            harbor_bin=harbor_bin,
+            extra_args=[
+                "--jobs-dir",
+                str(jobs_dir),
+                "--job-name",
+                job_name,
+                *extra_args,
+            ],
+        )
+        write_json(plan_path, plan_payload)
         execution_report = execute_command_plan(
             plan_source=plan_path,
             out=execution_path,
@@ -238,6 +294,8 @@ def _run_skillsbench_spec(
         )
         if not job_dir.exists():
             raise RuntimeError(f"Expected Harbor job directory does not exist after execution: {job_dir}")
+    if source_job_dir_value:
+        write_json(plan_path, plan_payload)
 
     imported_runs = import_skillsbench_job(
         source=job_dir,
@@ -270,12 +328,66 @@ def _run_skillsbench_spec(
         "job_dir": str(job_dir),
         "task_ids": list(run_spec["task_ids"]),
         "hydrated_paths": hydration_report["hydrated_paths"] if hydration_report else [],
+        "task_preparation": task_preparation,
+        "preparation_path": str(preparation_path) if preparation_report else None,
         "execution_mode": execute_mode if execution_report else "import-only",
         "execution_summary": execution_report["summary"] if execution_report else None,
         "imported_records": len(imported_runs),
         "success_count": sum(1 for record in imported_runs if record["success"]),
         "failure_count": sum(1 for record in imported_runs if not record["success"]),
         "records_validation": records_validation,
+    }
+
+
+def prepare_skillsbench_tasks(
+    *,
+    source_repo_root: Path,
+    registry_path: Path,
+    split_task_ids: dict[str, list[str]],
+    prepared_root: Path,
+    skill_mode: str,
+    patches: dict[str, list[str]],
+) -> dict[str, Any]:
+    adapter = SkillsBenchAdapter()
+    task_index = adapter.build_registry_index(registry_path)
+    task_ids = sorted({task_id for task_ids in split_task_ids.values() for task_id in task_ids})
+    prepared_root.mkdir(parents=True, exist_ok=True)
+
+    prepared_tasks: list[dict[str, Any]] = []
+    patched_files: list[str] = []
+    for task_id in task_ids:
+        task = task_index[task_id]
+        source_task_path = source_repo_root / task.source_path
+        destination_task_path = prepared_root / task.source_path
+        if destination_task_path.exists():
+            shutil.rmtree(destination_task_path)
+        destination_task_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source_task_path, destination_task_path)
+
+        if skill_mode == "strip":
+            stripped_files = _strip_skills_from_task(destination_task_path)
+            patched_files.extend(stripped_files)
+
+        for patch_name in patches.get(task_id, []):
+            patched_files.extend(_apply_task_patch(task_id=task_id, patch_name=patch_name, task_root=destination_task_path))
+
+        prepared_tasks.append(
+            {
+                "task_id": task_id,
+                "source_path": str(source_task_path),
+                "prepared_path": str(destination_task_path),
+                "skill_mode": skill_mode,
+                "patches": patches.get(task_id, []),
+            }
+        )
+
+    return {
+        "schema_version": SUITE_SCHEMA_VERSION,
+        "action": "skillsbench_task_preparation",
+        "prepared_root": str(prepared_root),
+        "skill_mode": skill_mode,
+        "patched_files": patched_files,
+        "tasks": prepared_tasks,
     }
 
 
@@ -339,3 +451,67 @@ def _resolve_command_value(base_dir: Path, command_value: str) -> str:
     ):
         return str(_resolve_path(base_dir, command_value))
     return command_value
+
+
+def _merge_task_preparation(
+    execution_defaults: dict[str, Any] | None,
+    run_override: dict[str, Any] | None,
+) -> dict[str, Any]:
+    merged = {
+        "mode": DEFAULT_TASK_PREPARATION["mode"],
+        "skill_mode": DEFAULT_TASK_PREPARATION["skill_mode"],
+        "patches": dict(DEFAULT_TASK_PREPARATION["patches"]),
+    }
+    if execution_defaults:
+        merged.update({key: value for key, value in execution_defaults.items() if key != "patches"})
+        if execution_defaults.get("patches"):
+            merged["patches"] = dict(execution_defaults["patches"])
+    if run_override:
+        merged.update({key: value for key, value in run_override.items() if key != "patches"})
+        if run_override.get("patches"):
+            merged["patches"] = dict(run_override["patches"])
+    return merged
+
+
+def _strip_skills_from_task(task_root: Path) -> list[str]:
+    patched_files: list[str] = []
+    skills_root = task_root / "environment" / "skills"
+    if skills_root.exists():
+        shutil.rmtree(skills_root)
+        patched_files.append(str(skills_root))
+
+    dockerfile_path = task_root / "environment" / "Dockerfile"
+    if dockerfile_path.exists():
+        dockerfile_text = dockerfile_path.read_text(encoding="utf-8")
+        updated_text = _strip_skills_from_dockerfile_text(dockerfile_text)
+        if updated_text != dockerfile_text:
+            dockerfile_path.write_text(updated_text, encoding="utf-8")
+            patched_files.append(str(dockerfile_path))
+    return patched_files
+
+
+def _strip_skills_from_dockerfile_text(dockerfile_text: str) -> str:
+    filtered_lines = []
+    for line in dockerfile_text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("COPY skills "):
+            continue
+        if stripped.startswith("ENV PYTHONPATH=") and "/skills/" in stripped:
+            continue
+        filtered_lines.append(line)
+    return "\n".join(filtered_lines).rstrip() + "\n"
+
+
+def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list[str]:
+    if patch_name == "offer_letter_generator_system_docx":
+        if task_id != "offer-letter-generator":
+            raise ValueError(f"Patch {patch_name} is only valid for offer-letter-generator, not {task_id}")
+        dockerfile_path = task_root / "environment" / "Dockerfile"
+        dockerfile_text = dockerfile_path.read_text(encoding="utf-8")
+        dockerfile_text = dockerfile_text.replace(
+            "RUN apt-get update && apt-get install -y \\\n    python3 \\\n    python3-pip \\\n    curl \\\n    && rm -rf /var/lib/apt/lists/*\n\n# Install Python packages\nRUN pip3 install --break-system-packages \\\n    python-docx==1.1.2\n",
+            "RUN apt-get update && apt-get install -y \\\n    python3 \\\n    python3-pip \\\n    python3-docx \\\n    curl \\\n    && rm -rf /var/lib/apt/lists/*\n",
+        )
+        dockerfile_path.write_text(dockerfile_text, encoding="utf-8")
+        return [str(dockerfile_path)]
+    raise ValueError(f"Unsupported task patch: {patch_name}")

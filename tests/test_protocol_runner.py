@@ -14,6 +14,8 @@ if str(SRC) not in sys.path:
 
 from sip_bench.metrics import load_jsonl
 from sip_bench.protocol_runner import (
+    _apply_task_patch,
+    _strip_skills_from_dockerfile_text,
     build_skillsbench_explicit_plan,
     load_protocol_suite_config,
     run_skillsbench_suite,
@@ -136,6 +138,46 @@ class ProtocolRunnerTests(unittest.TestCase):
             )
             with self.assertRaises(ValueError):
                 load_protocol_suite_config(config_path)
+
+    def test_strip_skills_from_dockerfile_text_removes_skill_copy_and_pythonpath(self) -> None:
+        original = (
+            "FROM python:3.12-slim\n"
+            "COPY skills /root/.codex/skills\n"
+            "COPY file.txt /app/file.txt\n"
+            'ENV PYTHONPATH="/root/.codex/skills/example/scripts"\n'
+        )
+        updated = _strip_skills_from_dockerfile_text(original)
+        self.assertNotIn("COPY skills", updated)
+        self.assertNotIn("ENV PYTHONPATH", updated)
+        self.assertIn("COPY file.txt /app/file.txt", updated)
+
+    def test_apply_offer_letter_patch_rewrites_dockerfile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            task_root = Path(tmpdir) / "tasks" / "offer-letter-generator"
+            dockerfile_path = task_root / "environment" / "Dockerfile"
+            dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
+            dockerfile_path.write_text(
+                "FROM ubuntu:24.04\n\n"
+                "RUN apt-get update && apt-get install -y \\\n"
+                "    python3 \\\n"
+                "    python3-pip \\\n"
+                "    curl \\\n"
+                "    && rm -rf /var/lib/apt/lists/*\n\n"
+                "# Install Python packages\n"
+                "RUN pip3 install --break-system-packages \\\n"
+                "    python-docx==1.1.2\n",
+                encoding="utf-8",
+            )
+
+            patched_files = _apply_task_patch(
+                task_id="offer-letter-generator",
+                patch_name="offer_letter_generator_system_docx",
+                task_root=task_root,
+            )
+            updated = dockerfile_path.read_text(encoding="utf-8")
+            self.assertIn("python3-docx", updated)
+            self.assertNotIn("python-docx==1.1.2", updated)
+            self.assertEqual(patched_files, [str(dockerfile_path)])
 
     def _make_single_trial_job_dir(self, job_dir: Path, *, fixture_relative_path: str) -> Path:
         source = ROOT / "tests" / "fixtures" / "skillsbench_harbor_job_sample" / fixture_relative_path

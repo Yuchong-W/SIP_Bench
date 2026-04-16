@@ -93,6 +93,30 @@ Notes:
 2. The suite runner also supports import-only runs for deterministic regression testing.
 3. The current real suite is an `oracle` plumbing validation suite, not a meaningful self-improvement claim.
 
+## Task Preparation
+
+The suite runner now supports per-run task preparation for `SkillsBench`:
+
+1. `mode = source`
+Run directly from the upstream checkout.
+2. `mode = copy`
+Copy only the selected task directories into a run-local prepared root.
+3. `skill_mode = strip`
+Remove `environment/skills` and rewrite the task Dockerfile so `COPY skills ...` and skill-specific `PYTHONPATH` lines are removed.
+4. `patches`
+Apply explicit run-local task patches without mutating the upstream checkout.
+
+Current built-in patch:
+
+1. `offer_letter_generator_system_docx`
+Rewrites `offer-letter-generator` to install `python3-docx` from the system package manager instead of the flaky `pip python-docx` path that repeatedly failed on this machine.
+
+The first config using this preparation layer is:
+
+1. [protocol/skillsbench_codex_external_prepared_suite.json](E:\Protocal_Bench\protocol\skillsbench_codex_external_prepared_suite.json)
+
+This config is the first non-`oracle` candidate suite. It uses `codex`, explicit timeout multipliers, copied prepared tasks, stripped-skill `T0`, and kept-skill `T1`.
+
 ## First Commands
 
 ```powershell
@@ -105,4 +129,5 @@ python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.j
 python scripts\run_eval.py import-skillsbench-job --job-dir tests\fixtures\skillsbench_harbor_job_sample --out results\dryrun\skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version job-fixture-import --benchmark-version skillsbench-harbor-fixture
 python scripts\validate_records.py --data results\dryrun\skillsbench_job_runs.jsonl --schema runs
 python scripts\run_protocol.py run-skillsbench-suite --config protocol\skillsbench_oracle_real_suite.json --mode subprocess
+python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import load_protocol_suite_config; cfg = load_protocol_suite_config('protocol/skillsbench_codex_external_prepared_suite.json'); print(cfg['suite_name'], len(cfg['runs']))"
 ```

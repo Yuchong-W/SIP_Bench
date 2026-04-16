@@ -1,0 +1,97 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-codex-external-prepared-suite",
+  "benchmark_name": "skillsbench",
+  "repo_root": "../benchmarks/skillsbench",
+  "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_suite",
+  "execution": {
+    "agent": "codex",
+    "model": null,
+    "harbor_bin": "../scripts/harbor312.cmd",
+    "jobs_dir": "../results/real_jobs_protocol",
+    "path_type": "external",
+    "agent_version": "harbor312-codex-external-v0",
+    "seed": 0,
+    "extra_args": [
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4",
+      "--agent-setup-timeout-multiplier",
+      "4"
+    ]
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "strip"
+      }
+    },
+    {
+      "run_name": "t0_heldout",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "offer-letter-generator"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "strip",
+        "patches": {
+          "offer-letter-generator": [
+            "offer_letter_generator_system_docx"
+          ]
+        }
+      }
+    },
+    {
+      "run_name": "t1_adapt",
+      "phase": "T1",
+      "benchmark_split": "adapt",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep"
+      }
+    },
+    {
+      "run_name": "t1_replay",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep"
+      }
+    },
+    {
+      "run_name": "t1_heldout",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "offer-letter-generator"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "offer-letter-generator": [
+            "offer_letter_generator_system_docx"
+          ]
+        }
+      }
+    }
+  ]
+}
