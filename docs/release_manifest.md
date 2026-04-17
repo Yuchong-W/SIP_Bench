@@ -96,6 +96,8 @@ Engineering docs:
 10. `docs/release_notes_v0_1.md`
 11. `docs/launch_materials_v0_1.md`
 12. `docs/support_matrix_v0_1.md`
+13. `docs/linux_validation_runbook_v0_1.md`
+14. `docs/post_v0_1_backlog.md`
 
 Tests and fixtures:
 

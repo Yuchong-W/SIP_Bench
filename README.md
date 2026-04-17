@@ -60,6 +60,8 @@ Milestone and release-tracking docs live here:
 1. [docs/milestone_plan_v0_1.md](docs/milestone_plan_v0_1.md)
 2. [docs/release_checklist_v0_1.md](docs/release_checklist_v0_1.md)
 3. [docs/support_matrix_v0_1.md](docs/support_matrix_v0_1.md)
+4. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
+5. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
 
 ## Supported Environments
 
@@ -193,9 +195,11 @@ This layer is what enables frozen-style versus skill-enabled comparisons without
 3. [docs/decision_log.md](docs/decision_log.md)
 4. [docs/known_limitations.md](docs/known_limitations.md)
 5. [docs/release_manifest.md](docs/release_manifest.md)
-6. [scripts/README.md](scripts/README.md)
-7. [src/sip_bench/](src/sip_bench)
-8. [tests/README.md](tests/README.md)
+6. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
+7. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
+8. [scripts/README.md](scripts/README.md)
+9. [src/sip_bench/](src/sip_bench)
+10. [tests/README.md](tests/README.md)
 
 ## Operational Notes
 

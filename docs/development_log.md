@@ -628,3 +628,16 @@ Observed result:
 
 1. The release branch is now back to a reviewable baseline with no hidden local dirt.
 2. Future release work can be measured against real changes instead of CRLF-only churn.
+
+### Linux Runbook And Post-Release Backlog
+
+Work completed:
+
+1. Added a dedicated Linux validation runbook for machines that cannot use `codex`.
+2. Added a post-`v0.1` backlog so README polish, live `tau`, and prepared-suite work stay outside the release-critical path.
+3. Linked both docs from the README and release manifest.
+
+Observed result:
+
+1. The remaining unchecked release items are now explicit and operational, not just implied in conversation.
+2. The release branch has a cleaner boundary between `v0.1` scope and follow-up work.

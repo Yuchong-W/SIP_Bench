@@ -77,7 +77,7 @@ This checklist is for the first public open-source release. It assumes:
 
 ## 10. Post-Release Backlog
 
-- [ ] README follow-ups are captured separately from the release branch.
+- [x] README follow-ups are captured separately from the release branch.
 - [x] `tau-bench` live integration remains a tracked follow-up, not a release blocker.
 - [x] `codex` prepared-suite validation remains a tracked follow-up, not a release blocker.
 - [x] Paper-writing work is tracked separately from open-source release hygiene.
