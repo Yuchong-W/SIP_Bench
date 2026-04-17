@@ -17,6 +17,7 @@ This release includes:
    - contribution guidance
    - security policy
    - CI
+   - shared release-check command
 
 Current release posture:
 

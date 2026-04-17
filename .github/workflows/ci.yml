@@ -21,18 +21,5 @@ jobs:
       - name: Install minimal dependencies
         run: python -m pip install --upgrade pip jsonschema
 
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -p "test_*.py"
-
-      - name: Validate tracked dry-run artifacts
-        run: |
-          python scripts/validate_records.py --data results/dryrun/sample_runs.jsonl --schema runs
-          python scripts/validate_records.py --data results/dryrun/summary.jsonl --schema summary
-
-      - name: Validate tracked real suite artifacts
-        run: |
-          python scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl --schema runs
-          python scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary
-
-      - name: Smoke CLI aggregation path
-        run: python scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
+      - name: Run release checks
+        run: python scripts/run_release_checks.py

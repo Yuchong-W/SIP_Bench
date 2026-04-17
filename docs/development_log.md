@@ -597,3 +597,21 @@ Observed result:
 2. The first public quickstart no longer depends on `codex` connectivity or private model credentials.
 3. The Linux path is now materially stronger because bare `python` subprocess calls fall back to the active interpreter when needed.
 4. The remaining release-cleanup problem is mostly line-ending churn in tracked files rather than missing release structure.
+
+### Release Validation Consolidation
+
+Work completed:
+
+1. Added `scripts/run_release_checks.py` as a single local entrypoint for the public `v0.1` validation path.
+2. Rewired GitHub Actions CI to call that script instead of duplicating release checks inline.
+3. Added `.editorconfig` so normal repository text files default to `LF` while Windows launchers keep `CRLF`.
+4. Updated the README, contributing guide, script docs, and release checklist to point at the shared validation command.
+
+Validation run:
+
+1. `python3 scripts/run_release_checks.py`
+
+Observed result:
+
+1. Release validation is now easier to rerun locally and less likely to drift between docs, CI, and the actual release branch.
+2. The repository now has both Git-level and editor-level line-ending policy, which should reduce future formatting churn.

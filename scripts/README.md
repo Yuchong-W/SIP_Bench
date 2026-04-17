@@ -23,6 +23,9 @@ Windows launcher for Harbor on Python `3.12`. It sets a local `UV_CACHE_DIR`, fo
 7. `tau311.cmd`
 Windows launcher for `tau-bench` on `py -3.11`. It prepends the repo-local dependency overlay `.pydeps311` and the local `benchmarks\tau-bench` checkout to `PYTHONPATH`, then forwards all arguments to Python.
 
+8. `run_release_checks.py`
+Run the release-facing local validation path used by the public quickstart and CI. It exercises unit tests, dry-run aggregation, SkillsBench Harbor job import, and schema validation for tracked artifacts.
+
 Release-facing guidance:
 
 1. `Linux-first` is the current public support target.
@@ -50,6 +53,7 @@ Operational notes:
    - current shell environment
 8. The recommended local secret path is `protocol/.env.local`, which is gitignored. A checked-in template lives at `protocol/tau_openai.env.example`.
 9. `execute-plan` and `tau_bench_preflight` now resolve bare `python` or `python3` through the current environment so Linux hosts without a `python` alias still work.
+10. `run_release_checks.py` uses the current interpreter by default, so the same command works inside virtualenvs and CI without relying on an ambient `python` alias.
 
 Planned next:
 
@@ -62,6 +66,7 @@ Execute the golden-task suite after adapter or metric changes.
 ## First Commands
 
 ```bash
+python3 scripts/run_release_checks.py
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/smoke_adapters.py
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture

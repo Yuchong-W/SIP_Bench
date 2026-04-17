@@ -106,6 +106,7 @@ Schemas and protocol references:
 The commands below avoid private agent access and work with the repository's local fixtures and tracked sample outputs.
 
 ```bash
+python3 scripts/run_release_checks.py
 python3 -m unittest discover -s tests -p "test_*.py"
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture
@@ -118,6 +119,12 @@ What this gives you:
 2. a generated `summary.jsonl` from sample runs
 3. a real-format `SkillsBench` Harbor job imported into SIP-Bench run records
 4. schema validation on the imported artifact
+
+If you want the same checks as the release path and CI, start with:
+
+```bash
+python3 scripts/run_release_checks.py
+```
 
 ## Representative Artifacts
 

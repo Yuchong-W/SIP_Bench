@@ -20,6 +20,10 @@ Highlights:
    - security policy
    - issue and PR templates
    - minimal CI
+7. consolidated release validation:
+   - `scripts/run_release_checks.py`
+   - CI now uses the shared release-check entrypoint
+   - `.editorconfig` complements `.gitattributes` for line-ending discipline
 
 Known release posture:
 

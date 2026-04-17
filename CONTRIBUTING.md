@@ -31,18 +31,23 @@ Changes in these areas can silently invalidate previously documented results or 
 Recommended baseline:
 
 ```bash
-python3 -m unittest discover -s tests -p "test_*.py"
-python3 scripts/validate_records.py --data results/dryrun/sample_runs.jsonl --schema runs
-python3 scripts/validate_records.py --data results/dryrun/summary.jsonl --schema summary
+python3 scripts/run_release_checks.py
 ```
 
 Useful additional checks:
 
 ```bash
+python3 scripts/run_release_checks.py --skip-tests
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture
-python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --schema runs
 ```
+
+Line-ending policy:
+
+1. `.editorconfig` and `.gitattributes` are both part of the release surface.
+2. default repository text files should stay `LF`.
+3. Windows launcher files such as `.cmd` should stay `CRLF`.
+4. avoid mixing formatting-only renormalization with feature changes.
 
 ## Result Artifact Policy
 

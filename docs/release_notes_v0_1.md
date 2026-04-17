@@ -50,6 +50,7 @@ This release does not introduce a new benchmark world. Instead, it adds a reusab
 4. security policy
 5. issue and pull request templates
 6. minimal CI for tests and schema validation
+7. one-command release validation through `python3 scripts/run_release_checks.py`
 
 ## Release-Critical Evidence Paths
 

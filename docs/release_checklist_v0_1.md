@@ -33,6 +33,7 @@ This checklist is for the first public open-source release. It assumes:
 
 - [ ] Unit tests pass on the supported environment.
 - [ ] Schema validation passes for the tracked example artifacts.
+- [ ] `python3 scripts/run_release_checks.py` passes on the release branch.
 - [ ] The documented quickstart has been re-run from a clean checkout.
 - [ ] `python` vs `python3` assumptions are explicit and consistent.
 
