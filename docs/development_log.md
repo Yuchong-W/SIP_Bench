@@ -563,3 +563,37 @@ Observed result:
 2. `tau-bench` no longer depends on the launching shell having exported `OPENAI_API_KEY` if a suite-adjacent `.env.local` or explicit `env_file` is present.
 3. The remaining blocker for a true live smoke run is possession of a valid provider key, not discovering that key inside the protocol runner.
 4. Windows-written UTF-8 env files with BOM are now accepted; preflight correctly recognizes `OPENAI_API_KEY` from a temporary probe file written by PowerShell.
+
+### Open-Source Release Packaging
+
+Work completed:
+
+1. Repositioned the repository around a public `protocol-layer benchmark` story instead of an internal milestone log.
+2. Added release-engineering files for a real open-source launch:
+   - `LICENSE`
+   - `NOTICE`
+   - `CITATION.cff`
+   - `CONTRIBUTING.md`
+   - `SECURITY.md`
+   - GitHub issue templates
+   - GitHub pull request template
+   - GitHub Actions CI workflow
+3. Added `docs/milestone_plan_v0_1.md` and `docs/release_checklist_v0_1.md`.
+4. Rewrote the README around `Linux-first` quickstart, representative artifacts, and release-critical versus experimental paths.
+5. Updated release-facing docs so `SkillsBench oracle` and `tau-bench historical` are the explicit `v0.1` evidence path.
+
+Validation run:
+
+1. `python3 -m unittest discover -s tests -p "test_*.py"`
+2. `python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl`
+3. `python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture`
+4. `python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --schema runs`
+5. `python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl --schema runs`
+6. `python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary`
+
+Observed result:
+
+1. The repository now has a credible public release surface instead of only internal implementation notes.
+2. The first public quickstart no longer depends on `codex` connectivity or private model credentials.
+3. The Linux path is now materially stronger because bare `python` subprocess calls fall back to the active interpreter when needed.
+4. The remaining release-cleanup problem is mostly line-ending churn in tracked files rather than missing release structure.

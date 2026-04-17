@@ -1,0 +1,12 @@
+SI-Protocol Benchmark (SIP-Bench)
+Copyright 2026 Yuchong-W
+
+This repository is released under the Apache License, Version 2.0.
+
+The repository integrates with external benchmark ecosystems, including
+SkillsBench and tau-bench. Those upstream projects, their datasets, and any
+checked-out benchmark code remain subject to their own licenses and terms.
+
+Tracked release artifacts in this repository document the SIP-Bench protocol
+layer, schemas, runners, and example outputs. Run-local caches, prepared task
+copies, and local secret files are excluded from the intended release surface.

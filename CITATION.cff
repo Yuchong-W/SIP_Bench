@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: SI-Protocol Benchmark
+message: If you use SIP-Bench, please cite this software entry.
+type: software
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-05-01
+repository-code: https://github.com/Yuchong-W/Protocol_Bench
+url: https://github.com/Yuchong-W/Protocol_Bench
+authors:
+  - family-names: Yuchong-W
+    email: yuchong-23@mails.tsinghua.edu.cn
+abstract: >
+  SIP-Bench is a protocol-layer benchmark for self-improving agents. It adds
+  longitudinal evaluation structure and normalized metrics for improvement,
+  retention, and cost across existing benchmark environments.
+keywords:
+  - agents
+  - benchmarking
+  - evaluation
+  - self-improvement
+  - protocols

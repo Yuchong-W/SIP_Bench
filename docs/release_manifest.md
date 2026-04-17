@@ -1,5 +1,25 @@
 # Release Manifest
 
+## Release Intent
+
+This manifest is now scoped to the first public open-source release, not to every local experiment.
+
+Release priorities:
+
+1. present `SIP-Bench` as protocol-layer research infrastructure
+2. keep the public surface reviewable and reproducible
+3. anchor the release on validated artifacts that do not require `codex` connectivity or private API access
+
+Current release-critical evidence:
+
+1. `SkillsBench oracle real suite`
+2. `tau-bench historical/import-only suite`
+
+Current experimental but non-blocking areas:
+
+1. `SkillsBench codex external prepared suite`
+2. `tau-bench` live smoke
+
 ## Target Repository
 
 1. `Yuchong-W/Protocol_Bench`
@@ -37,14 +57,27 @@ Core source:
 CLI and repository docs:
 
 1. `README.md`
-2. `scripts/README.md`
-3. `scripts/aggregate_metrics.py`
-4. `scripts/run_eval.py`
-5. `scripts/run_protocol.py`
-6. `scripts/smoke_adapters.py`
-7. `scripts/validate_records.py`
-8. `scripts/tau311.cmd`
-9. `.gitignore`
+2. `CONTRIBUTING.md`
+3. `SECURITY.md`
+4. `CHANGELOG.md`
+5. `scripts/README.md`
+6. `scripts/aggregate_metrics.py`
+7. `scripts/run_eval.py`
+8. `scripts/run_protocol.py`
+9. `scripts/smoke_adapters.py`
+10. `scripts/validate_records.py`
+11. `scripts/harbor312.cmd`
+12. `scripts/tau311.cmd`
+13. `.gitignore`
+14. `.gitattributes`
+15. `LICENSE`
+16. `NOTICE`
+17. `CITATION.cff`
+18. `.github/workflows/ci.yml`
+19. `.github/ISSUE_TEMPLATE/bug_report.md`
+20. `.github/ISSUE_TEMPLATE/feature_request.md`
+21. `.github/ISSUE_TEMPLATE/config.yml`
+22. `.github/PULL_REQUEST_TEMPLATE.md`
 
 Engineering docs:
 
@@ -55,6 +88,8 @@ Engineering docs:
 5. `docs/known_limitations.md`
 6. `docs/upstream_surface_notes.md`
 7. `docs/release_manifest.md`
+8. `docs/milestone_plan_v0_1.md`
+9. `docs/release_checklist_v0_1.md`
 
 Tests and fixtures:
 
@@ -69,9 +104,13 @@ Tests and fixtures:
 9. `tests/fixtures/skillsbench_registry_sample.json`
 10. `tests/fixtures/tau_results_sample.json`
 11. `tests/test_protocol_runner.py`
-12. `protocol/skillsbench_codex_external_prepared_suite.json`
-13. `protocol/tau_bench_retail_historical_suite.json`
-14. `protocol/tau_bench_retail_openai_smoke_suite.json`
+12. `tests/fixtures/skillsbench_harbor_job_sample/result.json`
+13. `tests/fixtures/skillsbench_harbor_job_sample/citation-check__fixture001/result.json`
+14. `tests/fixtures/skillsbench_harbor_job_sample/court-form-filling__fixture002/result.json`
+15. `protocol/skillsbench_codex_external_prepared_suite.json`
+16. `protocol/tau_bench_retail_historical_suite.json`
+17. `protocol/tau_bench_retail_openai_smoke_suite.json`
+18. `protocol/tau_openai.env.example`
 
 Sample outputs:
 
@@ -86,6 +125,7 @@ Sample outputs:
 9. `results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl`
 10. `results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl`
 11. `results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json`
+12. `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl`
 
 ## Files Intentionally Excluded From Upload
 
@@ -98,55 +138,9 @@ Sample outputs:
 7. `.pydeps311/`
 8. `results/dryrun/pip_probe/`
 9. ad-hoc tau protocol smoke outputs under `results/protocol_runs/tau_bench_retail_openai_smoke_suite/`
-
-
-## Update 2026-04-15
-
-Additional source and script files now intended for upload:
-
-1. `scripts/harbor312.cmd`
-2. `tests/fixtures/skillsbench_harbor_job_sample/result.json`
-3. `tests/fixtures/skillsbench_harbor_job_sample/citation-check__fixture001/result.json`
-4. `tests/fixtures/skillsbench_harbor_job_sample/court-form-filling__fixture002/result.json`
-5. `protocol/skillsbench_codex_external_prepared_suite.json`
-
-Additional sample outputs expected after the next real smoke run:
-
-1. `results/dryrun/skillsbench_hydration.json`
-2. `results/dryrun/skillsbench_execution.json`
-3. `results/dryrun/skillsbench_job_runs.jsonl`
-
-Additional local-only exclusions:
-
-1. `.uv-cache/`
-2. `results/real_jobs*/`
-3. `results/prepared_probes/`
-
-
-## Real Smoke Outputs
-
-Generated and suitable for upload:
-
-1. `results/dryrun/skillsbench_real_smoke_plan.json`
-2. `results/dryrun/skillsbench_real_smoke_hydration.json`
-3. `results/dryrun/skillsbench_real_smoke_execution.json`
-4. `results/dryrun/skillsbench_real_smoke_runs.jsonl`
-5. `results/dryrun/skillsbench_job_runs.jsonl`
-
-
-## Real Successful Smoke Outputs
-
-Generated and suitable for upload:
-
-1. `results/dryrun/skillsbench_dialogue_smoke_plan.json`
-2. `results/dryrun/skillsbench_dialogue_smoke_hydration.json`
-3. `results/dryrun/skillsbench_dialogue_smoke_execution.json`
-4. `results/dryrun/skillsbench_dialogue_smoke_runs.jsonl`
-5. `results/dryrun/skillsbench_dialogue_timeout4_plan.json`
-6. `results/dryrun/skillsbench_dialogue_timeout4_hydration.json`
-7. `results/dryrun/skillsbench_dialogue_timeout4_execution.json`
-8. `results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl`
-
+10. partial outputs under `results/protocol_runs/skillsbench_codex_external_prepared_suite/`
+11. `results/protocol_runs/**/prepared/`
+12. `.codex/`
 
 ## Real Protocol Suite Outputs
 
@@ -172,6 +166,15 @@ Generated and suitable for upload:
 18. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_heldout.jsonl`
 19. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_replay.jsonl`
 20. `results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_heldout.jsonl`
+
+## Experimental Outputs
+
+These should be kept reviewable but are not part of the `v0.1` release-critical surface:
+
+1. `protocol/skillsbench_codex_external_prepared_suite.json`
+2. `protocol/tau_bench_retail_openai_smoke_suite.json`
+3. any provider-backed live smoke outputs
+4. any incomplete prepared-suite outputs
 
 
 ## Publication Sync Note
@@ -199,3 +202,4 @@ Additional local-only exclusions:
 4. `protocol/.env`
 5. `protocol/.env.local`
 6. `protocol/*.env.local`
+7. `results/protocol_runs/skillsbench_codex_external_prepared_suite/`

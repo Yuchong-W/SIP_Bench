@@ -226,3 +226,29 @@ Why:
 2. benchmark execution should be fully config-driven except for the secret values themselves
 3. applying the same resolved env to both preflight and execution removes a class of false-negative setup failures
 4. a gitignored `protocol/.env.local` gives a stable local convention without leaking secrets into the repository
+
+### D018
+
+Decision:
+
+The first public `SIP-Bench` release should use `Apache-2.0` and present itself as `Linux-first` research infrastructure.
+
+Why:
+
+1. the project is closer to reusable benchmark infrastructure than to a throwaway experiment repository
+2. `Apache-2.0` gives a clearer public release posture for reuse, attribution, and contribution than an ad-hoc or missing license state
+3. the current public support story is materially stronger on Linux than on Windows
+4. narrowing the official support target reduces release ambiguity and avoids overpromising cross-platform stability
+
+### D019
+
+Decision:
+
+The `v0.1` release-critical evidence path should be limited to validated `SkillsBench oracle` and `tau-bench historical/import-only` artifacts, while `codex` prepared-suite and provider-backed live runs remain experimental.
+
+Why:
+
+1. the repository already contains credible validated artifacts for those two release-critical paths
+2. `codex` connectivity is not available on every intended validation machine
+3. `tau-bench` live execution still depends on private provider credentials
+4. separating release-critical from experimental paths improves the open-source launch quality without blocking future research experiments

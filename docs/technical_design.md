@@ -9,6 +9,13 @@ The MVP focuses on two benchmark families:
 1. `SkillsBench`
 2. `tau-bench`
 
+The current `v0.1` release direction is `Linux-first` and open-source-release-oriented. The release-critical evidence path is:
+
+1. real `SkillsBench oracle` suite artifacts
+2. `tau-bench historical/import-only` suite artifacts
+
+Experimental paths such as `SkillsBench codex external prepared` and `tau-bench` live provider-backed runs remain useful, but they are not release blockers.
+
 ## Design Principles
 
 1. Reuse existing benchmark environments instead of building a new environment stack.
@@ -196,6 +203,7 @@ Current CLI entrypoints:
 1. `scripts/aggregate_metrics.py`
 2. `scripts/smoke_adapters.py`
 3. `scripts/run_eval.py`
+4. `scripts/run_protocol.py`
 4. `scripts/validate_records.py`
 
 `run_eval.py` currently supports:
@@ -204,6 +212,13 @@ Current CLI entrypoints:
 2. `execute-plan`
 3. `import-tau-results`
 4. `import-skillsbench-results`
+5. `hydrate-skillsbench`
+6. `import-skillsbench-job`
+
+`run_protocol.py` currently supports:
+
+1. `run-skillsbench-suite`
+2. `run-tau-suite`
 
 This is enough to exercise a dry-run end-to-end workflow:
 
@@ -249,14 +264,36 @@ The test suite currently covers:
 8. mock execution
 9. subprocess execution via a local fixture program
 10. schema validation
+11. config-driven suite orchestration
+12. env-file loading and protocol-level env override wiring
+13. task-preparation helpers for copied SkillsBench tasks
 
 Primary test command:
 
-```powershell
-python -m unittest discover -s tests -p "test_*.py"
+```bash
+python3 -m unittest discover -s tests -p "test_*.py"
 ```
 
 ## Environment Constraints
+
+Current release-facing constraints:
+
+1. `Linux-first` is the official support target for `v0.1`.
+2. Windows helper scripts remain available, but they are not the primary public execution path.
+3. `tau-bench` live execution requires model-provider credentials and is not required for the first public release.
+4. Upstream benchmark checkouts under `benchmarks/` are local dependencies, not vendored release contents.
+5. Real `SkillsBench` Docker tasks may need explicit timeout policy because environment setup instability is still machine-dependent.
+
+## Release Surface
+
+Tracked release assets should focus on protocol code, schemas, CLI entrypoints, docs, tests, and representative validated artifacts.
+
+The following are intentionally not part of the current release-critical surface:
+
+1. local caches and local dependency overlays
+2. local secret files
+3. run-local prepared task copies
+4. incomplete experimental `codex` prepared-suite outputs
 
 Observed engineering constraints:
 

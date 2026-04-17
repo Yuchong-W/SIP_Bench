@@ -1,168 +1,202 @@
-﻿# SI-Protocol Benchmark
+# SI-Protocol Benchmark
 
-`SI-Protocol Benchmark` (`SIP-Bench`) is a protocol-layer benchmark for measuring self-improvement in agents.
+`SIP-Bench` is a protocol layer for evaluating self-improving agents across improvement, retention, and cost.
 
-This project does not introduce a brand-new environment. It wraps existing benchmarks with a unified evaluation protocol so we can answer questions that current agent benchmarks usually miss:
+It does not introduce a new task world. It wraps existing benchmark environments with a shared longitudinal evaluation contract so you can ask questions that single-shot leaderboards usually cannot answer:
 
 1. Did the agent improve on held-out tasks?
-2. Did it retain performance on old tasks?
-3. How much interaction and compute did that improvement cost?
+2. Did it retain performance on tasks it already knew?
+3. What interaction, compute, and operational cost did that improvement require?
 
-## Current Scope
+## Why This Is Different
 
-The MVP targets two environments:
+Most agent benchmarks report a score for one run on one split. `SIP-Bench` instead standardizes a reusable protocol:
 
-1. `SkillsBench`
-2. `tau-bench`
+1. `T0 / T1 / T2` checkpoints
+2. `replay / adapt / heldout / drift` task partitions
+3. normalized run records and summary records
+4. metrics for gain, retention, and efficiency
+5. first-class recording of failed benchmark executions
 
-An optional third environment, `SWE-bench-Live`, is reserved for a later extension if the first two adapters stabilize on schedule.
+The project is best understood as research infrastructure for measuring self-improvement, not as another benchmark wrapper and not as a new benchmark environment.
 
-## Core Protocol
+## Current Release Direction
 
-Each benchmark is evaluated under a shared three-stage protocol:
+The current `v0.1` release plan is optimized for a strong open-source launch:
 
-1. `T0`: initial agent, no targeted adaptation
-2. `T1`: post-adaptation
-3. `T2`: post-delay or post-drift
+1. official support target: `Linux-first`
+2. release-critical environments:
+   - `SkillsBench`
+   - `tau-bench`
+3. release-critical evidence:
+   - real `SkillsBench oracle` suite artifacts
+   - `tau-bench` historical/import-only protocol artifacts
+4. experimental but non-blocking:
+   - `SkillsBench codex external prepared suite`
+   - `tau-bench` live runs that require provider credentials
 
-Each benchmark also defines shared task subsets:
+Milestone and release-tracking docs live here:
+
+1. [docs/milestone_plan_v0_1.md](docs/milestone_plan_v0_1.md)
+2. [docs/release_checklist_v0_1.md](docs/release_checklist_v0_1.md)
+
+## Supported Environments
+
+| Environment | Current status | Release role |
+| --- | --- | --- |
+| `SkillsBench` | Real planning, hydration, execution import, and suite aggregation implemented | Primary release path |
+| `tau-bench` historical | Import-only suite path implemented and aggregated | Secondary release path |
+| `tau-bench` live | Runtime wrapper and preflight exist, requires provider credentials | Optional |
+| `SkillsBench codex prepared` | Task preparation layer exists, validation is still experimental | Optional |
+
+## Protocol Model
+
+Lifecycle phases:
+
+1. `T0`: initial agent
+2. `T1`: post-adaptation checkpoint
+3. `T2`: delayed or post-drift checkpoint
+
+Task partitions:
 
 1. `replay`
 2. `adapt`
 3. `heldout`
 4. optional `drift`
 
-The primary metrics are:
+Primary metrics:
 
 1. `FG`: Forward Gain
 2. `BR`: Backward Retention
-3. `IE`: Improvement Efficiency
+3. `BR_ratio`
+4. `IE`: Improvement Efficiency
+5. `PDS`: Post-Delay Stability
+6. `NIS`: Net Improvement Score
 
-## Repository Layout
+Schemas and protocol references:
 
-1. [protocol/protocol_spec_v0.md](E:\Protocal_Bench\protocol\protocol_spec_v0.md)
-2. [schemas/runs.schema.json](E:\Protocal_Bench\schemas\runs.schema.json)
-3. [schemas/summary.schema.json](E:\Protocal_Bench\schemas\summary.schema.json)
-4. [schemas/protocol_suite.schema.json](E:\Protocal_Bench\schemas\protocol_suite.schema.json)
-5. [docs/decision_log.md](E:\Protocal_Bench\docs\decision_log.md)
-6. [docs/known_limitations.md](E:\Protocal_Bench\docs\known_limitations.md)
-7. [docs/technical_design.md](E:\Protocal_Bench\docs\technical_design.md)
-8. [docs/development_log.md](E:\Protocal_Bench\docs\development_log.md)
-9. `scripts/`
-10. `results/`
-11. `tests/`
+1. [protocol/protocol_spec_v0.md](protocol/protocol_spec_v0.md)
+2. [schemas/runs.schema.json](schemas/runs.schema.json)
+3. [schemas/summary.schema.json](schemas/summary.schema.json)
+4. [schemas/protocol_suite.schema.json](schemas/protocol_suite.schema.json)
 
-## Status
+## Quickstart
 
-This repository is now beyond pure scaffold status. The protocol, schemas, metric engine, aggregation CLI, sparse SkillsBench hydration, real SkillsBench Harbor-job import, config-driven protocol orchestration, and real upstream checkout strategy are in place. `tau-bench` is checked out locally over SSH, `SkillsBench` is maintained as a sparse SSH checkout, and the real execution path now prefers `scripts\harbor312.cmd` so Harbor runs under Python `3.12` with Docker BuildKit disabled.
+The commands below avoid private agent access and work with the repository's local fixtures and tracked sample outputs.
 
-The first real multi-run protocol suite has already executed end-to-end and produced a valid `combined_runs.jsonl` plus `summary.jsonl` under `results/protocol_runs/skillsbench_oracle_real_suite/`.
+```bash
+python3 -m unittest discover -s tests -p "test_*.py"
+python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
+python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture
+python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --schema runs
+```
 
-`tau-bench` now also has a config-driven suite runner plus a local runtime wrapper. The supported path on this machine is `scripts\tau311.cmd`, which injects the repo-local dependency overlay `.pydeps311` and the local `benchmarks\tau-bench` checkout into `PYTHONPATH` before delegating to `py -3.11`. With that wrapper, `tau-bench` imports succeed locally and the remaining online smoke blocker is an absent `OPENAI_API_KEY`, not a broken Python environment.
+What this gives you:
 
-## Real SkillsBench Flow
+1. local unit coverage for protocol logic
+2. a generated `summary.jsonl` from sample runs
+3. a real-format `SkillsBench` Harbor job imported into SIP-Bench run records
+4. schema validation on the imported artifact
 
-The current single-run real SkillsBench smoke path is:
+## Representative Artifacts
 
-1. `plan-skillsbench`
-2. `hydrate-skillsbench`
-3. `execute-plan --mode subprocess`
-4. `import-skillsbench-job`
-5. `validate_records`
+Tracked example outputs and configs:
 
-Notes:
+1. Real `SkillsBench` suite report: [results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json](results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json)
+2. Real `SkillsBench` summary: [results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl](results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl)
+3. Successful `SkillsBench` smoke import: [results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl](results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl)
+4. Sample `tau-bench` imported runs: [results/dryrun/tau_runs.jsonl](results/dryrun/tau_runs.jsonl)
+5. Real `SkillsBench` suite config: [protocol/skillsbench_oracle_real_suite.json](protocol/skillsbench_oracle_real_suite.json)
+6. Experimental prepared-suite config: [protocol/skillsbench_codex_external_prepared_suite.json](protocol/skillsbench_codex_external_prepared_suite.json)
+7. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
+8. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
 
-1. The execution bridge now consumes real Harbor job directories even when a trial fails during Docker build or verifier setup.
-2. The benchmark outcome is recorded in imported `runs.jsonl`; `execute-plan` only reports whether the command launched successfully.
-3. On this machine, the global `harbor.exe` installed under Python `3.13` is not reliable for Windows subprocess orchestration, so `scripts\harbor312.cmd` is the supported launcher.
-4. The first fully successful real smoke run on this machine used `dialogue-parser` with `--environment-build-timeout-multiplier 4`; the default `600` second build timeout was too low for that Docker task.
+## Real Benchmark Paths
 
-## Real Protocol Suite Flow
+### SkillsBench
 
-The current real multi-run protocol path is:
+Current real path:
 
-1. `run-skillsbench-suite`
-2. per-run `plan`
-3. per-run `hydrate`
-4. per-run `execute`
-5. per-run `import`
-6. combined `runs.jsonl` validation
-7. summary aggregation into `summary.jsonl`
+1. build an explicit plan
+2. hydrate the sparse checkout
+3. execute through Harbor
+4. import the Harbor job directory
+5. validate `runs.jsonl`
 
-Notes:
+The current multi-run suite runner supports:
 
-1. Suite configs are resolved relative to the config file location.
-2. The suite runner also supports import-only runs for deterministic regression testing.
-3. The current real suite is an `oracle` plumbing validation suite, not a meaningful self-improvement claim.
+1. per-run planning
+2. per-run hydration
+3. optional run-local task preparation
+4. per-run execution or import-only mode
+5. combined `runs.jsonl`
+6. aggregated `summary.jsonl`
 
-## Task Preparation
+The current tracked real suite is an orchestration validation suite, not a claim of meaningful self-improvement.
 
-The suite runner now supports per-run task preparation for `SkillsBench`:
+### tau-bench
+
+Current supported paths:
+
+1. `historical/import-only`
+2. `live` with explicit provider credentials
+
+The current release-safe path is the historical suite because it does not depend on private API access.
+
+The live smoke path is configured but requires provider credentials. A checked-in template lives at [protocol/tau_openai.env.example](protocol/tau_openai.env.example).
+
+## Task Preparation Layer
+
+For `SkillsBench`, suite configs can optionally prepare run-local task copies instead of mutating the upstream checkout.
+
+Supported preparation features:
 
 1. `mode = source`
-Run directly from the upstream checkout.
 2. `mode = copy`
-Copy only the selected task directories into a run-local prepared root.
-3. `skill_mode = strip`
-Remove `environment/skills` and rewrite the task Dockerfile so `COPY skills ...` and skill-specific `PYTHONPATH` lines are removed.
-4. `patches`
-Apply explicit run-local task patches without mutating the upstream checkout.
+3. `skill_mode = strip|keep`
+4. explicit task patches such as `offer_letter_generator_system_docx`
 
-Current built-in patch:
+This layer is what enables frozen-style versus skill-enabled comparisons without rewriting upstream tasks in place.
 
-1. `offer_letter_generator_system_docx`
-Rewrites `offer-letter-generator` to install `python3-docx` from the system package manager instead of the flaky `pip python-docx` path that repeatedly failed on this machine.
+## Repository Map
 
-The first config using this preparation layer is:
+1. [docs/technical_design.md](docs/technical_design.md)
+2. [docs/development_log.md](docs/development_log.md)
+3. [docs/decision_log.md](docs/decision_log.md)
+4. [docs/known_limitations.md](docs/known_limitations.md)
+5. [docs/release_manifest.md](docs/release_manifest.md)
+6. [scripts/README.md](scripts/README.md)
+7. [src/sip_bench/](src/sip_bench)
+8. [tests/README.md](tests/README.md)
 
-1. [protocol/skillsbench_codex_external_prepared_suite.json](E:\Protocal_Bench\protocol\skillsbench_codex_external_prepared_suite.json)
+## Operational Notes
 
-This config is the first non-`oracle` candidate suite. It uses `codex`, explicit timeout multipliers, copied prepared tasks, stripped-skill `T0`, and kept-skill `T1`.
+1. `Linux-first` is the official support target for `v0.1`.
+2. Windows-specific helpers such as `scripts/harbor312.cmd` and `scripts/tau311.cmd` remain useful local wrappers, but they are not the center of the public support story.
+3. Real `SkillsBench` runs may still need explicit timeout overrides for slow Docker tasks.
+4. `tau-bench` live execution depends on provider credentials and is intentionally not a release blocker.
+5. Upstream benchmark checkouts under `benchmarks/` are local dependencies and are not vendored into the repository release surface.
 
-## tau-bench Runtime Path
+## FAQ
 
-The supported `tau-bench` runtime path on this machine is:
+### Is this a new benchmark?
 
-1. `scripts\tau311.cmd`
-2. repo-local dependency overlay `.pydeps311`
-3. local upstream checkout `benchmarks\tau-bench`
+No. `SIP-Bench` is a protocol layer on top of existing benchmark environments.
 
-Current verified state:
+### Does the first release require private API access?
 
-1. `scripts\tau311.cmd -c "import openai, litellm, tenacity"` succeeds
-2. `scripts\tau311.cmd -c "import tau_bench"` succeeds
-3. `protocol/tau_bench_retail_historical_suite.json` executes end-to-end and generates a valid `summary.jsonl`
-4. `protocol/tau_bench_retail_openai_smoke_suite.json` now fails fast in preflight only because `OPENAI_API_KEY` is not set in the resolved suite environment
+No. The release-critical quickstart and tracked validation path do not require private model credentials.
 
-`tau-bench` credential resolution order is now:
+### Is `codex` required?
 
-1. run-level `env_file`
-2. suite-level `execution.env_file`
-3. auto-discovered `protocol/.env.local`
-4. auto-discovered `protocol/.env`
-5. auto-discovered `<repo_root>/.env.local`
-6. auto-discovered `<repo_root>/.env`
-7. current shell environment
+No. Experimental prepared-suite support exists, but `codex` connectivity is not part of the `v0.1` release-critical path.
 
-The recommended local path is:
+### What should I use if I only want a stable second environment today?
 
-1. copy [protocol/tau_openai.env.example](E:\Protocal_Bench\protocol\tau_openai.env.example) to `protocol/.env.local`
-2. put `OPENAI_API_KEY=...` in that file
-3. rerun `python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_openai_smoke_suite.json --mode subprocess`
+Use the tracked `tau-bench` historical/import-only path. It exercises the protocol layer without turning provider credentials into a blocker.
 
-## First Commands
+## License
 
-```powershell
-python -m unittest discover -s tests -p "test_*.py"
-python scripts\aggregate_metrics.py --runs results\dryrun\sample_runs.jsonl --out results\dryrun\summary.jsonl
-python scripts\smoke_adapters.py
-python scripts\run_eval.py plan-skillsbench --registry tests\fixtures\skillsbench_registry_sample.json --repo-root benchmarks\skillsbench --task-id court-form-filling --replay-count 1 --adapt-count 0 --heldout-count 0 --harbor-bin scripts\harbor312.cmd --out results\dryrun\skillsbench_plan.json
-python scripts\run_eval.py hydrate-skillsbench --plan results\dryrun\skillsbench_plan.json --repo-root benchmarks\skillsbench --split replay --out results\dryrun\skillsbench_hydration.json
-python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.json --split replay --mode subprocess --cwd E:\Protocal_Bench --out results\dryrun\skillsbench_execution.json
-python scripts\run_eval.py import-skillsbench-job --job-dir tests\fixtures\skillsbench_harbor_job_sample --out results\dryrun\skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version job-fixture-import --benchmark-version skillsbench-harbor-fixture
-python scripts\validate_records.py --data results\dryrun\skillsbench_job_runs.jsonl --schema runs
-python scripts\run_protocol.py run-skillsbench-suite --config protocol\skillsbench_oracle_real_suite.json --mode subprocess
-python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_historical_suite.json --mode subprocess
-scripts\tau311.cmd -c "import openai, litellm, tau_bench; print('tau_runtime_ok')"
-python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import load_protocol_suite_config; cfg = load_protocol_suite_config('protocol/skillsbench_codex_external_prepared_suite.json'); print(cfg['suite_name'], len(cfg['runs']))"
-```
+The SIP-Bench code in this repository is licensed under [Apache-2.0](LICENSE).
+
+External benchmark projects, datasets, and local upstream checkouts keep their own licenses and usage terms. See [NOTICE](NOTICE) for the release-surface clarification.
