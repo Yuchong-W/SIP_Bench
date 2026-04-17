@@ -21,6 +21,7 @@ from sip_bench.runner import (
     import_skillsbench_job,
     import_skillsbench_results,
     import_tau_results,
+    load_env_file,
 )
 
 
@@ -208,6 +209,68 @@ class RunnerTests(unittest.TestCase):
             heldout_output = tmp_path / "mock_heldout.txt"
             self.assertTrue(replay_output.exists())
             self.assertTrue(heldout_output.exists())
+
+    def test_load_env_file_supports_comments_export_and_quotes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            env_path = Path(tmpdir) / ".env"
+            env_path.write_text(
+                "# comment\n"
+                "OPENAI_API_KEY=test-key\n"
+                "export TAU_MODEL_PROVIDER=openai\n"
+                "QUOTED_VALUE=\"hello world\"\n"
+                "SINGLE_QUOTED='value'\n",
+                encoding="utf-8-sig",
+            )
+            env_map = load_env_file(env_path)
+            self.assertEqual(env_map["OPENAI_API_KEY"], "test-key")
+            self.assertEqual(env_map["TAU_MODEL_PROVIDER"], "openai")
+            self.assertEqual(env_map["QUOTED_VALUE"], "hello world")
+            self.assertEqual(env_map["SINGLE_QUOTED"], "value")
+
+    def test_execute_command_plan_subprocess_accepts_env_overrides(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            output_path = tmp_path / "env_out.txt"
+            plan = {
+                "benchmark_name": "fixture",
+                "manifest": {
+                    "replay": [
+                        {
+                            "task_id": "env-check",
+                            "title": "env-check",
+                        }
+                    ],
+                    "adapt": [],
+                    "heldout": [],
+                    "drift": [],
+                },
+                "commands": {
+                    "replay": [
+                        [
+                            sys.executable,
+                            "-c",
+                            (
+                                "import os, pathlib; "
+                                f"pathlib.Path(r'{output_path}').write_text(os.environ['SIP_TEST_ENV'], encoding='utf-8')"
+                            ),
+                        ]
+                    ],
+                    "adapt": [],
+                    "heldout": [],
+                    "drift": [],
+                },
+            }
+            plan_path = tmp_path / "plan.json"
+            plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+            report_path = tmp_path / "env_report.json"
+            report = execute_command_plan(
+                plan_source=plan_path,
+                out=report_path,
+                mode="subprocess",
+                env_overrides={"SIP_TEST_ENV": "from-override"},
+            )
+            self.assertEqual(report["summary"]["status_counts"]["success"], 1)
+            self.assertEqual(output_path.read_text(encoding="utf-8"), "from-override")
 
 
 if __name__ == "__main__":

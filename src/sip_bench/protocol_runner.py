@@ -13,6 +13,7 @@ from sip_bench.runner import (
     hydrate_skillsbench_checkout,
     import_skillsbench_job,
     import_tau_results,
+    load_env_file,
     tau_bench_preflight,
     write_json,
 )
@@ -113,11 +114,17 @@ def run_tau_bench_suite(
     suite_root.mkdir(parents=True, exist_ok=True)
 
     execution_defaults = config["execution"]
+    suite_env_overrides = _resolve_suite_env(
+        base_dir=base_dir,
+        repo_root=repo_root,
+        env_file_value=execution_defaults.get("env_file"),
+    )
     preflight_report = tau_bench_preflight(
         repo_root=repo_root,
         python_bin=_resolve_command_value(base_dir, execution_defaults.get("python_bin", "python")),
         model_provider=execution_defaults["model_provider"],
         user_model_provider=execution_defaults["user_model_provider"],
+        env_overrides=suite_env_overrides,
     )
     write_json(suite_root / "preflight.json", preflight_report)
 
@@ -542,6 +549,11 @@ def _run_tau_spec(
     few_shot_displays_path = _resolve_path(base_dir, few_shot_displays_value) if few_shot_displays_value else None
     extra_args = [*execution_defaults.get("extra_args", []), *run_spec.get("extra_args", [])]
     source_result_value = run_spec.get("source_result_file")
+    env_overrides = _resolve_suite_env(
+        base_dir=base_dir,
+        repo_root=repo_root,
+        env_file_value=run_spec.get("env_file", execution_defaults.get("env_file")),
+    )
 
     split_task_ids: dict[str, list[int]] = {name: [] for name in DEFAULT_SPLITS}
     split_task_ids[split_name] = [int(task_id) for task_id in run_spec["task_ids"]]
@@ -557,6 +569,7 @@ def _run_tau_spec(
         python_bin=python_bin,
         model_provider=model_provider,
         user_model_provider=user_model_provider,
+        env_overrides=env_overrides,
     )
     write_json(preflight_path, run_preflight)
 
@@ -612,6 +625,7 @@ def _run_tau_spec(
             split=split_name,
             mode=execute_mode,
             cwd=repo_root,
+            env_overrides=env_overrides,
         )
         result_file = _resolve_tau_result_file(run_log_dir=run_log_dir, before_files=before_files)
         imported_runs = import_tau_results(
@@ -651,6 +665,7 @@ def _run_tau_spec(
         "run_log_dir": str(run_log_dir),
         "task_ids": list(split_task_ids[split_name]),
         "preflight_path": str(preflight_path),
+        "env_override_keys": sorted(env_overrides.keys()),
         "preflight_ready": run_preflight["ready"],
         "execution_mode": execution_mode_value,
         "execution_summary": execution_summary,
@@ -830,6 +845,30 @@ def _resolve_command_value(base_dir: Path, command_value: str) -> str:
     ):
         return str(_resolve_path(base_dir, command_value))
     return command_value
+
+
+def _resolve_suite_env(
+    *,
+    base_dir: Path,
+    repo_root: Path,
+    env_file_value: str | None,
+) -> dict[str, str]:
+    candidate_paths: list[Path] = []
+    if env_file_value:
+        candidate_paths.append(_resolve_path(base_dir, env_file_value))
+    else:
+        candidate_paths.extend(
+            [
+                base_dir / ".env.local",
+                base_dir / ".env",
+                repo_root / ".env.local",
+                repo_root / ".env",
+            ]
+        )
+    for candidate in candidate_paths:
+        if candidate.exists():
+            return load_env_file(candidate)
+    return {}
 
 
 def _merge_task_preparation(

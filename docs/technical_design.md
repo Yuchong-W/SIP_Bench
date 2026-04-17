@@ -496,3 +496,37 @@ Engineering implication:
 
 1. `tau-bench` protocol integration is ready for real execution once one provider credential is supplied
 2. the next failure to expect is benchmark/runtime behavior, not environment bootstrap
+
+## Update: tau-bench Protocol-Level Env Resolution
+
+`tau-bench` no longer depends on ad-hoc shell exports for provider credentials.
+
+Implemented path:
+
+1. suite schema now supports `env_file` at both `execution` and per-run level
+2. the runner loads dotenv-style `KEY=VALUE` files without external dependencies
+3. the same resolved env overrides are applied to both preflight and real subprocess execution
+4. `execute_command_plan` now accepts explicit `env_overrides` and records only the override keys, not secret values
+
+Resolution order:
+
+1. run-level `env_file`
+2. suite-level `execution.env_file`
+3. config-directory `.env.local`
+4. config-directory `.env`
+5. benchmark repo `.env.local`
+6. benchmark repo `.env`
+7. inherited shell environment
+
+Why this was needed:
+
+1. VSCode or local tooling can have working provider setup that is invisible to a new shell launched for protocol execution
+2. relying only on shell exports makes smoke runs non-reproducible and hard to hand off
+3. benchmark execution should be config-driven, including secret-source resolution, even if secret values themselves are never committed
+
+Current verified behavior:
+
+1. unit coverage now includes dotenv parsing and subprocess env injection
+2. `run_tau_bench_suite(...)` passes resolved env overrides into preflight
+3. `protocol/.env.local` is now the recommended gitignored local credential location, with `protocol/tau_openai.env.example` as the checked-in template
+4. Windows UTF-8 env files with BOM are handled via `utf-8-sig`, so PowerShell-written local env files resolve correctly

@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -234,6 +235,67 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(len(summary_rows), 1)
             self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
             self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
+
+    @patch("sip_bench.protocol_runner.tau_bench_preflight")
+    def test_run_tau_suite_autodiscovers_local_env_file_for_preflight(self, preflight_mock) -> None:
+        preflight_mock.return_value = {
+            "schema_version": "0.1.0",
+            "action": "tau_bench_preflight",
+            "ready": True,
+            "required_env_vars": ["OPENAI_API_KEY"],
+            "env_status": {"OPENAI_API_KEY": True},
+            "env_override_keys": ["OPENAI_API_KEY"],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            env_path = tmp_path / ".env.local"
+            env_path.write_text("OPENAI_API_KEY=test-key\n", encoding="utf-8")
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "tau-env-suite",
+                "benchmark_name": "tau-bench",
+                "repo_root": str(ROOT / "benchmarks" / "tau-bench"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "python_bin": "python",
+                    "env": "retail",
+                    "task_split": "test",
+                    "model": "gpt-4o-mini",
+                    "model_provider": "openai",
+                    "user_model": "gpt-4o-mini",
+                    "user_model_provider": "openai",
+                    "agent_strategy": "tool-calling",
+                    "user_strategy": "llm",
+                    "num_trials": 1,
+                    "max_concurrency": 1,
+                    "log_dir": str(tmp_path / "tau_logs"),
+                    "path_type": "external",
+                    "agent_version": "tau-env-suite",
+                    "seed": 13,
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": [4],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    }
+                ],
+            }
+            config_path = tmp_path / "tau_env_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_tau_bench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=True,
+            )
+            self.assertTrue(report["runs_validation"]["valid"])
+            first_call = preflight_mock.call_args_list[0]
+            self.assertEqual(first_call.kwargs["env_overrides"]["OPENAI_API_KEY"], "test-key")
+            self.assertEqual(report["runs"][0]["env_override_keys"], ["OPENAI_API_KEY"])
 
     def test_load_protocol_suite_config_rejects_invalid_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

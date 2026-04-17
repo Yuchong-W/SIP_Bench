@@ -543,3 +543,23 @@ Observed result:
 2. Preflight dependency import succeeds.
 3. The only remaining online blocker is `OPENAI_API_KEY` absence.
 4. `tau-bench` is therefore real-test-ready from an engineering standpoint, pending one provider credential.
+
+### tau-bench Env Resolution Hardening
+
+Work completed:
+
+1. Added `env_file` support to the protocol suite schema for both suite-level execution defaults and per-run overrides.
+2. Added dotenv-style env-file loading to the runner without introducing a new dependency.
+3. Threaded resolved env overrides through tau preflight and real subprocess execution.
+4. Added a checked-in template at `protocol\tau_openai.env.example` and gitignored local secret paths under `protocol\`.
+
+Tests run:
+
+1. `python -m unittest discover -s tests -p "test_*.py"`
+
+Observed result:
+
+1. Unit coverage now includes env-file parsing, subprocess env override injection, and tau-suite preflight wiring.
+2. `tau-bench` no longer depends on the launching shell having exported `OPENAI_API_KEY` if a suite-adjacent `.env.local` or explicit `env_file` is present.
+3. The remaining blocker for a true live smoke run is possession of a valid provider key, not discovering that key inside the protocol runner.
+4. Windows-written UTF-8 env files with BOM are now accepted; preflight correctly recognizes `OPENAI_API_KEY` from a temporary probe file written by PowerShell.

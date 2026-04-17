@@ -3,6 +3,10 @@ __pycache__/
 .venv/
 .pydeps311/
 .uv-cache/
+protocol/.env
+protocol/.env.local
+protocol/*.env
+protocol/*.env.local
 results/dryrun/artifacts/
 results/dryrun/pip_probe/
 results/protocol_runs/**/artifacts/

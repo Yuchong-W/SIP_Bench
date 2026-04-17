@@ -33,7 +33,16 @@ Operational notes:
    - `skill_mode = strip|keep`
    - explicit task patch IDs such as `offer_letter_generator_system_docx`
 5. `tau-bench` on this machine should be run through `scripts\tau311.cmd`, not the ambient `python`, because the required packages are intentionally isolated into `.pydeps311`.
-6. The current `tau-bench` online smoke blocker is missing provider credentials, not importability. `OPENAI_API_KEY` is absent, while `scripts\tau311.cmd -c "import tau_bench"` already succeeds.
+6. The current `tau-bench` online smoke blocker is missing provider credentials, not importability. `OPENAI_API_KEY` is absent from the resolved suite environment, while `scripts\tau311.cmd -c "import tau_bench"` already succeeds.
+7. `run_protocol.py` now supports protocol-level env loading for `tau-bench`. Resolution order is:
+   - run-level `env_file`
+   - suite-level `execution.env_file`
+   - `protocol/.env.local`
+   - `protocol/.env`
+   - `<repo_root>/.env.local`
+   - `<repo_root>/.env`
+   - current shell environment
+8. The recommended local secret path is `protocol/.env.local`, which is gitignored. A checked-in template lives at `protocol/tau_openai.env.example`.
 
 Planned next:
 

@@ -213,3 +213,16 @@ Why:
 2. user-site installs failed with `WinError 5` under `C:\Users\22793\AppData\Roaming\Python`
 3. a repo-local overlay keeps the runtime reproducible and visible inside the benchmark workspace
 4. once imports are isolated, online smoke failures can be attributed cleanly to missing provider credentials rather than to Python environment drift
+
+### D017
+
+Decision:
+
+Provider credentials for `tau-bench` should be resolved at the protocol layer from explicit env files or local `.env` discovery, not only from the parent shell environment.
+
+Why:
+
+1. shell-export-only credentials make real smoke runs non-reproducible across terminals and editors
+2. benchmark execution should be fully config-driven except for the secret values themselves
+3. applying the same resolved env to both preflight and execution removes a class of false-negative setup failures
+4. a gitignored `protocol/.env.local` gives a stable local convention without leaking secrets into the repository

@@ -132,7 +132,23 @@ Current verified state:
 1. `scripts\tau311.cmd -c "import openai, litellm, tenacity"` succeeds
 2. `scripts\tau311.cmd -c "import tau_bench"` succeeds
 3. `protocol/tau_bench_retail_historical_suite.json` executes end-to-end and generates a valid `summary.jsonl`
-4. `protocol/tau_bench_retail_openai_smoke_suite.json` now fails fast in preflight only because `OPENAI_API_KEY` is not set
+4. `protocol/tau_bench_retail_openai_smoke_suite.json` now fails fast in preflight only because `OPENAI_API_KEY` is not set in the resolved suite environment
+
+`tau-bench` credential resolution order is now:
+
+1. run-level `env_file`
+2. suite-level `execution.env_file`
+3. auto-discovered `protocol/.env.local`
+4. auto-discovered `protocol/.env`
+5. auto-discovered `<repo_root>/.env.local`
+6. auto-discovered `<repo_root>/.env`
+7. current shell environment
+
+The recommended local path is:
+
+1. copy [protocol/tau_openai.env.example](E:\Protocal_Bench\protocol\tau_openai.env.example) to `protocol/.env.local`
+2. put `OPENAI_API_KEY=...` in that file
+3. rerun `python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_openai_smoke_suite.json --mode subprocess`
 
 ## First Commands
 

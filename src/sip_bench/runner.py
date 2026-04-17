@@ -202,8 +202,10 @@ def tau_bench_preflight(
     python_bin: str = "python",
     model_provider: str,
     user_model_provider: str,
+    env_overrides: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     repo_path = Path(repo_root)
+    resolved_env = _merge_env(env_overrides)
     dependency_command = [
         python_bin,
         "-c",
@@ -218,6 +220,7 @@ def tau_bench_preflight(
         capture_output=True,
         text=True,
         check=False,
+        env=resolved_env,
     )
     required_env_vars = sorted(
         {
@@ -229,12 +232,13 @@ def tau_bench_preflight(
             if env_var is not None
         }
     )
-    env_status = {env_var: bool(os.environ.get(env_var)) for env_var in required_env_vars}
+    env_status = {env_var: bool(resolved_env.get(env_var)) for env_var in required_env_vars}
     return {
         "schema_version": "0.1.0",
         "action": "tau_bench_preflight",
         "repo_root": str(repo_path),
         "python_bin": python_bin,
+        "env_override_keys": sorted(env_overrides.keys()) if env_overrides else [],
         "dependency_command": dependency_command,
         "dependency_returncode": dependency_check.returncode,
         "dependency_stdout": dependency_check.stdout,
@@ -342,6 +346,7 @@ def execute_command_plan(
     fail_fast: bool = False,
     cwd: str | Path | None = None,
     max_tasks: int | None = None,
+    env_overrides: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     if mode not in {"mock", "subprocess"}:
         raise ValueError(f"Unsupported mode: {mode}")
@@ -351,6 +356,7 @@ def execute_command_plan(
     output_path = Path(out)
     artifacts_root = Path(artifacts_dir) if artifacts_dir else output_path.parent / "artifacts"
     execution_root = Path(cwd) if cwd else None
+    resolved_env = _merge_env(env_overrides)
 
     records: list[dict[str, Any]] = []
     executed = 0
@@ -375,6 +381,7 @@ def execute_command_plan(
                 mode=mode,
                 artifacts_root=artifacts_root,
                 cwd=execution_root,
+                env=resolved_env,
             )
             records.append(record)
             executed += 1
@@ -392,6 +399,7 @@ def execute_command_plan(
         "split": split,
         "cwd": str(execution_root) if execution_root else None,
         "artifacts_dir": str(artifacts_root),
+        "env_override_keys": sorted(env_overrides.keys()) if env_overrides else [],
         "summary": _summarize_execution(records, halted=halted),
         "records": records,
         "generated_at": _now_utc(),
@@ -440,6 +448,7 @@ def _execute_one(
     mode: str,
     artifacts_root: Path,
     cwd: Path | None,
+    env: dict[str, str] | None,
 ) -> dict[str, Any]:
     task_stub = _safe_slug(task["task_id"])
     task_dir = artifacts_root / split_name / f"{index:03d}_{task_stub}"
@@ -480,6 +489,7 @@ def _execute_one(
             capture_output=True,
             text=False,
             check=False,
+            env=env,
         )
         stdout_text = completed.stdout.decode("utf-8", errors="replace") if completed.stdout is not None else ""
         stderr_text = completed.stderr.decode("utf-8", errors="replace") if completed.stderr is not None else ""
@@ -560,6 +570,35 @@ def _provider_env_var(provider: str | None) -> str | None:
         "anyscale": "ANYSCALE_API_KEY",
     }
     return mapping.get(normalized)
+
+
+def load_env_file(path: str | Path) -> dict[str, str]:
+    env_path = Path(path)
+    entries: dict[str, str] = {}
+    for raw_line in env_path.read_text(encoding="utf-8-sig").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export ") :].strip()
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key:
+            continue
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+            value = value[1:-1]
+        entries[key] = value
+    return entries
+
+
+def _merge_env(env_overrides: dict[str, str] | None = None) -> dict[str, str]:
+    merged = dict(os.environ)
+    if env_overrides:
+        merged.update(env_overrides)
+    return merged
 
 
 def _resolve_git_revision(repo_root: str | Path | None) -> str | None:

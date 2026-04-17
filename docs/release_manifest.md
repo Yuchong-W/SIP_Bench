@@ -189,9 +189,13 @@ Additional runtime and protocol files now intended for upload:
 1. `scripts/tau311.cmd`
 2. `protocol/tau_bench_retail_historical_suite.json`
 3. `protocol/tau_bench_retail_openai_smoke_suite.json`
+4. `protocol/tau_openai.env.example`
 
 Additional local-only exclusions:
 
 1. `.pydeps311/`
 2. `results/dryrun/pip_probe/`
 3. transient tau smoke preflight outputs under `results/protocol_runs/tau_bench_retail_openai_smoke_suite/`
+4. `protocol/.env`
+5. `protocol/.env.local`
+6. `protocol/*.env.local`

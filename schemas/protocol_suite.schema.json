@@ -67,6 +67,10 @@
           "type": "string",
           "minLength": 1
         },
+        "env_file": {
+          "type": "string",
+          "minLength": 1
+        },
         "env": {
           "type": "string",
           "enum": [
@@ -267,6 +271,10 @@
             }
           },
           "python_bin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "env_file": {
             "type": "string",
             "minLength": 1
           },
