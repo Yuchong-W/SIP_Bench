@@ -20,6 +20,26 @@ Most agent benchmarks report a score for one run on one split. `SIP-Bench` inste
 
 The project is best understood as research infrastructure for measuring self-improvement, not as another benchmark wrapper and not as a new benchmark environment.
 
+## Protocol At A Glance
+
+```mermaid
+flowchart LR
+    A[T0 initial agent] --> B[Replay tasks]
+    A --> C[Held-out tasks]
+    B --> D[T1 post-adaptation agent]
+    C --> D
+    D --> E[Replay evaluation]
+    D --> F[Held-out evaluation]
+    D --> G[Optional drift or delayed T2 evaluation]
+    E --> H[BR and BR_ratio]
+    F --> I[FG]
+    H --> J[Protocol summary]
+    I --> J
+    G --> K[PDS]
+    K --> J
+    J --> L[IE and NIS with cost fields]
+```
+
 ## Current Release Direction
 
 The current `v0.1` release plan is optimized for a strong open-source launch:
@@ -39,6 +59,7 @@ Milestone and release-tracking docs live here:
 
 1. [docs/milestone_plan_v0_1.md](docs/milestone_plan_v0_1.md)
 2. [docs/release_checklist_v0_1.md](docs/release_checklist_v0_1.md)
+3. [docs/support_matrix_v0_1.md](docs/support_matrix_v0_1.md)
 
 ## Supported Environments
 

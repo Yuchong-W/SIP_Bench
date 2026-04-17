@@ -92,6 +92,7 @@ Engineering docs:
 9. `docs/release_checklist_v0_1.md`
 10. `docs/release_notes_v0_1.md`
 11. `docs/launch_materials_v0_1.md`
+12. `docs/support_matrix_v0_1.md`
 
 Tests and fixtures:
 
