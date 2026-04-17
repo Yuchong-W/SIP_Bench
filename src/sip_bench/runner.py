@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
@@ -206,8 +208,9 @@ def tau_bench_preflight(
 ) -> dict[str, Any]:
     repo_path = Path(repo_root)
     resolved_env = _merge_env(env_overrides)
+    resolved_python_bin = _resolve_python_bin(python_bin)
     dependency_command = [
-        python_bin,
+        resolved_python_bin,
         "-c",
         (
             "import sys; "
@@ -238,6 +241,7 @@ def tau_bench_preflight(
         "action": "tau_bench_preflight",
         "repo_root": str(repo_path),
         "python_bin": python_bin,
+        "resolved_python_bin": resolved_python_bin,
         "env_override_keys": sorted(env_overrides.keys()) if env_overrides else [],
         "dependency_command": dependency_command,
         "dependency_returncode": dependency_check.returncode,
@@ -483,8 +487,9 @@ def _execute_one(
         }
 
     try:
+        resolved_command = _resolve_subprocess_command(command)
         completed = subprocess.run(
-            command,
+            resolved_command,
             cwd=str(cwd) if cwd else None,
             capture_output=True,
             text=False,
@@ -502,6 +507,7 @@ def _execute_one(
             "task_id": task["task_id"],
             "task_title": task["title"],
             "command": command,
+            "resolved_command": resolved_command,
             "mode": mode,
             "status": "success" if completed.returncode == 0 else "failed",
             "exit_code": completed.returncode,
@@ -512,7 +518,7 @@ def _execute_one(
             "stderr_path": str(stderr_path),
             "error": None,
         }
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, PermissionError) as exc:
         stdout_path.write_text("", encoding="utf-8")
         stderr_path.write_text(str(exc), encoding="utf-8")
         finished_at = _now_utc()
@@ -522,6 +528,7 @@ def _execute_one(
             "task_id": task["task_id"],
             "task_title": task["title"],
             "command": command,
+            "resolved_command": _resolve_subprocess_command(command),
             "mode": mode,
             "status": "missing_executable",
             "exit_code": None,
@@ -555,6 +562,34 @@ def _safe_slug(value: str) -> str:
 
 def _now_utc() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _resolve_subprocess_command(command: list[str]) -> list[str]:
+    if not command:
+        return []
+    resolved = list(command)
+    resolved[0] = _resolve_python_bin(resolved[0])
+    return resolved
+
+
+def _resolve_python_bin(python_bin: str) -> str:
+    if python_bin not in {"python", "python3"}:
+        return python_bin
+
+    discovered = shutil.which(python_bin)
+    if discovered and os.access(discovered, os.X_OK):
+        return discovered
+
+    current = sys.executable
+    if current and os.access(current, os.X_OK):
+        return current
+
+    alternate = "python3" if python_bin == "python" else "python"
+    discovered_alternate = shutil.which(alternate)
+    if discovered_alternate and os.access(discovered_alternate, os.X_OK):
+        return discovered_alternate
+
+    return python_bin
 
 
 def _provider_env_var(provider: str | None) -> str | None:

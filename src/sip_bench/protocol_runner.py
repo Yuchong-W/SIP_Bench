@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -697,7 +699,7 @@ def prepare_skillsbench_tasks(
         source_task_path = source_repo_root / task.source_path
         destination_task_path = prepared_root / task.source_path
         if destination_task_path.exists():
-            shutil.rmtree(destination_task_path)
+            _safe_rmtree(destination_task_path)
         destination_task_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(source_task_path, destination_task_path)
 
@@ -914,7 +916,7 @@ def _strip_skills_from_task(task_root: Path) -> list[str]:
     patched_files: list[str] = []
     skills_root = task_root / "environment" / "skills"
     if skills_root.exists():
-        shutil.rmtree(skills_root)
+        _safe_rmtree(skills_root)
         patched_files.append(str(skills_root))
 
     dockerfile_path = task_root / "environment" / "Dockerfile"
@@ -952,3 +954,11 @@ def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list
         dockerfile_path.write_text(dockerfile_text, encoding="utf-8")
         return [str(dockerfile_path)]
     raise ValueError(f"Unsupported task patch: {patch_name}")
+
+
+def _safe_rmtree(path: Path) -> None:
+    def _onerror(func: Any, failed_path: str, exc_info: Any) -> None:
+        os.chmod(failed_path, stat.S_IWRITE)
+        func(failed_path)
+
+    shutil.rmtree(path, onerror=_onerror)
