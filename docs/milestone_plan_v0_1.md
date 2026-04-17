@@ -19,6 +19,16 @@ Locked decisions:
    - `SkillsBench codex external prepared suite`
    - `tau-bench` online smoke or live runs when API access becomes available
 
+## Progress Snapshot
+
+Current snapshot as of `2026-04-17`:
+
+1. `M1 Release Narrative`: complete
+2. `M2 Repository Hygiene`: complete for the repository-facing release path
+3. `M3 Quickstart And Demo`: complete for the current public quickstart and artifact tour
+4. `M4 Release-Grade Validation`: local validation and CI wiring complete, Linux benchmark-machine rerun still pending
+5. `M5 Release Cut`: release notes and launch materials drafted, final tag still pending
+
 ## Why This Release Can Be Novel
 
 The core novelty is not a new task world. The novelty is a reusable longitudinal evaluation protocol for self-improving agents.

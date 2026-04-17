@@ -32,6 +32,7 @@ Current experimental but non-blocking areas:
 4. remote is configured as `origin = git@github.com:Yuchong-W/Protocol_Bench.git`
 5. release branch `main` has been pushed successfully
 6. HTTPS transport is still blocked locally, so future publishing from this machine should prefer SSH
+7. the local working tree is clean after refreshing line-ending-only files through the git index
 
 ## Files Intended For Upload
 

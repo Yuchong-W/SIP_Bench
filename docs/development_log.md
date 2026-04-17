@@ -615,3 +615,16 @@ Observed result:
 
 1. Release validation is now easier to rerun locally and less likely to drift between docs, CI, and the actual release branch.
 2. The repository now has both Git-level and editor-level line-ending policy, which should reduce future formatting churn.
+
+### Working Tree Cleanup
+
+Work completed:
+
+1. Verified that the remaining tracked-file noise after release packaging was line-ending-only, not semantic content drift.
+2. Refreshed those files through the git index instead of rewriting tracked artifacts by hand.
+3. Reached a fully clean working tree again after the release-validation and doc commits were pushed.
+
+Observed result:
+
+1. The release branch is now back to a reviewable baseline with no hidden local dirt.
+2. Future release work can be measured against real changes instead of CRLF-only churn.
