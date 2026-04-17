@@ -10,7 +10,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from sip_bench.protocol_runner import run_skillsbench_suite
+from sip_bench.protocol_runner import run_skillsbench_suite, run_tau_bench_suite
 
 
 def parse_args() -> argparse.Namespace:
@@ -30,6 +30,24 @@ def parse_args() -> argparse.Namespace:
         help="Execution mode for generated plans.",
     )
     skillsbench.add_argument(
+        "--no-aggregate",
+        action="store_true",
+        help="Skip summary aggregation after combined runs are written.",
+    )
+
+    tau_bench = subparsers.add_parser("run-tau-suite")
+    tau_bench.add_argument("--config", required=True, help="Path to the protocol suite config JSON.")
+    tau_bench.add_argument(
+        "--out-root",
+        help="Optional override for the suite output root directory.",
+    )
+    tau_bench.add_argument(
+        "--mode",
+        default="subprocess",
+        choices=("subprocess", "mock"),
+        help="Execution mode for generated plans.",
+    )
+    tau_bench.add_argument(
         "--no-aggregate",
         action="store_true",
         help="Skip summary aggregation after combined runs are written.",
@@ -56,6 +74,28 @@ def main() -> int:
                     "run_count": report["run_count"],
                     "runs_valid": report["runs_validation"]["valid"],
                     "summary": report["summary"],
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "run-tau-suite":
+        report = run_tau_bench_suite(
+            config_path=args.config,
+            out_root=args.out_root,
+            execute_mode=args.mode,
+            aggregate=not args.no_aggregate,
+        )
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "suite_name": report["suite_name"],
+                    "out_root": report["out_root"],
+                    "run_count": report["run_count"],
+                    "runs_valid": report["runs_validation"]["valid"],
+                    "summary": report["summary"],
+                    "preflight_ready": report["preflight"]["ready"],
                 },
                 indent=2,
             )

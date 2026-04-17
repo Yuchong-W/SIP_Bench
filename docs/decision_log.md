@@ -200,3 +200,16 @@ Why:
 2. `T0` frozen-style runs need a clean way to remove benchmark-provided skills without rewriting upstream sources in place
 3. run-local copies make any deviation explicit, reviewable, and disposable
 4. this keeps the protocol runner honest about what was executed while avoiding accidental contamination of the sparse upstream checkout
+
+### D016
+
+Decision:
+
+`tau-bench` should run through a repo-local Python dependency overlay plus wrapper script instead of through user-site or ambient Python installs.
+
+Why:
+
+1. direct `pip install` under the default machine Python path repeatedly produced non-deterministic hangs
+2. user-site installs failed with `WinError 5` under `C:\Users\22793\AppData\Roaming\Python`
+3. a repo-local overlay keeps the runtime reproducible and visible inside the benchmark workspace
+4. once imports are isolated, online smoke failures can be attributed cleanly to missing provider credentials rather than to Python environment drift

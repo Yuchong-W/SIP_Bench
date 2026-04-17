@@ -459,3 +459,87 @@ Observed result:
 2. `offer-letter-generator` fails during Docker build because `python-docx` transitively requires `lxml`, which the container could not resolve from `pip`.
 3. `codex` is reachable through Harbor and does not fail on missing credentials; the first real non-`oracle` failure was `AgentSetupTimeoutError` after `360.0` seconds.
 4. Subsequent Harbor runs also exposed intermittent Docker availability and overlay filesystem instability on this machine, so current blocking risk is runtime stability rather than missing protocol glue.
+
+## 2026-04-17
+
+### tau-bench Protocol Runner Completion
+
+Work completed:
+
+1. Extended `protocol_suite.schema.json` from `SkillsBench`-only to `SkillsBench + tau-bench`.
+2. Added `run_tau_bench_suite(...)` plus explicit tau plan construction in `src\sip_bench\protocol_runner.py`.
+3. Added `run-tau-suite` to `scripts\run_protocol.py`.
+4. Added two tau suite configs:
+   - `protocol\tau_bench_retail_historical_suite.json`
+   - `protocol\tau_bench_retail_openai_smoke_suite.json`
+5. Added protocol-runner regression coverage for tau import-only aggregation and config validation.
+
+Tests run:
+
+1. `python -m unittest discover -s tests -p "test_*.py"`
+2. `python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_historical_suite.json --mode subprocess`
+
+Observed result:
+
+1. The full test suite passed with `32` tests.
+2. The historical tau suite executed end-to-end and generated a valid `summary.jsonl`.
+3. `tau-bench` is now on the same protocol footing as `SkillsBench` for import-only and aggregation flows.
+
+### tau-bench Runtime Isolation
+
+Work completed:
+
+1. Created repo-local dependency overlay directory `.pydeps311`.
+2. Added `scripts\tau311.cmd` to force `py -3.11` plus local `PYTHONPATH` injection.
+3. Re-pointed both tau suite configs to `scripts\tau311.cmd` instead of ambient `python`.
+
+Commands run:
+
+1. `scripts\tau311.cmd -c "import openai, litellm, tenacity; print('core_wrapper_ok')"`
+2. `scripts\tau311.cmd -c "import tau_bench; from litellm import provider_list; print('tau_wrapper_ok', len(provider_list))"`
+
+Observed result:
+
+1. Core OpenAI/LiteLLM imports succeed from the repo-local overlay.
+2. `tau_bench` imports succeed from the wrapper path.
+3. The machine no longer needs a successful global or user-site `pip install` to run tau preflight.
+
+### Package Installation Diagnosis
+
+Work completed:
+
+1. Confirmed that direct HTTPS access from Python works against both `pypi.org` and the Tsinghua mirror.
+2. Confirmed that `pip download` succeeds when cache is disabled.
+3. Identified two separate installation hazards:
+   - hanging `pip` commands when multiple probes share `E:\pip_cache`
+   - `WinError 5` when `pip` attempts to write user-site packages under `C:\Users\22793\AppData\Roaming\Python`
+4. Recovered by avoiding user-site install and using the repo-local overlay instead.
+
+Commands run:
+
+1. `py -3.11 -c "import urllib.request ..."`
+2. `py -3.11 -m pip download --no-deps --retries 0 --timeout 10 -d results\dryrun\pip_probe openai`
+3. targeted installs into `.pydeps311`
+
+Observed result:
+
+1. The problem is not global TLS failure.
+2. The reliable path is: no shared pip cache, no user-site install, local overlay only.
+
+### tau Online Smoke Preflight
+
+Work completed:
+
+1. Ran the online tau smoke suite through the new wrapper-backed protocol path.
+2. Collected both suite-level and per-run preflight reports.
+
+Commands run:
+
+1. `python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_openai_smoke_suite.json --mode subprocess`
+
+Observed result:
+
+1. The command now fails fast instead of hanging in environment bootstrap.
+2. Preflight dependency import succeeds.
+3. The only remaining online blocker is `OPENAI_API_KEY` absence.
+4. `tau-bench` is therefore real-test-ready from an engineering standpoint, pending one provider credential.

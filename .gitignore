@@ -1,8 +1,13 @@
 __pycache__/
 *.pyc
+.venv/
+.pydeps311/
 .uv-cache/
 results/dryrun/artifacts/
+results/dryrun/pip_probe/
 results/protocol_runs/**/artifacts/
+results/protocol_runs/tau_bench_retail_historical_suite/
+results/protocol_runs/tau_bench_retail_openai_smoke_suite/
 results/dryrun/mock_replay.txt
 results/dryrun/mock_heldout.txt
 results/real_jobs*/

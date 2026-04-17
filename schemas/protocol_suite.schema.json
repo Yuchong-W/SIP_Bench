@@ -9,7 +9,6 @@
     "suite_name",
     "benchmark_name",
     "repo_root",
-    "registry_path",
     "out_root",
     "execution",
     "runs"
@@ -25,7 +24,10 @@
     },
     "benchmark_name": {
       "type": "string",
-      "const": "skillsbench"
+      "enum": [
+        "skillsbench",
+        "tau-bench"
+      ]
     },
     "repo_root": {
       "type": "string",
@@ -42,13 +44,6 @@
     "execution": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "agent",
-        "harbor_bin",
-        "jobs_dir",
-        "path_type",
-        "agent_version"
-      ],
       "properties": {
         "agent": {
           "type": "string",
@@ -65,6 +60,72 @@
           "minLength": 1
         },
         "jobs_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "python_bin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "env": {
+          "type": "string",
+          "enum": [
+            "retail",
+            "airline"
+          ]
+        },
+        "task_split": {
+          "type": "string",
+          "enum": [
+            "train",
+            "dev",
+            "test"
+          ]
+        },
+        "model_provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_model_provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent_strategy": {
+          "type": "string",
+          "enum": [
+            "tool-calling",
+            "act",
+            "react",
+            "few-shot"
+          ]
+        },
+        "user_strategy": {
+          "type": "string",
+          "enum": [
+            "human",
+            "llm",
+            "react",
+            "verify",
+            "reflection"
+          ]
+        },
+        "num_trials": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_concurrency": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "log_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "few_shot_displays_path": {
           "type": "string",
           "minLength": 1
         },
@@ -133,8 +194,15 @@
             "type": "array",
             "minItems": 1,
             "items": {
-              "type": "string",
-              "minLength": 1
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
             "uniqueItems": true
           },
@@ -176,6 +244,10 @@
             "type": "string",
             "minLength": 1
           },
+          "source_result_file": {
+            "type": "string",
+            "minLength": 1
+          },
           "agent_version": {
             "type": "string",
             "minLength": 1
@@ -193,6 +265,72 @@
             "items": {
               "type": "string"
             }
+          },
+          "python_bin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "env": {
+            "type": "string",
+            "enum": [
+              "retail",
+              "airline"
+            ]
+          },
+          "task_split": {
+            "type": "string",
+            "enum": [
+              "train",
+              "dev",
+              "test"
+            ]
+          },
+          "model_provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "user_model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "user_model_provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "agent_strategy": {
+            "type": "string",
+            "enum": [
+              "tool-calling",
+              "act",
+              "react",
+              "few-shot"
+            ]
+          },
+          "user_strategy": {
+            "type": "string",
+            "enum": [
+              "human",
+              "llm",
+              "react",
+              "verify",
+              "reflection"
+            ]
+          },
+          "num_trials": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_concurrency": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "log_dir": {
+            "type": "string",
+            "minLength": 1
+          },
+          "few_shot_displays_path": {
+            "type": "string",
+            "minLength": 1
           },
           "task_preparation": {
             "$ref": "#/$defs/taskPreparation"

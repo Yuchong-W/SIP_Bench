@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -173,6 +174,8 @@ def import_tau_results(
     agent_name: str,
     agent_version: str,
     seed: int,
+    benchmark_version: str = "snapshot-cli-v1",
+    task_ids: set[int] | None = None,
 ) -> list[dict[str, Any]]:
     adapter = TauBenchAdapter()
     runs = adapter.parse_result_file(
@@ -186,9 +189,61 @@ def import_tau_results(
         agent_name=agent_name,
         agent_version=agent_version,
         seed=seed,
+        benchmark_version=benchmark_version,
+        task_ids=task_ids,
     )
     write_jsonl(out, runs)
     return runs
+
+
+def tau_bench_preflight(
+    *,
+    repo_root: str | Path,
+    python_bin: str = "python",
+    model_provider: str,
+    user_model_provider: str,
+) -> dict[str, Any]:
+    repo_path = Path(repo_root)
+    dependency_command = [
+        python_bin,
+        "-c",
+        (
+            "import sys; "
+            f"sys.path.insert(0, r'{repo_path}'); "
+            "import litellm; import openai; print('tau_preflight_import_ok')"
+        ),
+    ]
+    dependency_check = subprocess.run(
+        dependency_command,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    required_env_vars = sorted(
+        {
+            env_var
+            for env_var in (
+                _provider_env_var(model_provider),
+                _provider_env_var(user_model_provider),
+            )
+            if env_var is not None
+        }
+    )
+    env_status = {env_var: bool(os.environ.get(env_var)) for env_var in required_env_vars}
+    return {
+        "schema_version": "0.1.0",
+        "action": "tau_bench_preflight",
+        "repo_root": str(repo_path),
+        "python_bin": python_bin,
+        "dependency_command": dependency_command,
+        "dependency_returncode": dependency_check.returncode,
+        "dependency_stdout": dependency_check.stdout,
+        "dependency_stderr": dependency_check.stderr,
+        "required_env_vars": required_env_vars,
+        "env_status": env_status,
+        "ready": dependency_check.returncode == 0 and all(env_status.values()),
+        "generated_at": _now_utc(),
+    }
 
 
 def import_skillsbench_results(
@@ -490,6 +545,21 @@ def _safe_slug(value: str) -> str:
 
 def _now_utc() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _provider_env_var(provider: str | None) -> str | None:
+    if provider is None:
+        return None
+    normalized = provider.lower()
+    mapping = {
+        "openai": "OPENAI_API_KEY",
+        "anthropic": "ANTHROPIC_API_KEY",
+        "google": "GOOGLE_API_KEY",
+        "gemini": "GOOGLE_API_KEY",
+        "mistral": "MISTRAL_API_KEY",
+        "anyscale": "ANYSCALE_API_KEY",
+    }
+    return mapping.get(normalized)
 
 
 def _resolve_git_revision(repo_root: str | Path | None) -> str | None:

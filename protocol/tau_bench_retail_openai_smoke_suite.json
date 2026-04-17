@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "tau-bench-retail-openai-smoke-suite",
+  "benchmark_name": "tau-bench",
+  "repo_root": "../benchmarks/tau-bench",
+  "out_root": "../results/protocol_runs/tau_bench_retail_openai_smoke_suite",
+  "execution": {
+    "python_bin": "../scripts/tau311.cmd",
+    "env": "retail",
+    "task_split": "test",
+    "model": "gpt-4o-mini",
+    "model_provider": "openai",
+    "user_model": "gpt-4o-mini",
+    "user_model_provider": "openai",
+    "agent_strategy": "tool-calling",
+    "user_strategy": "llm",
+    "num_trials": 1,
+    "max_concurrency": 1,
+    "log_dir": "../results/real_tau_runs",
+    "path_type": "external",
+    "agent_version": "tau-openai-smoke-v0",
+    "seed": 10,
+    "extra_args": []
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [0]
+    }
+  ]
+}

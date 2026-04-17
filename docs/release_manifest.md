@@ -43,7 +43,8 @@ CLI and repository docs:
 5. `scripts/run_protocol.py`
 6. `scripts/smoke_adapters.py`
 7. `scripts/validate_records.py`
-8. `.gitignore`
+8. `scripts/tau311.cmd`
+9. `.gitignore`
 
 Engineering docs:
 
@@ -69,6 +70,8 @@ Tests and fixtures:
 10. `tests/fixtures/tau_results_sample.json`
 11. `tests/test_protocol_runner.py`
 12. `protocol/skillsbench_codex_external_prepared_suite.json`
+13. `protocol/tau_bench_retail_historical_suite.json`
+14. `protocol/tau_bench_retail_openai_smoke_suite.json`
 
 Sample outputs:
 
@@ -92,6 +95,9 @@ Sample outputs:
 4. local upstream checkouts under `benchmarks/skillsbench/` and `benchmarks/tau-bench/`
 5. broken local `.git/` residue
 6. `results/prepared_probes/`
+7. `.pydeps311/`
+8. `results/dryrun/pip_probe/`
+9. ad-hoc tau protocol smoke outputs under `results/protocol_runs/tau_bench_retail_openai_smoke_suite/`
 
 
 ## Update 2026-04-15
@@ -175,3 +181,17 @@ Current publication expectation:
 1. push directly from local `main` to `origin/main`
 2. use SSH transport on this machine
 3. do not assume GitHub CLI or PR automation is available locally
+
+## Update 2026-04-17
+
+Additional runtime and protocol files now intended for upload:
+
+1. `scripts/tau311.cmd`
+2. `protocol/tau_bench_retail_historical_suite.json`
+3. `protocol/tau_bench_retail_openai_smoke_suite.json`
+
+Additional local-only exclusions:
+
+1. `.pydeps311/`
+2. `results/dryrun/pip_probe/`
+3. transient tau smoke preflight outputs under `results/protocol_runs/tau_bench_retail_openai_smoke_suite/`

@@ -17,8 +17,10 @@ from sip_bench.protocol_runner import (
     _apply_task_patch,
     _strip_skills_from_dockerfile_text,
     build_skillsbench_explicit_plan,
+    build_tau_explicit_plan,
     load_protocol_suite_config,
     run_skillsbench_suite,
+    run_tau_bench_suite,
 )
 
 
@@ -129,11 +131,149 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
             self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
 
+    def test_build_tau_explicit_plan_preserves_split_assignment(self) -> None:
+        plan = build_tau_explicit_plan(
+            repo_root="benchmarks/tau-bench",
+            env="retail",
+            task_split="test",
+            split_task_ids={
+                "replay": [0],
+                "adapt": [1],
+                "heldout": [2],
+                "drift": [],
+            },
+            model="gpt-4o-mini",
+            model_provider="openai",
+            user_model="gpt-4o-mini",
+            user_model_provider="openai",
+        )
+        self.assertEqual(plan["manifest"]["counts"]["replay"], 1)
+        self.assertEqual(plan["manifest"]["counts"]["heldout"], 1)
+        self.assertEqual(plan["manifest"]["replay"][0]["task_id"], "retail:test:0")
+        self.assertIn("--task-ids", plan["commands"]["replay"][0])
+
+    def test_run_tau_suite_import_only_aggregates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "tau-fixture-suite",
+                "benchmark_name": "tau-bench",
+                "repo_root": str(ROOT / "benchmarks" / "tau-bench"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "python_bin": "python",
+                    "env": "retail",
+                    "task_split": "test",
+                    "model": "gpt-4o-mini",
+                    "model_provider": "openai",
+                    "user_model": "gpt-4o-mini",
+                    "user_model_provider": "openai",
+                    "agent_strategy": "tool-calling",
+                    "user_strategy": "llm",
+                    "num_trials": 1,
+                    "max_concurrency": 1,
+                    "log_dir": str(tmp_path / "tau_logs"),
+                    "path_type": "external",
+                    "agent_version": "tau-fixture-suite",
+                    "seed": 13,
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": [4],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    },
+                    {
+                        "run_name": "t0_heldout",
+                        "phase": "T0",
+                        "benchmark_split": "heldout",
+                        "task_ids": [5],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    },
+                    {
+                        "run_name": "t1_adapt",
+                        "phase": "T1",
+                        "benchmark_split": "adapt",
+                        "task_ids": [4],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    },
+                    {
+                        "run_name": "t1_replay",
+                        "phase": "T1",
+                        "benchmark_split": "replay",
+                        "task_ids": [4],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    },
+                    {
+                        "run_name": "t1_heldout",
+                        "phase": "T1",
+                        "benchmark_split": "heldout",
+                        "task_ids": [5],
+                        "source_result_file": str(ROOT / "tests" / "fixtures" / "tau_results_sample.json"),
+                    },
+                ],
+            }
+            config_path = tmp_path / "tau_fixture_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_tau_bench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=True,
+            )
+            self.assertTrue(report["runs_validation"]["valid"])
+            self.assertTrue(report["summary"]["generated"])
+            combined_runs = load_jsonl(Path(report["combined_runs_path"]))
+            self.assertEqual(len(combined_runs), 5)
+            self.assertTrue(all(run["benchmark_name"] == "tau-bench" for run in combined_runs))
+            summary_rows = load_jsonl(Path(report["summary"]["summary_path"]))
+            self.assertEqual(len(summary_rows), 1)
+            self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
+            self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
+
     def test_load_protocol_suite_config_rejects_invalid_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "bad_suite.json"
             config_path.write_text(
                 json.dumps({"schema_version": "0.1.0", "suite_name": "bad"}, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                load_protocol_suite_config(config_path)
+
+    def test_load_protocol_suite_config_rejects_invalid_tau_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "bad_tau_suite.json"
+            config_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "0.1.0",
+                        "suite_name": "bad-tau",
+                        "benchmark_name": "tau-bench",
+                        "repo_root": "benchmarks/tau-bench",
+                        "out_root": "results/bad",
+                        "execution": {
+                            "env": "retail",
+                            "task_split": "test",
+                            "path_type": "external",
+                            "agent_version": "bad",
+                        },
+                        "runs": [
+                            {
+                                "run_name": "t0_replay",
+                                "phase": "T0",
+                                "benchmark_split": "replay",
+                                "task_ids": [0],
+                            }
+                        ],
+                    },
+                    indent=2,
+                )
+                + "\n",
                 encoding="utf-8",
             )
             with self.assertRaises(ValueError):

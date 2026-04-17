@@ -64,16 +64,18 @@ class TauBenchAdapter(BenchmarkAdapter):
         model_provider: str,
         user_model: str,
         user_model_provider: str,
+        python_bin: str = "python",
         agent_strategy: str = "tool-calling",
         user_strategy: str = "llm",
         num_trials: int = 1,
         max_concurrency: int = 1,
         seed: int = 10,
         log_dir: str = "results",
+        few_shot_displays_path: str | None = None,
         extra_args: list[str] | None = None,
     ) -> list[str]:
         command = [
-            "python",
+            python_bin,
             str(Path(repo_root) / "run.py"),
             "--agent-strategy",
             agent_strategy,
@@ -103,6 +105,8 @@ class TauBenchAdapter(BenchmarkAdapter):
         if task_ids:
             command.append("--task-ids")
             command.extend(str(task_id) for task_id in task_ids)
+        if few_shot_displays_path:
+            command.extend(["--few-shot-displays-path", few_shot_displays_path])
         if extra_args:
             command.extend(extra_args)
         return command
@@ -120,19 +124,24 @@ class TauBenchAdapter(BenchmarkAdapter):
         agent_name: str,
         agent_version: str,
         seed: int,
+        benchmark_version: str = "snapshot-cli-v1",
+        task_ids: set[int] | None = None,
     ) -> list[dict[str, Any]]:
         payload = json.loads(Path(source).read_text(encoding="utf-8"))
         runs: list[dict[str, Any]] = []
         for attempt_index, item in enumerate(payload):
             reward = float(item["reward"])
             task_id = int(item["task_id"])
+            if task_ids is not None and task_id not in task_ids:
+                continue
+            info = item.get("info", {})
             run_id = f"tau::{env}::{task_split}::{phase}::{seed}::{task_id}::{attempt_index}"
             runs.append(
                 {
                     "schema_version": "0.1.0",
                     "run_id": run_id,
                     "benchmark_name": self.benchmark_name,
-                    "benchmark_version": "snapshot-cli-v1",
+                    "benchmark_version": benchmark_version,
                     "benchmark_split": benchmark_split,
                     "phase": phase,
                     "path_type": path_type,
@@ -150,7 +159,7 @@ class TauBenchAdapter(BenchmarkAdapter):
                     "memory_reads": 0,
                     "memory_writes": 0,
                     "wall_clock_seconds": 0.0,
-                    "cost_usd": 0.0,
+                    "cost_usd": float(info.get("user_cost", 0.0) or 0.0),
                     "human_interventions": 0,
                     "seed": seed,
                     "started_at": "1970-01-01T00:00:00Z",
@@ -158,7 +167,7 @@ class TauBenchAdapter(BenchmarkAdapter):
                     "metadata": {
                         "env": env,
                         "task_split": task_split,
-                        "raw_info": item.get("info", {}),
+                        "raw_info": info,
                         "traj_length": len(item.get("traj", [])),
                         "trial": item.get("trial"),
                     },

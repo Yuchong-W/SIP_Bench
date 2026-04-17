@@ -152,6 +152,7 @@ Current upstream assumptions:
 2. result file is a JSON array of upstream `EnvRunResult`
 3. reward can be normalized directly into SIP `score`
 4. upstream `task_split` must stay in metadata, while SIP `benchmark_split` must be passed explicitly by the caller
+5. real runtime on this machine should use a wrapper that injects repo-local dependencies rather than relying on the ambient Python installation
 
 ## Runner Layer
 
@@ -169,6 +170,8 @@ Converts upstream tau results to SIP runs.
 Converts SkillsBench trajectories or evaluation rows to SIP runs.
 4. `execute_command_plan`
 Executes or mock-executes plan commands and produces an execution report.
+5. `tau_bench_preflight`
+Checks local importability plus required provider environment variables before any online tau run is attempted.
 
 Execution modes:
 
@@ -444,3 +447,52 @@ Engineering implication:
 1. non-`oracle` execution is now a runtime-stability problem, not a missing-integration problem
 2. timeout policy must remain a first-class suite config input
 3. a prepared external-path suite can now be expressed cleanly even if this machine still needs Docker stabilization for consistent completion
+
+## Update: tau-bench Local Runtime Overlay
+
+`tau-bench` no longer depends on the ambient Windows Python environment on this machine.
+
+Implemented path:
+
+1. repo-local dependency overlay: `.pydeps311`
+2. local wrapper: `scripts\tau311.cmd`
+3. upstream checkout on `PYTHONPATH`: `benchmarks\tau-bench`
+4. interpreter: `py -3.11`
+
+Why this was needed:
+
+1. direct `pip install` under the default Anaconda-backed `python` path repeatedly hung or failed
+2. user-site installs eventually failed with `WinError 5` under `C:\Users\22793\AppData\Roaming\Python`
+3. mixing `Anaconda`, `py -3.11`, `uv`, and Harbor runtimes made global dependency debugging noisy and non-reproducible
+
+Current verified behavior:
+
+1. `scripts\tau311.cmd -c "import openai, litellm, tenacity"` succeeds
+2. `scripts\tau311.cmd -c "import tau_bench"` succeeds
+3. the protocol preflight now verifies dependency importability independently from provider credentials
+
+Engineering implication:
+
+1. future `tau-bench` execution on this machine should go through `scripts\tau311.cmd`
+2. local dependency overlays are a safer default than user-site installs for single-researcher benchmark workspaces
+
+## Update: tau-bench Protocol Status
+
+`tau-bench` now has a protocol path that is operationally distinct from its provider-credential path.
+
+Current status:
+
+1. historical import suite: `protocol/tau_bench_retail_historical_suite.json`
+2. online smoke suite: `protocol/tau_bench_retail_openai_smoke_suite.json`
+3. suite runner command: `python scripts\run_protocol.py run-tau-suite --config <suite>`
+
+Observed results:
+
+1. the historical suite executes end-to-end and generates a valid `summary.jsonl`
+2. the online smoke suite now fails fast in preflight rather than hanging in package installation
+3. the remaining online blocker is `OPENAI_API_KEY` absence, not dependency import failure
+
+Engineering implication:
+
+1. `tau-bench` protocol integration is ready for real execution once one provider credential is supplied
+2. the next failure to expect is benchmark/runtime behavior, not environment bootstrap

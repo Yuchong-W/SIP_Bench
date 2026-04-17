@@ -58,6 +58,8 @@ This repository is now beyond pure scaffold status. The protocol, schemas, metri
 
 The first real multi-run protocol suite has already executed end-to-end and produced a valid `combined_runs.jsonl` plus `summary.jsonl` under `results/protocol_runs/skillsbench_oracle_real_suite/`.
 
+`tau-bench` now also has a config-driven suite runner plus a local runtime wrapper. The supported path on this machine is `scripts\tau311.cmd`, which injects the repo-local dependency overlay `.pydeps311` and the local `benchmarks\tau-bench` checkout into `PYTHONPATH` before delegating to `py -3.11`. With that wrapper, `tau-bench` imports succeed locally and the remaining online smoke blocker is an absent `OPENAI_API_KEY`, not a broken Python environment.
+
 ## Real SkillsBench Flow
 
 The current single-run real SkillsBench smoke path is:
@@ -117,6 +119,21 @@ The first config using this preparation layer is:
 
 This config is the first non-`oracle` candidate suite. It uses `codex`, explicit timeout multipliers, copied prepared tasks, stripped-skill `T0`, and kept-skill `T1`.
 
+## tau-bench Runtime Path
+
+The supported `tau-bench` runtime path on this machine is:
+
+1. `scripts\tau311.cmd`
+2. repo-local dependency overlay `.pydeps311`
+3. local upstream checkout `benchmarks\tau-bench`
+
+Current verified state:
+
+1. `scripts\tau311.cmd -c "import openai, litellm, tenacity"` succeeds
+2. `scripts\tau311.cmd -c "import tau_bench"` succeeds
+3. `protocol/tau_bench_retail_historical_suite.json` executes end-to-end and generates a valid `summary.jsonl`
+4. `protocol/tau_bench_retail_openai_smoke_suite.json` now fails fast in preflight only because `OPENAI_API_KEY` is not set
+
 ## First Commands
 
 ```powershell
@@ -129,5 +146,7 @@ python scripts\run_eval.py execute-plan --plan results\dryrun\skillsbench_plan.j
 python scripts\run_eval.py import-skillsbench-job --job-dir tests\fixtures\skillsbench_harbor_job_sample --out results\dryrun\skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests\fixtures\skillsbench_registry_sample.json --agent-version job-fixture-import --benchmark-version skillsbench-harbor-fixture
 python scripts\validate_records.py --data results\dryrun\skillsbench_job_runs.jsonl --schema runs
 python scripts\run_protocol.py run-skillsbench-suite --config protocol\skillsbench_oracle_real_suite.json --mode subprocess
+python scripts\run_protocol.py run-tau-suite --config protocol\tau_bench_retail_historical_suite.json --mode subprocess
+scripts\tau311.cmd -c "import openai, litellm, tau_bench; print('tau_runtime_ok')"
 python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('src').resolve())); from sip_bench.protocol_runner import load_protocol_suite_config; cfg = load_protocol_suite_config('protocol/skillsbench_codex_external_prepared_suite.json'); print(cfg['suite_name'], len(cfg['runs']))"
 ```
