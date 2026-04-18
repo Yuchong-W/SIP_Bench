@@ -61,6 +61,27 @@ The current `v0.1.0` release is anchored on:
 
 These were chosen because they are reproducible within the current public release posture and do not require `codex` connectivity or private provider credentials.
 
+## Minimal Proof Of Value
+
+`v0.1.0` is not meant to ship with only "the pipeline runs" evidence.
+The smallest tracked proof of value in this release is [results/dryrun/summary.jsonl](../results/dryrun/summary.jsonl), derived from [results/dryrun/sample_runs.jsonl](../results/dryrun/sample_runs.jsonl).
+
+| Protocol view | Value | Why it matters |
+| --- | --- | --- |
+| Held-out mean `T0 -> T1` | `0.250 -> 0.425` | Improvement on new tasks is real |
+| Replay mean `T0 -> T1` | `0.600 -> 0.525` | The same adaptation hurts replay retention |
+| Held-out mean `T1 -> T2` | `0.425 -> 0.405` | Improvement is not perfectly stable over time |
+| Adapt cost mean | `75` tokens, `2` tool calls, `4.0s` | The gain is tied to explicit cost |
+| Derived metrics | `FG = +0.175`, `BR = -0.075`, `PDS = -0.020`, `IE = 0.0025` | The protocol makes the tradeoff legible instead of implicit |
+
+If this release only reported the post-adaptation held-out mean of `0.425`, the story would be "the agent improved."
+The protocol view is more honest: the agent improved on held-out tasks, gave back some replay performance, softened slightly by `T2`, and spent measurable budget to do it.
+
+That is the intended `v0.1.0` value proposition:
+
+1. not only validating benchmark plumbing
+2. also showing a concrete case where protocol structure reveals more than a single leaderboard number
+
 ## Experimental But Non-Blocking
 
 The following paths are present in the repository but are not release blockers:

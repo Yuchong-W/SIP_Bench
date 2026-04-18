@@ -41,6 +41,10 @@ This checklist is for the first public open-source release. It assumes:
 
 - [x] `SkillsBench oracle real suite` artifacts are present and valid.
 - [x] `tau-bench historical suite` artifacts are present and valid.
+- [x] The release includes one compact proof-of-value result:
+  - [x] table, figure, or similarly compact artifact
+  - [x] grounded in tracked artifacts or an explicitly documented small run
+  - [x] showing what SIP-Bench reveals beyond a single-shot benchmark score
 - [ ] Experimental `codex` prepared-suite outputs are either:
   - [x] intentionally excluded from release, or
   - [ ] intentionally validated and documented

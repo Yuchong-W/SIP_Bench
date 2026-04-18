@@ -134,12 +134,31 @@ Tracked example outputs and configs:
 
 1. Real `SkillsBench` suite report: [results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json](results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json)
 2. Real `SkillsBench` summary: [results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl](results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl)
-3. Successful `SkillsBench` smoke import: [results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl](results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl)
-4. Sample `tau-bench` imported runs: [results/dryrun/tau_runs.jsonl](results/dryrun/tau_runs.jsonl)
-5. Real `SkillsBench` suite config: [protocol/skillsbench_oracle_real_suite.json](protocol/skillsbench_oracle_real_suite.json)
-6. Experimental prepared-suite config: [protocol/skillsbench_codex_external_prepared_suite.json](protocol/skillsbench_codex_external_prepared_suite.json)
-7. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
-8. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
+3. Tracked sample summary with non-trivial `FG/BR/PDS/IE`: [results/dryrun/summary.jsonl](results/dryrun/summary.jsonl)
+4. Successful `SkillsBench` smoke import: [results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl](results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl)
+5. Sample `tau-bench` imported runs: [results/dryrun/tau_runs.jsonl](results/dryrun/tau_runs.jsonl)
+6. Real `SkillsBench` suite config: [protocol/skillsbench_oracle_real_suite.json](protocol/skillsbench_oracle_real_suite.json)
+7. Experimental prepared-suite config: [protocol/skillsbench_codex_external_prepared_suite.json](protocol/skillsbench_codex_external_prepared_suite.json)
+8. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
+9. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
+
+## Minimal Value Proof
+
+The smallest tracked proof that `SIP-Bench` adds value beyond a single-shot score is [results/dryrun/summary.jsonl](results/dryrun/summary.jsonl), which is derived from [results/dryrun/sample_runs.jsonl](results/dryrun/sample_runs.jsonl).
+
+It intentionally shows a case where adaptation helps held-out tasks but slightly hurts replay performance and slips again at `T2`.
+
+| Protocol view | Value | Why a plain score would miss it |
+| --- | --- | --- |
+| Held-out mean `T0 -> T1` | `0.250 -> 0.425` | Looks like a clean improvement on new tasks |
+| Replay mean `T0 -> T1` | `0.600 -> 0.525` | Shows retention loss that the held-out gain hides |
+| Held-out mean `T1 -> T2` | `0.425 -> 0.405` | Shows post-improvement slippage instead of one stable final score |
+| Adapt cost mean | `75` tokens, `2` tool calls, `4.0s` | Makes the gain costed instead of free |
+| Derived protocol metrics | `FG = +0.175`, `BR = -0.075`, `PDS = -0.020`, `IE = 0.0025` | Summarizes the tradeoff directly instead of leaving it implicit |
+
+A plain post-adaptation score of `0.425` on held-out tasks would suggest "the agent improved." The protocol view is stricter: yes, held-out performance improved, but replay performance regressed, the gain softened by `T2`, and the improvement had an explicit interaction cost. That is the core reason `SIP-Bench` exists.
+
+The real `SkillsBench oracle` suite remains the release-critical evidence that the protocol works on a live benchmark path. The dry-run summary above is the compact release-facing example that shows why the protocol is useful.
 
 ## Real Benchmark Paths
 

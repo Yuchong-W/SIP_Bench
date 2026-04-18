@@ -21,13 +21,13 @@ Locked decisions:
 
 ## Progress Snapshot
 
-Current snapshot as of `2026-04-17`:
+Current snapshot as of `2026-04-18`:
 
 1. `M1 Release Narrative`: complete
 2. `M2 Repository Hygiene`: complete for the repository-facing release path
-3. `M3 Quickstart And Demo`: complete for the current public quickstart and artifact tour
-4. `M4 Release-Grade Validation`: local validation and CI wiring complete, Linux benchmark-machine rerun still pending
-5. `M5 Release Cut`: release notes and launch materials drafted, final tag still pending
+3. `M3 Quickstart And Demo`: complete for the current public quickstart, artifact tour, and compact proof-of-value writeup
+4. `M4 Release-Grade Validation`: local validation, tracked real-suite validation, and minimal proof-of-value example are in place; fresh-clone rerun and CI confirmation still pending
+5. `M5 Release Cut`: release notes and launch materials are drafted and now include the compact value-proof narrative; final tag and release publication still pending
 
 ## Why This Release Can Be Novel
 
@@ -49,6 +49,28 @@ By `v0.1.0`, the repository should satisfy all of the following:
 3. A researcher can inspect real example artifacts for both `SkillsBench` and `tau-bench`.
 4. The repository contains the legal and engineering files expected from a serious open-source project.
 5. The published claims match what has actually been executed and stored in versioned artifacts.
+6. The release includes at least one compact example that shows why the protocol is useful beyond a single-shot benchmark score.
+
+## Minimum Value Proof For v0.1
+
+`v0.1.0` should not ship with only "the pipeline runs" evidence.
+It should also ship with one small but concrete proof that the protocol adds value.
+
+The minimum acceptable form is:
+
+1. one compact table or figure, typically `3` to `6` rows
+2. one short explanatory passage in the README, release notes, or both
+3. evidence derived from tracked artifacts or a clearly described small targeted run
+
+That proof may emphasize either or both of:
+
+1. engineering value:
+   - retries, failures, and attempt provenance are visible instead of being silently collapsed into one final score
+2. research value:
+   - `FG`, `BR`, `IE`, or related protocol fields reveal something a single-shot leaderboard number would miss
+
+This is intentionally smaller than a paper-ready study.
+`v0.1.0` needs an honest proof-of-value, not a large-scale empirical campaign.
 
 ## Non-Goals For v0.1
 
@@ -120,11 +142,13 @@ Deliverables:
 2. Confirm `SkillsBench oracle real suite` artifacts remain valid.
 3. Confirm `tau-bench historical` protocol artifacts remain valid.
 4. Add minimal CI for tests and schema validation.
+5. Produce one compact proof-of-value result derived from tracked artifacts or a small targeted release-side run.
 
 Exit criteria:
 
 1. The repository has at least one clean validation report on the official support environment.
 2. The release does not depend on access to a closed agent endpoint.
+3. The release can point to one concrete example of protocol value, not only protocol correctness.
 
 ### M5: Release Cut
 
@@ -137,11 +161,13 @@ Deliverables:
 3. `v0.1.0` changelog or release note
 4. Tag and publish the release
 5. Draft one short launch post and one short research-oriented summary
+6. Integrate the compact proof-of-value example into the release-facing narrative.
 
 Exit criteria:
 
 1. `main` is in a releasable state.
 2. The first public tag can be shared without caveats about repository mess.
+3. A skeptical reader can see at least one concrete reason this protocol is worth using.
 
 ## Deliverable Matrix
 
@@ -155,6 +181,7 @@ Exit criteria:
    - `tau-bench historical suite`
 5. Passing local validation flow on the official support environment
 6. A public release tag and release notes
+7. One small proof-of-value result that demonstrates what SIP-Bench reveals beyond "final score"
 
 ### Strongly Recommended
 
@@ -232,3 +259,4 @@ Mitigation:
 2. Clean up working-tree noise before more features are added.
 3. Rewrite the README around a public user journey rather than an internal lab log.
 4. Prepare a Linux validation pass for the final release branch.
+5. Draft the smallest credible value-proof table and explanatory note for the release surface.

@@ -12,7 +12,7 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 
 ## README And Docs Follow-Ups
 
-1. Add a short results table or image derived from tracked artifacts.
+1. Expand the `v0.1` minimal proof-of-value example into a richer results section once more evidence is available.
 2. Consider adding CI and license badges once the release tag is live.
 3. Decide whether a dedicated docs site is worth the maintenance cost after `v0.1`.
 4. Add a short "how to integrate a new benchmark" walkthrough if external interest appears.
@@ -35,6 +35,7 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 1. Keep the paper claim anchored on benchmark or protocol infrastructure unless stronger empirical evidence appears.
 2. Build the paper around `FG`, `BR`, and `IE` tradeoffs instead of a generic "agent got better" narrative.
 3. Treat large-scale matched-budget comparisons as post-release research work, not release hygiene.
+4. Grow the `v0.1` proof-of-value into a multi-environment empirical case, not just a release-facing example.
 
 ## Product And Community
 
