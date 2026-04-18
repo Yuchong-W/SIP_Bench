@@ -172,7 +172,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. populate `docs/results_gallery_post_v0_1.md` with the first filled tables
-2. generate the first two figures from already tracked artifacts
-3. add one positioning note that explains how `SIP-Bench` differs from benchmark-first self-evolution suites
+1. add one positioning note that explains how `SIP-Bench` differs from benchmark-first self-evolution suites
+2. extend `docs/results_gallery_post_v0_1.md` with a dedicated `T0/T1/T2` stability figure
+3. add an attempt-provenance figure once one more repeatable failure-and-recovery run family is tracked
 4. postpone broader benchmark expansion until those repo-hosted assets exist
