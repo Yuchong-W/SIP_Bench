@@ -13,6 +13,18 @@
     "path_type": "oracle",
     "agent_version": "harbor312-oracle-protocol-v0",
     "seed": 0,
+    "task_preparation": {
+      "mode": "copy",
+      "skill_mode": "keep",
+      "patches": {
+        "dialogue-parser": [
+          "dialogue_parser_apt_retry"
+        ],
+        "citation-check": [
+          "citation_check_apt_retry"
+        ]
+      }
+    },
     "retry_policy": {
       "max_attempts": 2,
       "retry_on_execution_statuses": [

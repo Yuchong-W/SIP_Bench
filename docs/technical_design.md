@@ -464,12 +464,21 @@ Current built-in patch set:
 
 1. `offer_letter_generator_system_docx`
 Rewrites `offer-letter-generator` to use `python3-docx` from the system package manager instead of the unstable `pip python-docx` dependency chain observed on this machine.
+2. `dialogue_parser_apt_retry`
+Hardens the `dialogue-parser` Dockerfile with apt retry and timeout flags for the Graphviz system package install.
+3. `citation_check_apt_retry`
+Hardens the `citation-check` Dockerfile with apt retry and timeout flags for the Ubuntu package install step.
 
 Why this exists:
 
 1. several upstream `SkillsBench` tasks currently fail here because transitive `pip` dependencies intermittently resolve as unavailable during Docker build
 2. we need a way to separate protocol logic from machine-local environment noise
 3. preparation happens in a run-local copy and is therefore auditable and reversible
+
+Additional prepared-copy hardening now in place:
+
+1. shell scripts under prepared `SkillsBench` tasks are normalized from CRLF to LF before execution
+2. this avoids Linux false negatives where Harbor reports `required file not found` for existing `*.sh` files with Windows line endings
 
 ## Update: First Non-Oracle Probe
 
@@ -593,6 +602,7 @@ Current verified behavior:
 2. the tracked `SkillsBench oracle` real suite enables a conservative two-attempt policy for timeout-style failures and known apt/network fetch errors
 3. deterministic failures such as the observed `RewardFileNotFoundError` remain non-retriable by default
 4. a real Linux `dialogue-parser` probe triggered a retry from `attempt01` to `attempt02`, with both Harbor jobs imported into valid attempt-level `runs.jsonl` artifacts and the retry reason recorded as `exception_message:e: failed to fetch`
+5. after enabling run-local task preparation with apt hardening and shell normalization, a second real `dialogue-parser` probe completed successfully with `score = 1.0` and no retry
 
 Engineering implication:
 

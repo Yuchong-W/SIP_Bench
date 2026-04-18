@@ -164,6 +164,7 @@ The current multi-run suite runner supports:
 7. aggregated `summary.jsonl`
 
 The current tracked real suite is an orchestration validation suite, not a claim of meaningful self-improvement.
+It now runs through auditable prepared task copies for the release-critical `dialogue-parser` and `citation-check` tasks so Linux validation can harden task-local environment issues without mutating the upstream checkout.
 
 ### tau-bench
 

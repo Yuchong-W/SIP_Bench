@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
 from sip_bench.metrics import load_jsonl
 from sip_bench.protocol_runner import (
     _apply_task_patch,
+    _normalize_shell_scripts,
     _plan_skillsbench_retry,
     _resolve_command_value,
     _strip_skills_from_dockerfile_text,
@@ -586,6 +587,18 @@ class ProtocolRunnerTests(unittest.TestCase):
         self.assertNotIn("ENV PYTHONPATH", updated)
         self.assertIn("COPY file.txt /app/file.txt", updated)
 
+    def test_normalize_shell_scripts_rewrites_crlf_scripts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            task_root = Path(tmpdir) / "tasks" / "dialogue-parser"
+            tests_dir = task_root / "tests"
+            tests_dir.mkdir(parents=True, exist_ok=True)
+            script_path = tests_dir / "test.sh"
+            script_path.write_bytes(b"#!/bin/bash\r\necho ok\r\n")
+
+            patched_files = _normalize_shell_scripts(task_root)
+            self.assertEqual(patched_files, [str(script_path)])
+            self.assertEqual(script_path.read_bytes(), b"#!/bin/bash\necho ok\n")
+
     def test_apply_offer_letter_patch_rewrites_dockerfile(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             task_root = Path(tmpdir) / "tasks" / "offer-letter-generator"
@@ -612,6 +625,62 @@ class ProtocolRunnerTests(unittest.TestCase):
             updated = dockerfile_path.read_text(encoding="utf-8")
             self.assertIn("python3-docx", updated)
             self.assertNotIn("python-docx==1.1.2", updated)
+            self.assertEqual(patched_files, [str(dockerfile_path)])
+
+    def test_apply_dialogue_parser_patch_adds_apt_retry_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            task_root = Path(tmpdir) / "tasks" / "dialogue-parser"
+            dockerfile_path = task_root / "environment" / "Dockerfile"
+            dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
+            dockerfile_path.write_text(
+                "FROM python:3.12.8-slim\n\n"
+                "RUN pip install --no-cache-dir graphviz==0.20.3\n\n"
+                "RUN apt-get update && apt-get install -y graphviz && rm -rf /var/lib/apt/lists/*\n",
+                encoding="utf-8",
+            )
+
+            patched_files = _apply_task_patch(
+                task_id="dialogue-parser",
+                patch_name="dialogue_parser_apt_retry",
+                task_root=task_root,
+            )
+            updated = dockerfile_path.read_text(encoding="utf-8")
+            self.assertIn("Acquire::Retries=5", updated)
+            self.assertIn("Acquire::http::Timeout=30", updated)
+            self.assertIn("Acquire::https::Timeout=30", updated)
+            self.assertIn("--fix-missing", updated)
+            self.assertIn("graphviz", updated)
+            self.assertEqual(patched_files, [str(dockerfile_path)])
+
+    def test_apply_citation_check_patch_adds_apt_retry_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            task_root = Path(tmpdir) / "tasks" / "citation-check"
+            dockerfile_path = task_root / "environment" / "Dockerfile"
+            dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
+            dockerfile_path.write_text(
+                "FROM ubuntu:24.04\n\n"
+                "RUN apt-get update && apt-get install -y \\\n"
+                "    python3 \\\n"
+                "    python3-pip \\\n"
+                "    python3-venv \\\n"
+                "    wget \\\n"
+                "    curl \\\n"
+                "    ca-certificates \\\n"
+                "    && rm -rf /var/lib/apt/lists/*\n",
+                encoding="utf-8",
+            )
+
+            patched_files = _apply_task_patch(
+                task_id="citation-check",
+                patch_name="citation_check_apt_retry",
+                task_root=task_root,
+            )
+            updated = dockerfile_path.read_text(encoding="utf-8")
+            self.assertIn("Acquire::Retries=5", updated)
+            self.assertIn("Acquire::http::Timeout=30", updated)
+            self.assertIn("Acquire::https::Timeout=30", updated)
+            self.assertIn("--fix-missing", updated)
+            self.assertIn("python3-venv", updated)
             self.assertEqual(patched_files, [str(dockerfile_path)])
 
     def _make_single_trial_job_dir(self, job_dir: Path, *, fixture_relative_path: str) -> Path:

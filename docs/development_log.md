@@ -679,3 +679,17 @@ Observed result:
 2. The release-critical `SkillsBench oracle` suite can now distinguish "protocol is fine, infra was flaky once" from deterministic benchmark failures.
 3. `RewardFileNotFoundError` remains outside the default retry set until there is evidence that rerunning the same task reliably fixes it.
 4. A real Linux `dialogue-parser` retry probe executed `attempt01` and `attempt02` Harbor jobs end to end, and both attempts were preserved as valid `runs.jsonl` artifacts with the retry trigger recorded as `exception_message:e: failed to fetch`.
+
+### Hardened Prepared SkillsBench Tasks
+
+Work completed:
+
+1. Added task-preparation patches for `dialogue-parser` and `citation-check` Dockerfiles so prepared copies can harden apt installs with retry and timeout flags.
+2. Normalized prepared `*.sh` files from CRLF to LF during task preparation so Linux Harbor runs do not fail on shell-script line endings copied from upstream task files.
+3. Switched the tracked `SkillsBench oracle` suite to `task_preparation.mode = copy` with explicit patches for the two release-critical tasks.
+
+Observed result:
+
+1. A hardened real `dialogue-parser` Linux probe completed successfully on the first attempt with a valid imported SIP run record and `score = 1.0`.
+2. The previous `RewardFileNotFoundError` on `dialogue-parser` was traced to prepared-copy shell scripts using CRLF line endings; once normalized, the task progressed through environment setup, agent execution, and verifier completion.
+3. A hardened real `citation-check` probe now reaches an explicit retryable Docker build failure under the prepared copy, which narrows the remaining blocker to Ubuntu package index reliability rather than to protocol glue or script execution.

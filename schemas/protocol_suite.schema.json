@@ -379,7 +379,9 @@
             "items": {
               "type": "string",
               "enum": [
-                "offer_letter_generator_system_docx"
+                "offer_letter_generator_system_docx",
+                "dialogue_parser_apt_retry",
+                "citation_check_apt_retry"
               ]
             },
             "uniqueItems": true

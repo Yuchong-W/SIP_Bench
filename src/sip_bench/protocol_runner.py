@@ -787,6 +787,7 @@ def prepare_skillsbench_tasks(
             _safe_rmtree(destination_task_path)
         destination_task_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(source_task_path, destination_task_path)
+        patched_files.extend(_normalize_shell_scripts(destination_task_path))
 
         if skill_mode == "strip":
             stripped_files = _strip_skills_from_task(destination_task_path)
@@ -1159,6 +1160,17 @@ def _strip_skills_from_dockerfile_text(dockerfile_text: str) -> str:
     return "\n".join(filtered_lines).rstrip() + "\n"
 
 
+def _normalize_shell_scripts(task_root: Path) -> list[str]:
+    patched_files: list[str] = []
+    for script_path in sorted(task_root.rglob("*.sh")):
+        original_bytes = script_path.read_bytes()
+        normalized_bytes = original_bytes.replace(b"\r\n", b"\n")
+        if normalized_bytes != original_bytes:
+            script_path.write_bytes(normalized_bytes)
+            patched_files.append(str(script_path))
+    return patched_files
+
+
 def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list[str]:
     if patch_name == "offer_letter_generator_system_docx":
         if task_id != "offer-letter-generator":
@@ -1170,6 +1182,64 @@ def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list
             "RUN apt-get update && apt-get install -y \\\n    python3 \\\n    python3-pip \\\n    python3-docx \\\n    curl \\\n    && rm -rf /var/lib/apt/lists/*\n",
         )
         dockerfile_path.write_text(dockerfile_text, encoding="utf-8")
+        return [str(dockerfile_path)]
+    if patch_name == "dialogue_parser_apt_retry":
+        if task_id != "dialogue-parser":
+            raise ValueError(f"Patch {patch_name} is only valid for dialogue-parser, not {task_id}")
+        dockerfile_path = task_root / "environment" / "Dockerfile"
+        dockerfile_text = dockerfile_path.read_text(encoding="utf-8")
+        updated_text = dockerfile_text.replace(
+            "RUN apt-get update && apt-get install -y graphviz && rm -rf /var/lib/apt/lists/*\n",
+            (
+                "RUN apt-get update -o Acquire::Retries=5 \\\n"
+                "    -o Acquire::http::Timeout=30 \\\n"
+                "    -o Acquire::https::Timeout=30 \\\n"
+                "    && apt-get install -y --fix-missing \\\n"
+                "    -o Acquire::Retries=5 \\\n"
+                "    -o Acquire::http::Timeout=30 \\\n"
+                "    -o Acquire::https::Timeout=30 \\\n"
+                "    graphviz \\\n"
+                "    && rm -rf /var/lib/apt/lists/*\n"
+            ),
+        )
+        if updated_text == dockerfile_text:
+            raise ValueError(f"Patch {patch_name} could not find expected Dockerfile snippet for {task_id}")
+        dockerfile_path.write_text(updated_text, encoding="utf-8")
+        return [str(dockerfile_path)]
+    if patch_name == "citation_check_apt_retry":
+        if task_id != "citation-check":
+            raise ValueError(f"Patch {patch_name} is only valid for citation-check, not {task_id}")
+        dockerfile_path = task_root / "environment" / "Dockerfile"
+        dockerfile_text = dockerfile_path.read_text(encoding="utf-8")
+        updated_text = dockerfile_text.replace(
+            "RUN apt-get update && apt-get install -y \\\n"
+            "    python3 \\\n"
+            "    python3-pip \\\n"
+            "    python3-venv \\\n"
+            "    wget \\\n"
+            "    curl \\\n"
+            "    ca-certificates \\\n"
+            "    && rm -rf /var/lib/apt/lists/*\n",
+            (
+                "RUN apt-get update -o Acquire::Retries=5 \\\n"
+                "    -o Acquire::http::Timeout=30 \\\n"
+                "    -o Acquire::https::Timeout=30 \\\n"
+                "    && apt-get install -y --fix-missing \\\n"
+                "    -o Acquire::Retries=5 \\\n"
+                "    -o Acquire::http::Timeout=30 \\\n"
+                "    -o Acquire::https::Timeout=30 \\\n"
+                "    python3 \\\n"
+                "    python3-pip \\\n"
+                "    python3-venv \\\n"
+                "    wget \\\n"
+                "    curl \\\n"
+                "    ca-certificates \\\n"
+                "    && rm -rf /var/lib/apt/lists/*\n"
+            ),
+        )
+        if updated_text == dockerfile_text:
+            raise ValueError(f"Patch {patch_name} could not find expected Dockerfile snippet for {task_id}")
+        dockerfile_path.write_text(updated_text, encoding="utf-8")
         return [str(dockerfile_path)]
     raise ValueError(f"Unsupported task patch: {patch_name}")
 
