@@ -725,3 +725,22 @@ Observed result:
    - `t0_heldout_mean = 1.0`
    - `t1_heldout_mean = 1.0`
    - `br_ratio_mean = 1.0`
+
+### Fresh-Clone Release Validation
+
+Work completed:
+
+1. Created a fresh clone of the current reviewed tree at `/tmp/protocol_bench_fresh_validate_620713f`.
+2. Re-ran the documented release validation command from inside that clean checkout instead of from the original working tree.
+3. Updated the release plan and checklist so fresh-clone validation is no longer tracked as an unfinished blocker.
+
+Tests run:
+
+1. `git clone /home/yuchong/Protocal_Bench /tmp/protocol_bench_fresh_validate_620713f`
+2. `python3 scripts/run_release_checks.py`
+
+Observed result:
+
+1. The clean-checkout validation passed `8/8` checks at commit `620713f0a42d1b956217d950c239183038551dd3`.
+2. The documented public validation path does not rely on hidden local working-tree state.
+3. The remaining release-gating uncertainty is now remote CI confirmation and final tag publication, not quickstart drift.

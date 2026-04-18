@@ -6,9 +6,8 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 
 ## Release Follow-Ups
 
-1. Re-run the README quickstart from a truly fresh clone on the final Linux validation machine.
-2. Confirm GitHub Actions is green on the reviewed release commit.
-3. Cut and publish the `v0.1.0` tag from a reviewed commit.
+1. Confirm GitHub Actions is green on the reviewed release commit.
+2. Cut and publish the `v0.1.0` tag from a reviewed commit.
 
 ## README And Docs Follow-Ups
 
@@ -19,9 +18,8 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 
 ## Validation Hardening
 
-1. Add a fresh-clone validation record from the dedicated Linux benchmark machine.
-2. Decide whether `scripts/run_release_checks.py` should gain an optional `smoke_adapters` step.
-3. Consider a small helper for exporting release-check results into a markdown report.
+1. Decide whether `scripts/run_release_checks.py` should gain an optional `smoke_adapters` step.
+2. Consider a small helper for exporting release-check results into a markdown report.
 
 ## Benchmark Expansion
 

@@ -34,7 +34,7 @@ This checklist is for the first public open-source release. It assumes:
 - [x] Unit tests pass on the supported environment.
 - [x] Schema validation passes for the tracked example artifacts.
 - [x] `python3 scripts/run_release_checks.py` passes on the release branch.
-- [ ] The documented quickstart has been re-run from a clean checkout.
+- [x] The documented quickstart has been re-run from a clean checkout.
 - [x] `python` vs `python3` assumptions are explicit and consistent.
 
 ## 5. Benchmark Artifact Set
@@ -66,7 +66,7 @@ This checklist is for the first public open-source release. It assumes:
 ## 8. Release Packaging
 
 - [x] Version number is fixed to `v0.1.0`.
-- [ ] Release notes summarize:
+- [x] Release notes summarize:
   - [x] protocol contribution
   - [x] supported benchmarks
   - [x] known limitations

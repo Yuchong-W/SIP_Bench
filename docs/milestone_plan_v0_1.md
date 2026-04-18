@@ -26,7 +26,7 @@ Current snapshot as of `2026-04-18`:
 1. `M1 Release Narrative`: complete
 2. `M2 Repository Hygiene`: complete for the repository-facing release path
 3. `M3 Quickstart And Demo`: complete for the current public quickstart, artifact tour, and compact proof-of-value writeup
-4. `M4 Release-Grade Validation`: local validation, tracked real-suite validation, and minimal proof-of-value example are in place; fresh-clone rerun and CI confirmation still pending
+4. `M4 Release-Grade Validation`: local validation, tracked real-suite validation, minimal proof-of-value example, and fresh-clone validation are in place; CI confirmation still pending
 5. `M5 Release Cut`: release notes and launch materials are drafted and now include the compact value-proof narrative; final tag and release publication still pending
 
 ## Why This Release Can Be Novel
