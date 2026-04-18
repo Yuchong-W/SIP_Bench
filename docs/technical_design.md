@@ -334,7 +334,9 @@ Resolved in the current revision:
 
 1. `SkillsBench` plans can now be constrained by explicit `task_id` values.
 2. Sparse checkout hydration is now a first-class CLI step driven from the generated plan.
-3. A dedicated `scripts\harbor312.cmd` launcher now runs Harbor on Python `3.12`, forces UTF-8 console output, and disables Docker BuildKit on this machine.
+3. Dedicated repository-local Harbor launchers now exist for both Windows and Linux:
+   - `scripts/harbor312`
+   - `scripts/harbor312.cmd`
 4. Harbor job directories are now importable into SIP `runs.jsonl`, including failed trials that never reached agent execution.
 
 Current environment-specific blockers:
@@ -373,7 +375,7 @@ Successful path:
 1. selected task: `dialogue-parser`
 2. protocol steps: `plan -> hydrate -> execute -> import -> validate`
 3. agent path: `oracle`
-4. launcher: `scripts\harbor312.cmd`
+4. launcher: repository-local `harbor312` wrapper
 5. additional Harbor override: `--environment-build-timeout-multiplier 4`
 
 Observed outcome:

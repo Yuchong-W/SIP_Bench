@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
 from sip_bench.metrics import load_jsonl
 from sip_bench.protocol_runner import (
     _apply_task_patch,
+    _resolve_command_value,
     _strip_skills_from_dockerfile_text,
     build_skillsbench_explicit_plan,
     build_tau_explicit_plan,
@@ -26,6 +27,33 @@ from sip_bench.protocol_runner import (
 
 
 class ProtocolRunnerTests(unittest.TestCase):
+    def test_resolve_command_value_prefers_extensionless_wrapper_on_posix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            scripts_dir = tmp_path / "scripts"
+            scripts_dir.mkdir()
+            wrapper = scripts_dir / "harbor312"
+            wrapper.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            cmd_wrapper = scripts_dir / "harbor312.cmd"
+            cmd_wrapper.write_text("@echo off\r\n", encoding="utf-8")
+
+            resolved = _resolve_command_value(tmp_path, "scripts/harbor312.cmd")
+            self.assertEqual(resolved, str(wrapper))
+
+    def test_resolve_command_value_prefers_cmd_wrapper_on_windows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            scripts_dir = tmp_path / "scripts"
+            scripts_dir.mkdir()
+            wrapper = scripts_dir / "harbor312"
+            wrapper.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            cmd_wrapper = scripts_dir / "harbor312.cmd"
+            cmd_wrapper.write_text("@echo off\r\n", encoding="utf-8")
+
+            with patch("sip_bench.protocol_runner.os.name", "nt"):
+                resolved = _resolve_command_value(tmp_path, "scripts/harbor312")
+            self.assertEqual(resolved, str(cmd_wrapper))
+
     def test_build_skillsbench_explicit_plan_preserves_split_assignment(self) -> None:
         plan = build_skillsbench_explicit_plan(
             registry_path=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",

@@ -8,7 +8,7 @@ This matrix describes the intended public support posture for `v0.1.0`.
 | --- | --- | --- | --- |
 | Unit tests | Supported | Best effort | `Linux-first` is the official support target |
 | Dry-run CLI paths | Supported | Best effort | Quickstart and CI are centered on Linux |
-| `SkillsBench` protocol logic | Supported | Best effort | Real-task stability still depends on local Docker behavior |
+| `SkillsBench` protocol logic | Supported | Best effort | Real-task stability still depends on local Docker behavior and upstream package-network reliability |
 | `tau-bench` historical/import-only | Supported | Best effort | No provider credentials required |
 | `tau-bench` live preflight | Supported | Best effort | Requires provider credentials |
 | `codex` prepared-suite path | Experimental | Experimental | Not release-critical |
@@ -17,7 +17,7 @@ This matrix describes the intended public support posture for `v0.1.0`.
 
 | Benchmark path | Status | Release role | Notes |
 | --- | --- | --- | --- |
-| `SkillsBench oracle real suite` | Supported | Release-critical | Main real-suite evidence path |
+| `SkillsBench oracle real suite` | Supported | Release-critical | Main real-suite evidence path; Linux probe now closes the full suite loop |
 | `SkillsBench Harbor job import` | Supported | Release-critical | Imports both success and failure outcomes |
 | `SkillsBench prepared task copies` | Experimental | Optional | Useful for frozen vs skill-enabled comparisons |
 | `tau-bench historical/import-only` | Supported | Release-critical | Current second-environment evidence path |

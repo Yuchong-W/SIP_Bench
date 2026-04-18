@@ -68,19 +68,20 @@ CLI and repository docs:
 9. `scripts/run_release_checks.py`
 10. `scripts/smoke_adapters.py`
 11. `scripts/validate_records.py`
-12. `scripts/harbor312.cmd`
-13. `scripts/tau311.cmd`
-14. `.gitignore`
-15. `.gitattributes`
-16. `.editorconfig`
-17. `LICENSE`
-18. `NOTICE`
-19. `CITATION.cff`
-20. `.github/workflows/ci.yml`
-21. `.github/ISSUE_TEMPLATE/bug_report.md`
-22. `.github/ISSUE_TEMPLATE/feature_request.md`
-23. `.github/ISSUE_TEMPLATE/config.yml`
-24. `.github/PULL_REQUEST_TEMPLATE.md`
+12. `scripts/harbor312`
+13. `scripts/harbor312.cmd`
+14. `scripts/tau311.cmd`
+15. `.gitignore`
+16. `.gitattributes`
+17. `.editorconfig`
+18. `LICENSE`
+19. `NOTICE`
+20. `CITATION.cff`
+21. `.github/workflows/ci.yml`
+22. `.github/ISSUE_TEMPLATE/bug_report.md`
+23. `.github/ISSUE_TEMPLATE/feature_request.md`
+24. `.github/ISSUE_TEMPLATE/config.yml`
+25. `.github/PULL_REQUEST_TEMPLATE.md`
 
 Engineering docs:
 

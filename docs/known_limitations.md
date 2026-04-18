@@ -10,6 +10,7 @@
 6. The current public release is `Linux-first`; Windows helper workflows exist but are not the primary support target.
 7. `tau-bench` live execution still depends on private provider credentials and is therefore not part of the release-critical validation path.
 8. Experimental `codex` prepared-suite support exists in code and config, but it is not yet a stable release asset.
+9. Real `SkillsBench` Linux runs can fail for upstream reasons even when the SIP protocol path succeeds, including slow or flaky package downloads during Docker image builds and missing verifier reward files after agent execution.
 
 ## Intended Extensions
 

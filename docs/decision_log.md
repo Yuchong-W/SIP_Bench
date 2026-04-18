@@ -141,7 +141,7 @@ Why:
 
 Decision:
 
-Real SkillsBench execution on this machine should use a repository-local `scripts\harbor312.cmd` launcher instead of the globally installed `harbor.exe`.
+Real SkillsBench execution should use a repository-local Harbor wrapper instead of relying directly on the ambient global Harbor install.
 
 Why:
 
@@ -149,6 +149,7 @@ Why:
 2. `uvx --python 3.12 harbor` clears that runtime bug and reaches real environment setup
 3. a repository-local launcher lets plans encode a single stable executable path without teaching the protocol about multi-token shell prefixes
 4. the launcher is also the right place to pin local cache location and Docker-related environment workarounds
+5. the same tracked suite config should be able to resolve to `scripts/harbor312` on Linux and `scripts/harbor312.cmd` on Windows
 
 ### D012
 

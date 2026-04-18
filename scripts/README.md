@@ -20,10 +20,13 @@ Validate `json` or `jsonl` artifacts against the authoritative SIP schemas.
 6. `harbor312.cmd`
 Windows launcher for Harbor on Python `3.12`. It sets a local `UV_CACHE_DIR`, forces UTF-8 console output, and disables Docker BuildKit because the default Windows + global Harbor path on this machine is unstable.
 
-7. `tau311.cmd`
+7. `harbor312`
+POSIX wrapper for Harbor on Python `3.12`. It mirrors the release-facing environment defaults from `harbor312.cmd` while remaining executable on the `Linux-first` path.
+
+8. `tau311.cmd`
 Windows launcher for `tau-bench` on `py -3.11`. It prepends the repo-local dependency overlay `.pydeps311` and the local `benchmarks\tau-bench` checkout to `PYTHONPATH`, then forwards all arguments to Python.
 
-8. `run_release_checks.py`
+9. `run_release_checks.py`
 Run the release-facing local validation path used by the public quickstart and CI. It exercises unit tests, dry-run aggregation, SkillsBench Harbor job import, and schema validation for tracked artifacts.
 
 Release-facing guidance:
@@ -54,6 +57,7 @@ Operational notes:
 8. The recommended local secret path is `protocol/.env.local`, which is gitignored. A checked-in template lives at `protocol/tau_openai.env.example`.
 9. `execute-plan` and `tau_bench_preflight` now resolve bare `python` or `python3` through the current environment so Linux hosts without a `python` alias still work.
 10. `run_release_checks.py` uses the current interpreter by default, so the same command works inside virtualenvs and CI without relying on an ambient `python` alias.
+11. The tracked `SkillsBench oracle` real-suite config now points at `scripts/harbor312`, with automatic `.cmd` fallback on Windows so the same config works on both release-facing Linux hosts and local Windows workflows.
 
 Planned next:
 

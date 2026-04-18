@@ -8,7 +8,7 @@
   "execution": {
     "agent": "codex",
     "model": null,
-    "harbor_bin": "../scripts/harbor312.cmd",
+    "harbor_bin": "../scripts/harbor312",
     "jobs_dir": "../results/real_jobs_protocol",
     "path_type": "external",
     "agent_version": "harbor312-codex-external-v0",

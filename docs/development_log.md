@@ -641,3 +641,25 @@ Observed result:
 
 1. The remaining unchecked release items are now explicit and operational, not just implied in conversation.
 2. The release branch has a cleaner boundary between `v0.1` scope and follow-up work.
+
+### Real SkillsBench Linux Probe
+
+Work completed:
+
+1. Confirmed Docker was actually usable on the Linux host, not just installed.
+2. Ran a real four-run `SkillsBench oracle` Linux probe suite through `run-skillsbench-suite` with Docker-backed Harbor execution.
+3. Observed and recorded the full protocol loop:
+   - `plan`
+   - `hydrate`
+   - `execute`
+   - `import`
+   - `aggregate`
+4. Added a POSIX `scripts/harbor312` wrapper and switched the tracked `SkillsBench oracle` suite config to a cross-platform Harbor entrypoint.
+
+Observed result:
+
+1. The Linux probe produced valid `combined_runs.jsonl`, `summary.jsonl`, and `suite_report.json`.
+2. The SIP protocol runner correctly recorded multiple classes of real operational failure instead of dropping them:
+   - Docker build failures caused by upstream apt/network instability
+   - `RewardFileNotFoundError` after agent execution
+3. The release-critical protocol path is therefore real on Linux, even though the upstream benchmark tasks remain operationally flaky.

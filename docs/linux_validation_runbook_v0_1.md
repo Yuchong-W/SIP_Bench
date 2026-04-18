@@ -81,6 +81,12 @@ If the Linux machine also has the upstream benchmarks checked out, the next rele
 2. confirm Docker-backed `SkillsBench` behavior remains stable
 3. keep `tau-bench` live execution out of scope unless provider credentials are intentionally supplied
 
+Notes from the latest Linux probe:
+
+1. the tracked `SkillsBench oracle` suite config now uses `scripts/harbor312`, which falls back to `harbor312.cmd` on Windows
+2. a full four-run Linux probe reached valid `combined_runs.jsonl`, `summary.jsonl`, and `suite_report.json`
+3. real upstream failures still occurred during Docker-backed task execution, mainly apt/network build instability and missing verifier reward files
+
 ## Exit Criteria
 
 The Linux validation pass is good enough for `v0.1.0` if all of the following are true:

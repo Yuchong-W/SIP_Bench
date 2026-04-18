@@ -843,9 +843,19 @@ def _resolve_git_or_default(repo_root: Path, default_value: str) -> str:
 
 def _resolve_command_value(base_dir: Path, command_value: str) -> str:
     if any(token in command_value for token in ("\\", "/")) or command_value.lower().endswith(
-        (".cmd", ".bat", ".exe", ".ps1")
+        (".cmd", ".bat", ".exe", ".ps1", ".sh")
     ):
-        return str(_resolve_path(base_dir, command_value))
+        resolved = _resolve_path(base_dir, command_value)
+        if os.name == "nt" and not resolved.suffix:
+            for suffix in (".cmd", ".bat"):
+                candidate = resolved.with_suffix(suffix)
+                if candidate.exists():
+                    return str(candidate)
+        if os.name != "nt" and resolved.suffix.lower() in {".cmd", ".bat", ".ps1"}:
+            for candidate in (resolved.with_suffix(""), resolved.with_suffix(".sh")):
+                if candidate.exists():
+                    return str(candidate)
+        return str(resolved)
     return command_value
 
 
