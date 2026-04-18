@@ -34,7 +34,7 @@ The next phase is successful only if all of the following are true:
 4. at least one repeatable experiment bundle exists beyond the current `v0.1.0` release proof
 5. the design story and the evidence story point to the same claims
 
-## Current Status After The First Results Package
+## Current Status After The Host-Auth Bundle
 
 Completed so far:
 
@@ -46,8 +46,8 @@ Completed so far:
 
 Still missing:
 
-1. a stronger experiment bundle beyond the tracked `v0.1.0` release artifacts
-2. prepared-suite evidence that can actually test the "protocol-first versus benchmark-first" comparison story
+1. a stronger non-ceiling experiment bundle beyond the tracked `v0.1.0` release artifacts
+2. prepared-suite evidence that can actually test the "protocol-first versus benchmark-first" comparison story instead of only execution viability
 3. a second repeatable failure-and-recovery family so provenance is not anchored on only one recovery case
 
 New constraint learned from the latest probe work:
@@ -65,6 +65,15 @@ Bottom line:
 2. additional experiments are still necessary
 3. the highest-value remaining work is now experimental, not presentational
 4. the next experimental bottleneck is not "can account auth work at all?" but "can account auth produce non-ceiling protocol evidence?"
+
+## Locked Decisions From The Latest Round
+
+The plan should now assume all of the following unless new evidence overturns them:
+
+1. do not edit the global Harbor installation
+2. treat the repo-local host-auth custom agent as the primary prepared-suite path
+3. treat `OPENAI_API_KEY` as a contingency path, not the default next step
+4. keep the current easy-task host-auth bundle as a smoke or regression asset, not as the main evidence bundle
 
 ## Workstreams
 
@@ -145,11 +154,16 @@ Goal:
 
 Priority experiments:
 
-1. expand the repo-local host-auth custom agent from the first successful multi-run bundle to a stronger prepared comparison that can speak to replay vs held-out behavior without saturating at `1.0`
-2. keep `OPENAI_API_KEY` as the fallback route for the same prepared-suite comparison if the host-auth path stalls on harder task selections or larger bundles
-3. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
-4. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
-5. only then consider `tau-bench` live runs with explicit provider budget
+1. freeze the current easy-task host-auth bundle as the canonical smoke or regression bundle for account-auth prepared execution
+2. build a medium-difficulty host-auth bundle that is explicitly chosen to reduce ceiling effect
+   - candidate replay-like medium tasks can come from the current registry, for example `citation-check` or another medium task with nontrivial verifier structure
+   - candidate heldout-like medium tasks should be chosen from a different category so replay versus heldout remains interpretable
+3. if the medium bundle still saturates or is too weak to reveal tradeoffs, escalate to a hard-task host-auth bundle
+   - likely candidates should come from the current hard pool such as `enterprise-information-search`, `financial-modeling-qa`, or `fix-visual-stability`, depending on runtime practicality
+4. keep `OPENAI_API_KEY` as the fallback route only if the host-auth path stalls on those harder bundles or becomes operationally too brittle
+5. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
+6. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
+7. only then consider `tau-bench` live runs with explicit provider budget
 
 Minimum acceptable experimental upgrade:
 
@@ -159,11 +173,10 @@ Minimum acceptable experimental upgrade:
 
 Highest-value experimental package from here:
 
-1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas using either:
-   - the repo-local host-auth custom agent if it generalizes beyond `dialogue-parser`, or
-   - `OPENAI_API_KEY` if the host-auth path stalls
-2. one second tracked recovery case with attempt-level provenance
-3. one updated results-gallery section that combines those new artifacts into a protocol-first comparison table
+1. one non-ceiling prepared-suite comparison with interpretable `FG / BR / IE` deltas using the repo-local host-auth custom agent
+2. if that path stalls on harder bundles, one equivalent comparison with `OPENAI_API_KEY` as a contingency
+3. one second tracked recovery case with attempt-level provenance
+4. one updated results-gallery section that combines those new artifacts into a protocol-first comparison table
 
 Not yet a priority:
 
@@ -187,14 +200,16 @@ Not yet a priority:
 
 ### Phase 3: New Experimental Evidence
 
-1. try the prepared-suite expansion with the repo-local host-auth custom agent on a harder replay-plus-heldout bundle that is less likely to saturate
-2. if that stalls, rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
-3. add comparison tables that separate:
+1. keep the current easy host-auth bundle only as a smoke or regression check
+2. run a medium-difficulty replay-plus-heldout host-auth bundle that is less likely to saturate
+3. if that still saturates, escalate to a hard-task host-auth bundle rather than immediately switching credential mode
+4. if the harder host-auth bundles stall operationally, rerun the same comparison with env-file-backed `OPENAI_API_KEY`
+5. add comparison tables that separate:
    - held-out improvement
    - replay retention
    - stability
    - operational failure burden
-4. decide whether the new evidence is strong enough to justify a paper-facing empirical section
+6. decide whether the new evidence is strong enough to justify a paper-facing empirical section
 
 ## Repo-Hosted Asset Standard
 
@@ -213,7 +228,9 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. choose a harder host-auth replay/heldout task mix or add a second seed so the next bundle is less vulnerable to ceiling effect
-2. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on that stronger bundle
-3. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
-4. update the results gallery with a protocol-first comparison table once those experiments exist
+1. freeze the current easy-task host-auth bundle as the tracked smoke baseline and stop treating it as the main evidence target
+2. select a medium-difficulty replay/heldout pair from the current SkillsBench registry and run the next host-auth bundle on that pair
+3. if the medium bundle still returns all `1.0`, promote at least one side of the bundle to a hard task instead of rerunning the same easy pair
+4. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on those stronger bundles
+5. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
+6. update the results gallery with a protocol-first comparison table once those stronger experiments exist

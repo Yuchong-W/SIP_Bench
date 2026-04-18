@@ -25,20 +25,24 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 
 ## Benchmark Expansion
 
-1. Rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that the tracked suite completes end to end and currently collapses to flat-zero outputs without credentials.
-2. Add a stable public story for prepared-task comparisons only after the validation path is repeatable.
-3. Track a second repeatable failure-and-recovery family so provenance evidence is not based on one case.
-4. Revisit `tau-bench` live execution once provider API access is available and budget is explicit.
-5. Do not add a third benchmark until the current two-environment story is stronger.
+1. Keep the current host-auth easy-task bundle as a smoke or regression artifact, not as the main evidence bundle.
+2. Build a medium-difficulty host-auth prepared bundle that is explicitly chosen to avoid ceiling effect.
+3. Escalate to a hard-task host-auth bundle if the medium bundle still saturates at `1.0`.
+4. Rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` only if the harder host-auth bundles stall or become too brittle.
+5. Add a stable public story for prepared-task comparisons only after the non-ceiling validation path is repeatable.
+6. Track a second repeatable failure-and-recovery family so provenance evidence is not based on one case.
+7. Revisit `tau-bench` live execution once provider API access is available and budget is explicit.
+8. Do not add a third benchmark until the current two-environment story is stronger.
 
 ## Paper Track
 
 1. Keep the paper claim anchored on benchmark or protocol infrastructure unless stronger empirical evidence appears.
 2. Build the paper around `FG`, `BR`, and `IE` tradeoffs instead of a generic "agent got better" narrative.
-3. Treat large-scale matched-budget comparisons as post-release research work, not release hygiene.
-4. Grow the `v0.1` proof-of-value into a multi-environment empirical case, not just a release-facing example.
-5. Prefer repo-hosted tables and figures over slide-only evidence while the empirical story is still forming.
-6. Treat prepared-suite evidence as the main experimental unlock for a stronger paper claim.
+3. Treat the new host-auth smoke bundle as infrastructure evidence, not as the centerpiece empirical claim.
+4. Treat large-scale matched-budget comparisons as post-release research work, not release hygiene.
+5. Grow the `v0.1` proof-of-value into a multi-environment empirical case, not just a release-facing example.
+6. Prefer repo-hosted tables and figures over slide-only evidence while the empirical story is still forming.
+7. Treat non-ceiling prepared-suite evidence as the main experimental unlock for a stronger paper claim.
 
 ## Product And Community
 
