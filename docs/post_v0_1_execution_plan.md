@@ -144,6 +144,7 @@ Candidate repo assets:
 3. `docs/figures/cost_vs_gain.svg`
 4. `docs/figures/t0_t1_t2_stability.svg`
 5. `docs/figures/attempt_provenance.svg`
+6. `docs/host_auth_experiment_design.md`
 
 ### W3: Experimental Expansion
 
@@ -164,6 +165,10 @@ Priority experiments:
 5. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
 6. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
 7. only then consider `tau-bench` live runs with explicit provider budget
+
+Design note:
+
+1. `docs/host_auth_experiment_design.md` is the operational guide for screening-versus-evidence classification, local task availability constraints, and patch escalation policy
 
 Minimum acceptable experimental upgrade:
 

@@ -1,0 +1,80 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe",
+  "benchmark_name": "skillsbench",
+  "repo_root": "../benchmarks/skillsbench",
+  "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe",
+  "execution": {
+    "agent": "codex",
+    "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+    "model": "gpt-5.4",
+    "harbor_bin": "../scripts/harbor312",
+    "jobs_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe",
+    "path_type": "external",
+    "agent_version": "harbor312-codex-host-auth-v0",
+    "seed": 0,
+    "retry_policy": {
+      "max_attempts": 2,
+      "retry_on_execution_statuses": [
+        "failed"
+      ],
+      "retry_on_exception_types": [
+        "EnvironmentStartTimeoutError",
+        "EnvironmentBuildTimeoutError",
+        "AgentSetupTimeoutError"
+      ],
+      "retry_on_message_substrings": [
+        "e: failed to fetch",
+        "unable to fetch some archives",
+        "temporary failure resolving",
+        "connection was forcibly closed",
+        "timed out"
+      ]
+    },
+    "extra_args": [
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4",
+      "--agent-setup-timeout-multiplier",
+      "4"
+    ]
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "citation-check"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "strip",
+        "patches": {
+          "citation-check": [
+            "citation_check_apt_retry"
+          ]
+        }
+      }
+    },
+    {
+      "run_name": "t1_replay",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "citation-check"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "citation-check": [
+            "citation_check_apt_retry"
+          ]
+        }
+      }
+    }
+  ]
+}
