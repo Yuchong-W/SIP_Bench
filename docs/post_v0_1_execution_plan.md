@@ -50,6 +50,12 @@ Still missing:
 2. prepared-suite evidence that can actually test the "protocol-first versus benchmark-first" comparison story
 3. a second repeatable failure-and-recovery family so provenance is not anchored on only one recovery case
 
+New constraint learned from the latest probe work:
+
+1. a repo-local Harbor-to-Codex login bridge now exists and avoids editing the global Harbor installation
+2. that isolated bridge is useful engineering infrastructure, but it still does not remove the effective credential requirement on the current Harbor `codex` noninteractive path
+3. the next prepared-suite comparison should therefore still be planned around `OPENAI_API_KEY`, not around an assumption that the local ChatGPT login state is already sufficient
+
 Bottom line:
 
 1. design and interpretation work are no longer the main bottleneck
@@ -135,7 +141,10 @@ Goal:
 
 Priority experiments:
 
-1. rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that the full tracked suite completes end to end and currently collapses to a flat-zero summary without credentials
+1. rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that:
+   - the full tracked suite completes end to end
+   - the repo-local login bridge has been tested without modifying global Harbor files
+   - the current Harbor `codex` execution path still collapses to empty-key `401 Unauthorized` failures when no API key is supplied
 2. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
 3. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
 4. only then consider `tau-bench` live runs with explicit provider budget

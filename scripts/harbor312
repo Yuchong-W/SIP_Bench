@@ -10,6 +10,8 @@ export NO_COLOR=1
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
 export BUILDKIT_PROGRESS=plain
+export PYTHONPATH="${SCRIPT_DIR}/../tools/harbor_codex_bridge:${SCRIPT_DIR}/../src${PYTHONPATH:+:$PYTHONPATH}"
+export SIP_HARBOR_CODEX_AUTH_SOURCE="${HOME}/.codex/auth.json"
 
 if command -v harbor >/dev/null 2>&1; then
   exec harbor "$@"

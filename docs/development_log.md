@@ -815,3 +815,30 @@ Observed result:
    - `br_mean = 0.0`
 5. Agent-side `codex.txt` logs for both `dialogue-parser` and `offer-letter-generator` show repeated `401 Unauthorized` failures because the inherited `OPENAI_API_KEY` is empty, while the final imported SIP records collapse that state into verifier-backed `0.0` scores.
 6. The prepared-suite path therefore no longer belongs in the vague category of "maybe inaccessible on this host"; it is now a concrete experimental path whose remaining blocker is specifically credential state, not protocol wiring or task preparation.
+
+### Isolated Harbor Codex Login Bridge Probe
+
+Work completed:
+
+1. Added a repository-local Harbor-to-Codex auth bridge in `src/sip_bench/harbor_codex_bridge.py` plus `tools/harbor_codex_bridge/sitecustomize.py`.
+2. Updated `scripts/harbor312` and `scripts/harbor312.cmd` so only this repository's Harbor wrapper prepends the local bridge to `PYTHONPATH` and points `SIP_HARBOR_CODEX_AUTH_SOURCE` at the host `~/.codex/auth.json`.
+3. Kept the installed Harbor package untouched; no files under the global `harbor` installation were modified.
+4. Added unit coverage for:
+   - preferring repo-local login auth when no API key is present
+   - omitting empty `OPENAI_API_KEY` values from the agent environment
+5. Ran an isolated single-run `t0_replay` probe for prepared `dialogue-parser` against the local bridge path.
+6. Re-ran the same probe outside the Codex sandbox so Docker could access the host daemon and the result would not be confounded by sandbox-only `docker.sock` restrictions.
+
+Tests run:
+
+1. `python3 -m unittest tests.test_protocol_runner -v`
+2. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_replay_login_bridge_probe.json --mode subprocess`
+
+Observed result:
+
+1. The repo-local bridge works as intended from an isolation standpoint: Harbor is patched only through this repository's wrapper, not by editing any global Harbor file.
+2. The sandboxed probe first failed at Docker build time because the sandbox could not cleanly access the host daemon; rerunning outside the sandbox removed that ambiguity.
+3. The outside-sandbox rerun advanced through environment setup, agent setup, agent execution, and verifier execution, producing a full Harbor trial artifact under `results/real_jobs_protocol_prepared_t0_replay_login_bridge_probe/...-rerun02/`.
+4. Even with the local bridge in place, `agent/codex.txt` still shows repeated `401 Unauthorized` failures that report `Incorrect API key provided: ''`.
+5. The local ChatGPT/Codex login state therefore still does not substitute for `OPENAI_API_KEY` on the current Harbor `codex` noninteractive execution path, at least not with this bridge approach.
+6. The practical experimental conclusion is unchanged: the next full prepared-suite comparison should still be run with an env-file-backed `OPENAI_API_KEY`, while the repo-local bridge remains useful as contained infrastructure for future auth experiments.

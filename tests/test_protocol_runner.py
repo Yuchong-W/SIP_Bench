@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from sip_bench.metrics import load_jsonl
+from sip_bench.harbor_codex_bridge import build_codex_agent_env, build_codex_auth_setup_command
 from sip_bench.protocol_runner import (
     _allocate_attempt_job_name,
     _apply_task_patch,
@@ -30,6 +31,18 @@ from sip_bench.protocol_runner import (
 
 
 class ProtocolRunnerTests(unittest.TestCase):
+    def test_build_codex_auth_setup_command_prefers_repo_login_auth_when_key_missing(self) -> None:
+        command = build_codex_auth_setup_command(auth_source="/tmp/codex-auth.json")
+        self.assertIn('if [ -n "${OPENAI_API_KEY}" ]; then', command)
+        self.assertIn("elif [ -f /tmp/codex-auth.json ]; then", command)
+        self.assertIn("src = Path('/tmp/codex-auth.json')", command)
+        self.assertIn("data.pop('OPENAI_API_KEY', None)", command)
+        self.assertIn('ln -sf /tmp/codex-secrets/auth.json "$CODEX_HOME/auth.json"', command)
+
+    def test_build_codex_agent_env_omits_empty_api_key(self) -> None:
+        env = build_codex_agent_env(codex_home="/tmp/codex-home", openai_api_key="", openai_base_url=None)
+        self.assertEqual(env, {"CODEX_HOME": "/tmp/codex-home"})
+
     def test_allocate_attempt_job_name_avoids_existing_job_dirs(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             jobs_dir = Path(tmpdir)
