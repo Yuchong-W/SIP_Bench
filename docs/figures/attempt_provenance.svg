@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="460" viewBox="0 0 920 460" role="img" aria-labelledby="title desc">
+  <title id="title">Attempt Provenance Snapshot</title>
+  <desc id="desc">Flow-style figure showing the documented recovery path for the SkillsBench t0_replay rerun and summary counts from the tracked suite report.</desc>
+  <rect width="920" height="460" fill="#fbfaf6"/>
+  <text x="40" y="42" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2937">Attempt Provenance Snapshot</text>
+  <text x="40" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#4b5563">The tracked suite keeps recovery evidence visible instead of collapsing everything into one final score.</text>
+
+  <rect x="40" y="108" width="200" height="108" rx="14" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="58" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#9a3412">1. Recovery trigger</text>
+  <text x="58" y="164" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#7c2d12">`t0_replay` exposed a stale-import</text>
+  <text x="58" y="184" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#7c2d12">hazard when a Harbor job directory</text>
+  <text x="58" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#7c2d12">was reused.</text>
+
+  <rect x="290" y="108" width="200" height="108" rx="14" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="308" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1d4ed8">2. Recovery action</text>
+  <text x="308" y="164" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1e3a8a">Fresh job-name allocation was added</text>
+  <text x="308" y="184" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1e3a8a">so reruns cannot silently re-import</text>
+  <text x="308" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1e3a8a">an older failed result.</text>
+
+  <rect x="540" y="108" width="200" height="108" rx="14" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+  <text x="558" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#047857">3. Tracked rerun</text>
+  <text x="558" y="164" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#065f46">The final suite records the rerun as</text>
+  <text x="558" y="184" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#065f46">`skillsbench-oracle-real-suite-`</text>
+  <text x="558" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#065f46">`t0_replay-attempt01-rerun02`.</text>
+
+  <rect x="290" y="256" width="450" height="120" rx="14" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+  <text x="312" y="286" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#166534">4. Final tracked state</text>
+  <text x="312" y="316" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#166534">The current suite report selects one successful attempt for each of the four runs.</text>
+  <text x="312" y="340" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#166534">`t0_replay` is fully recovered, and the tracked suite summary returns to all-success.</text>
+
+  <g stroke="#9ca3af" stroke-width="2" fill="none" stroke-linecap="round">
+    <line x1="240" y1="162" x2="290" y2="162"/>
+    <line x1="490" y1="162" x2="540" y2="162"/>
+    <line x1="640" y1="216" x2="640" y2="256"/>
+  </g>
+  <g fill="#9ca3af">
+    <polygon points="290,162 280,157 280,167"/>
+    <polygon points="540,162 530,157 530,167"/>
+    <polygon points="640,256 635,246 645,246"/>
+  </g>
+
+  <rect x="40" y="256" width="200" height="120" rx="14" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="58" y="286" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#111827">Suite counts</text>
+  <text x="58" y="314" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#374151">Tracked suite runs: <tspan font-weight="700">4</tspan></text>
+  <text x="58" y="338" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#374151">Recovered rerun cases: <tspan font-weight="700">1</tspan></text>
+  <text x="58" y="362" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#374151">Final failed runs: <tspan font-weight="700">0</tspan></text>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4b5563">
+    <text x="40" y="426">Sources: docs/development_log.md; results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json</text>
+    <text x="560" y="426">Why it matters: recovery work remains visible in-repo instead of vanishing behind a final 1.0 score.</text>
+  </g>
+</svg>

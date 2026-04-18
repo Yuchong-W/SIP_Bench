@@ -172,7 +172,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. add an attempt-provenance figure once one more repeatable failure-and-recovery run family is tracked
-2. link the expanded results gallery from the release-facing narrative
-3. use the positioning note to tighten README or paper-facing related-work language
+1. link the expanded results gallery from the release-facing narrative and other public-facing docs
+2. use the positioning note to tighten README or paper-facing related-work language
+3. add prepared-suite evidence before expanding benchmark count
 4. postpone broader benchmark expansion until those repo-hosted assets exist

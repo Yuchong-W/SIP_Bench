@@ -94,8 +94,23 @@ Interpretation:
 2. the gain remains positive at `T2`
 3. `PDS = -0.020` makes the softening explicit instead of letting `T1` stand in as the whole story
 
+### Attempt Provenance Snapshot
+
+![Attempt Provenance Snapshot](figures/attempt_provenance.svg)
+
+Source:
+
+1. `docs/development_log.md`
+2. `results/protocol_runs/skillsbench_oracle_real_suite/suite_report.json`
+
+Interpretation:
+
+1. the `t0_replay` recovery path is now a tracked in-repo story instead of a hidden rerun
+2. the suite keeps the rerun-specific job name visible: `...rerun02`
+3. the final `1.0` suite summary is still useful, but no longer erases the engineering provenance behind recovery
+
 ## Remaining Gaps
 
-1. attempt provenance should become a dedicated chart after one more repeatable failure-and-recovery run family is checked in
-2. the next high-value upgrade is to add prepared-suite evidence, not to add a third benchmark prematurely
-3. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
+1. the next high-value upgrade is to add prepared-suite evidence, not to add a third benchmark prematurely
+2. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
+3. the current provenance chart is based on one strong recovery case; a second tracked recovery family would make this part of the story materially stronger
