@@ -683,6 +683,34 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertIn("python3-venv", updated)
             self.assertEqual(patched_files, [str(dockerfile_path)])
 
+    def test_apply_citation_check_python_runtime_patch_rewrites_dockerfile_and_verifier(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            task_root = Path(tmpdir) / "tasks" / "citation-check"
+            dockerfile_path = task_root / "environment" / "Dockerfile"
+            test_script_path = task_root / "tests" / "test.sh"
+            test_script_path.parent.mkdir(parents=True, exist_ok=True)
+            dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
+            dockerfile_path.write_text("FROM ubuntu:24.04\n", encoding="utf-8")
+            test_script_path.write_text("#!/bin/bash\napt-get update\n", encoding="utf-8")
+
+            patched_files = _apply_task_patch(
+                task_id="citation-check",
+                patch_name="citation_check_python_runtime",
+                task_root=task_root,
+            )
+            dockerfile_text = dockerfile_path.read_text(encoding="utf-8")
+            test_script_text = test_script_path.read_text(encoding="utf-8")
+            self.assertIn("FROM python:3.12.8-slim", dockerfile_text)
+            self.assertIn("requests==2.32.3", dockerfile_text)
+            self.assertIn("bibtexparser==1.4.2", dockerfile_text)
+            self.assertNotIn("apt-get", dockerfile_text)
+            self.assertIn("python3 -m pip install --no-cache-dir", test_script_text)
+            self.assertIn("/logs/verifier/reward.txt", test_script_text)
+            self.assertIn("pytest_output.txt", test_script_text)
+            self.assertNotIn("apt-get", test_script_text)
+            self.assertNotIn("uv", test_script_text)
+            self.assertEqual(patched_files, [str(dockerfile_path), str(test_script_path)])
+
     def _make_single_trial_job_dir(self, job_dir: Path, *, fixture_relative_path: str) -> Path:
         source = ROOT / "tests" / "fixtures" / "skillsbench_harbor_job_sample" / fixture_relative_path
         trial_name = Path(fixture_relative_path).parts[0]

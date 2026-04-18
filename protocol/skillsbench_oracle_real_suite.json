@@ -21,7 +21,7 @@
           "dialogue_parser_apt_retry"
         ],
         "citation-check": [
-          "citation_check_apt_retry"
+          "citation_check_python_runtime"
         ]
       }
     },

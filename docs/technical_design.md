@@ -468,6 +468,8 @@ Rewrites `offer-letter-generator` to use `python3-docx` from the system package 
 Hardens the `dialogue-parser` Dockerfile with apt retry and timeout flags for the Graphviz system package install.
 3. `citation_check_apt_retry`
 Hardens the `citation-check` Dockerfile with apt retry and timeout flags for the Ubuntu package install step.
+4. `citation_check_python_runtime`
+Rewrites `citation-check` to use a Python slim base image plus pip-installed verifier dependencies, and emits `reward.txt` directly from the verifier script so Harbor can import the result as a successful run.
 
 Why this exists:
 
@@ -603,6 +605,7 @@ Current verified behavior:
 3. deterministic failures such as the observed `RewardFileNotFoundError` remain non-retriable by default
 4. a real Linux `dialogue-parser` probe triggered a retry from `attempt01` to `attempt02`, with both Harbor jobs imported into valid attempt-level `runs.jsonl` artifacts and the retry reason recorded as `exception_message:e: failed to fetch`
 5. after enabling run-local task preparation with apt hardening and shell normalization, a second real `dialogue-parser` probe completed successfully with `score = 1.0` and no retry
+6. after switching `citation-check` to the Python-runtime prepared patch, a real Linux heldout probe also completed successfully with `score = 1.0` and no exception
 
 Engineering implication:
 

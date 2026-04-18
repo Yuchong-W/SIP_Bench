@@ -12,7 +12,7 @@
 8. Experimental `codex` prepared-suite support exists in code and config, but it is not yet a stable release asset.
 9. Real `SkillsBench` Linux runs can fail for upstream reasons even when the SIP protocol path succeeds, including slow or flaky package downloads during Docker image builds and missing verifier reward files after agent execution.
 10. The suite runner now supports explicit transient retries for selected `SkillsBench` failures, but retries do not guarantee success and intentionally do not mask deterministic benchmark failures.
-11. The current hardening work materially improves `dialogue-parser`, but `citation-check` still appears vulnerable to Ubuntu package-index instability during Docker build on this machine.
+11. The upstream `citation-check` task remains vulnerable to Ubuntu package-index instability on this machine, but the tracked prepared-copy patch now avoids that path with a validated Python-runtime fallback.
 
 ## Intended Extensions
 

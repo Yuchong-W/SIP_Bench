@@ -1241,6 +1241,58 @@ def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list
             raise ValueError(f"Patch {patch_name} could not find expected Dockerfile snippet for {task_id}")
         dockerfile_path.write_text(updated_text, encoding="utf-8")
         return [str(dockerfile_path)]
+    if patch_name == "citation_check_python_runtime":
+        if task_id != "citation-check":
+            raise ValueError(f"Patch {patch_name} is only valid for citation-check, not {task_id}")
+        dockerfile_path = task_root / "environment" / "Dockerfile"
+        test_script_path = task_root / "tests" / "test.sh"
+        dockerfile_path.write_text(
+            (
+                "FROM python:3.12.8-slim\n\n"
+                "WORKDIR /root\n\n"
+                "RUN pip install --no-cache-dir \\\n"
+                "    requests==2.32.3 \\\n"
+                "    bibtexparser==1.4.2\n\n"
+                "COPY test.bib /root/test.bib\n\n"
+                "COPY skills /root/.claude/skills\n"
+                "COPY skills /root/.codex/skills\n"
+                "COPY skills /root/.opencode/skill\n"
+                "COPY skills /root/.goose/skills\n"
+                "COPY skills /root/.factory/skills\n"
+                "COPY skills /root/.agents/skills\n"
+                "COPY skills /root/.gemini/skills\n"
+            ),
+            encoding="utf-8",
+        )
+        test_script_path.write_text(
+            (
+                "#!/bin/bash\n"
+                "set -x\n\n"
+                "# Ensure logs directory exists\n"
+                "mkdir -p /logs/verifier\n\n"
+                "# Install test dependencies directly with pip to avoid extra bootstrap drift.\n"
+                "python3 -m pip install --no-cache-dir \\\n"
+                "  pytest==8.4.1 \\\n"
+                "  pytest-json-ctrf==0.3.5\n\n"
+                "pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA -v 2>&1 | tee /logs/verifier/pytest_output.txt\n"
+                "RESULT=${PIPESTATUS[0]}\n\n"
+                "if [ -f /logs/verifier/ctrf.json ]; then\n"
+                "  PASSED=$(python3 -c \"import json; d=json.load(open('/logs/verifier/ctrf.json')); print(d['results']['summary']['passed'])\" 2>/dev/null || echo 0)\n"
+                "  TOTAL=$(python3 -c \"import json; d=json.load(open('/logs/verifier/ctrf.json')); print(d['results']['summary']['tests'])\" 2>/dev/null || echo 1)\n"
+                "  if [ \"$TOTAL\" -gt 0 ]; then\n"
+                "    SCORE=$(python3 -c \"print(round($PASSED / $TOTAL, 3))\")\n"
+                "  else\n"
+                "    SCORE=0.0\n"
+                "  fi\n"
+                "else\n"
+                "  SCORE=0.0\n"
+                "fi\n\n"
+                "echo \"$SCORE\" > /logs/verifier/reward.txt\n"
+                "exit $RESULT\n"
+            ),
+            encoding="utf-8",
+        )
+        return [str(dockerfile_path), str(test_script_path)]
     raise ValueError(f"Unsupported task patch: {patch_name}")
 
 

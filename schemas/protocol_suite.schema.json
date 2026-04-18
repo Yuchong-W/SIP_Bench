@@ -381,7 +381,8 @@
               "enum": [
                 "offer_letter_generator_system_docx",
                 "dialogue_parser_apt_retry",
-                "citation_check_apt_retry"
+                "citation_check_apt_retry",
+                "citation_check_python_runtime"
               ]
             },
             "uniqueItems": true

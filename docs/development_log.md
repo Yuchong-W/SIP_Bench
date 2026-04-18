@@ -693,3 +693,4 @@ Observed result:
 1. A hardened real `dialogue-parser` Linux probe completed successfully on the first attempt with a valid imported SIP run record and `score = 1.0`.
 2. The previous `RewardFileNotFoundError` on `dialogue-parser` was traced to prepared-copy shell scripts using CRLF line endings; once normalized, the task progressed through environment setup, agent execution, and verifier completion.
 3. A hardened real `citation-check` probe now reaches an explicit retryable Docker build failure under the prepared copy, which narrows the remaining blocker to Ubuntu package index reliability rather than to protocol glue or script execution.
+4. A stronger Python-runtime patch for `citation-check` then removed the Ubuntu apt dependency and verifier bootstrap drift, and a follow-up real heldout probe completed successfully with a valid imported SIP run record and `score = 1.0`.
