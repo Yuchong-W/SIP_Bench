@@ -694,3 +694,34 @@ Observed result:
 2. The previous `RewardFileNotFoundError` on `dialogue-parser` was traced to prepared-copy shell scripts using CRLF line endings; once normalized, the task progressed through environment setup, agent execution, and verifier completion.
 3. A hardened real `citation-check` probe now reaches an explicit retryable Docker build failure under the prepared copy, which narrows the remaining blocker to Ubuntu package index reliability rather than to protocol glue or script execution.
 4. A stronger Python-runtime patch for `citation-check` then removed the Ubuntu apt dependency and verifier bootstrap drift, and a follow-up real heldout probe completed successfully with a valid imported SIP run record and `score = 1.0`.
+
+## 2026-04-18
+
+### Suite Recovery Rerun
+
+Work completed:
+
+1. Added `--run-name` support to `scripts/run_protocol.py` so a config-driven suite can rerun only the named run or runs.
+2. Extended `run_skillsbench_suite(...)` and `run_tau_bench_suite(...)` to reuse existing suite reports for unselected runs while rebuilding `combined_runs.jsonl` and `summary.jsonl` from the mixed old-plus-new run set.
+3. Fixed Harbor rerun job naming so recovery runs always allocate a fresh job directory instead of reusing a stale prior `result.json`.
+4. Added regression coverage for targeted suite reruns and fresh rerun job-name allocation.
+5. Re-ran the failed `SkillsBench oracle real suite` `t0_replay` run through the new recovery path and restored the tracked suite to a fully successful `T0/T1 replay + heldout` state.
+
+Tests run:
+
+1. `python3 -m unittest tests.test_protocol_runner -v`
+2. `python3 -m unittest discover -s tests -p "test_*.py"`
+3. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_oracle_real_suite.json --mode subprocess --run-name t0_replay`
+4. escalated rerun of the same command outside the sandbox so Harbor and Docker could use normal network access
+
+Observed result:
+
+1. The local green test result is now `45` tests and represents real local regression coverage for protocol logic, fixture-backed import paths, and controlled integration seams; it is not the same thing as re-running every live benchmark path end to end.
+2. The recovery rerun first exposed a real stale-import hazard: reusing an existing Harbor job directory caused the protocol to re-import an older failed `dialogue-parser` job.
+3. After fresh job-name allocation was added, the next real rerun wrote to `skillsbench-oracle-real-suite-t0_replay-attempt01-rerun02` and imported a successful `dialogue-parser` Harbor result with `score = 1.0`.
+4. The tracked `SkillsBench oracle real suite` summary is now back to the intended release-facing shape:
+   - `t0_replay_mean = 1.0`
+   - `t1_replay_mean = 1.0`
+   - `t0_heldout_mean = 1.0`
+   - `t1_heldout_mean = 1.0`
+   - `br_ratio_mean = 1.0`

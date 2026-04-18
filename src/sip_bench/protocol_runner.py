@@ -44,6 +44,7 @@ def run_skillsbench_suite(
     out_root: str | Path | None = None,
     execute_mode: str = "subprocess",
     aggregate: bool = True,
+    selected_run_names: set[str] | None = None,
 ) -> dict[str, Any]:
     config_file = Path(config_path).resolve()
     config = load_protocol_suite_config(config_file)
@@ -55,10 +56,27 @@ def run_skillsbench_suite(
     suite_root.mkdir(parents=True, exist_ok=True)
 
     execution_defaults = config["execution"]
-    combined_runs: list[dict[str, Any]] = []
-    run_reports: list[dict[str, Any]] = []
+    selected_run_specs, selected_names = _select_suite_run_specs(
+        config["runs"],
+        selected_run_names,
+    )
+    existing_run_reports = _load_existing_suite_run_reports(suite_root / "suite_report.json")
+    unselected_names = {
+        str(run_spec["run_name"]) for run_spec in config["runs"] if str(run_spec["run_name"]) not in selected_names
+    }
+    if unselected_names:
+        missing_reports = sorted(name for name in unselected_names if name not in existing_run_reports)
+        if missing_reports:
+            missing_text = ", ".join(missing_reports)
+            raise ValueError(
+                "Cannot update only part of the suite without reusable prior run reports. "
+                f"Missing existing runs in {suite_root / 'suite_report.json'}: {missing_text}. "
+                "Run the full suite first or use a different out_root for the subset run."
+            )
 
-    for run_spec in config["runs"]:
+    combined_runs: list[dict[str, Any]] = []
+    run_reports_by_name = dict(existing_run_reports)
+    for run_spec in selected_run_specs:
         run_report = _run_skillsbench_spec(
             suite_name=config["suite_name"],
             base_dir=base_dir,
@@ -69,9 +87,16 @@ def run_skillsbench_suite(
             run_spec=run_spec,
             execute_mode=execute_mode,
         )
+        run_reports_by_name[str(run_report["run_name"])] = run_report
+
+    run_reports: list[dict[str, Any]] = []
+    for run_spec in config["runs"]:
+        run_name = str(run_spec["run_name"])
+        run_report = run_reports_by_name.get(run_name)
+        if run_report is None:
+            continue
         run_reports.append(run_report)
-        if run_report.get("records_path"):
-            combined_runs.extend(load_jsonl(run_report["records_path"]))
+        combined_runs.extend(load_jsonl(_resolve_suite_records_path(run_report, suite_root=suite_root, run_name=run_name)))
 
     combined_runs_path = suite_root / "combined_runs.jsonl"
     write_jsonl(combined_runs_path, combined_runs)
@@ -111,6 +136,7 @@ def run_tau_bench_suite(
     out_root: str | Path | None = None,
     execute_mode: str = "subprocess",
     aggregate: bool = True,
+    selected_run_names: set[str] | None = None,
 ) -> dict[str, Any]:
     config_file = Path(config_path).resolve()
     config = load_protocol_suite_config(config_file)
@@ -123,6 +149,24 @@ def run_tau_bench_suite(
     suite_root.mkdir(parents=True, exist_ok=True)
 
     execution_defaults = config["execution"]
+    selected_run_specs, selected_names = _select_suite_run_specs(
+        config["runs"],
+        selected_run_names,
+    )
+    existing_run_reports = _load_existing_suite_run_reports(suite_root / "suite_report.json")
+    unselected_names = {
+        str(run_spec["run_name"]) for run_spec in config["runs"] if str(run_spec["run_name"]) not in selected_names
+    }
+    if unselected_names:
+        missing_reports = sorted(name for name in unselected_names if name not in existing_run_reports)
+        if missing_reports:
+            missing_text = ", ".join(missing_reports)
+            raise ValueError(
+                "Cannot update only part of the suite without reusable prior run reports. "
+                f"Missing existing runs in {suite_root / 'suite_report.json'}: {missing_text}. "
+                "Run the full suite first or use a different out_root for the subset run."
+            )
+
     suite_env_overrides = _resolve_suite_env(
         base_dir=base_dir,
         repo_root=repo_root,
@@ -138,8 +182,8 @@ def run_tau_bench_suite(
     write_json(suite_root / "preflight.json", preflight_report)
 
     combined_runs: list[dict[str, Any]] = []
-    run_reports: list[dict[str, Any]] = []
-    for run_spec in config["runs"]:
+    run_reports_by_name = dict(existing_run_reports)
+    for run_spec in selected_run_specs:
         run_report = _run_tau_spec(
             suite_name=config["suite_name"],
             base_dir=base_dir,
@@ -149,9 +193,16 @@ def run_tau_bench_suite(
             run_spec=run_spec,
             execute_mode=execute_mode,
         )
+        run_reports_by_name[str(run_report["run_name"])] = run_report
+
+    run_reports: list[dict[str, Any]] = []
+    for run_spec in config["runs"]:
+        run_name = str(run_spec["run_name"])
+        run_report = run_reports_by_name.get(run_name)
+        if run_report is None:
+            continue
         run_reports.append(run_report)
-        if run_report.get("records_path"):
-            combined_runs.extend(load_jsonl(run_report["records_path"]))
+        combined_runs.extend(load_jsonl(_resolve_suite_records_path(run_report, suite_root=suite_root, run_name=run_name)))
 
     combined_runs_path = suite_root / "combined_runs.jsonl"
     write_jsonl(combined_runs_path, combined_runs)
@@ -350,6 +401,51 @@ def load_protocol_suite_config(config_path: str | Path) -> dict[str, Any]:
     return _normalize_protocol_suite_config(config)
 
 
+def _select_suite_run_specs(
+    run_specs: list[dict[str, Any]],
+    selected_run_names: set[str] | None,
+) -> tuple[list[dict[str, Any]], set[str]]:
+    if not selected_run_names:
+        return list(run_specs), {str(run_spec["run_name"]) for run_spec in run_specs}
+
+    requested_names = {str(name) for name in selected_run_names if str(name)}
+    available_names = {str(run_spec["run_name"]) for run_spec in run_specs}
+    unknown_names = sorted(requested_names - available_names)
+    if unknown_names:
+        raise ValueError(f"Unknown suite run name(s): {', '.join(unknown_names)}")
+    return [
+        run_spec for run_spec in run_specs if str(run_spec["run_name"]) in requested_names
+    ], requested_names
+
+
+def _load_existing_suite_run_reports(report_path: Path) -> dict[str, dict[str, Any]]:
+    if not report_path.exists():
+        return {}
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    return {
+        str(run_report["run_name"]): run_report
+        for run_report in report.get("runs", [])
+        if run_report.get("run_name")
+    }
+
+
+def _resolve_suite_records_path(
+    run_report: dict[str, Any],
+    *,
+    suite_root: Path,
+    run_name: str,
+) -> Path:
+    records_path_value = run_report.get("records_path")
+    candidate_paths: list[Path] = []
+    if records_path_value:
+        candidate_paths.append(Path(records_path_value))
+    candidate_paths.append(suite_root / "runs" / f"{run_name}.jsonl")
+    for candidate in candidate_paths:
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(f"Expected records for suite run {run_name} but found none in {candidate_paths}")
+
+
 def _run_skillsbench_spec(
     *,
     suite_name: str,
@@ -476,7 +572,8 @@ def _run_skillsbench_spec(
         attempt_plan_path = attempts_root / f"{attempt_label}.plan.json"
         attempt_execution_path = attempts_root / f"{attempt_label}.execution.json"
         attempt_records_path = attempts_root / f"{attempt_label}.runs.jsonl"
-        attempt_job_name = _format_attempt_job_name(
+        attempt_job_name = _allocate_attempt_job_name(
+            jobs_dir=jobs_dir,
             base_job_name=job_name,
             attempt_number=attempt_number,
             max_attempts=effective_retry_policy["max_attempts"],
@@ -1025,6 +1122,26 @@ def _format_attempt_job_name(*, base_job_name: str, attempt_number: int, max_att
     if max_attempts <= 1:
         return base_job_name
     return f"{base_job_name}-{_format_attempt_label(attempt_number)}"
+
+
+def _allocate_attempt_job_name(
+    *,
+    jobs_dir: Path,
+    base_job_name: str,
+    attempt_number: int,
+    max_attempts: int,
+) -> str:
+    base_attempt_job_name = _format_attempt_job_name(
+        base_job_name=base_job_name,
+        attempt_number=attempt_number,
+        max_attempts=max_attempts,
+    )
+    candidate_job_name = base_attempt_job_name
+    rerun_index = 2
+    while (jobs_dir / candidate_job_name).exists():
+        candidate_job_name = f"{base_attempt_job_name}-rerun{rerun_index:02d}"
+        rerun_index += 1
+    return candidate_job_name
 
 
 def _plan_skillsbench_retry(

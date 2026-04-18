@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
 
 from sip_bench.metrics import load_jsonl
 from sip_bench.protocol_runner import (
+    _allocate_attempt_job_name,
     _apply_task_patch,
     _normalize_shell_scripts,
     _plan_skillsbench_retry,
@@ -29,6 +30,21 @@ from sip_bench.protocol_runner import (
 
 
 class ProtocolRunnerTests(unittest.TestCase):
+    def test_allocate_attempt_job_name_avoids_existing_job_dirs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            jobs_dir = Path(tmpdir)
+            (jobs_dir / "retry-suite-t0_replay-attempt01").mkdir()
+            (jobs_dir / "retry-suite-t0_replay-attempt01-rerun02").mkdir()
+
+            allocated = _allocate_attempt_job_name(
+                jobs_dir=jobs_dir,
+                base_job_name="retry-suite-t0_replay",
+                attempt_number=1,
+                max_attempts=2,
+            )
+
+            self.assertEqual(allocated, "retry-suite-t0_replay-attempt01-rerun03")
+
     def test_plan_skillsbench_retry_matches_message_substrings(self) -> None:
         decision = _plan_skillsbench_retry(
             attempt_number=1,
@@ -197,6 +213,108 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(len(summary_rows), 1)
             self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
             self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
+
+    def test_run_skillsbench_suite_can_rerun_selected_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            success_job = self._make_single_trial_job_dir(
+                tmp_path / "jobs" / "success",
+                fixture_relative_path="citation-check__fixture001/result.json",
+            )
+            failure_job = self._make_single_trial_job_dir(
+                tmp_path / "jobs" / "failure",
+                fixture_relative_path="court-form-filling__fixture002/result.json",
+            )
+
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "resume-suite",
+                "benchmark_name": "skillsbench",
+                "repo_root": "benchmarks/skillsbench",
+                "registry_path": str(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "agent": "oracle",
+                    "model": None,
+                    "harbor_bin": "harbor",
+                    "jobs_dir": str(tmp_path / "jobs_unused"),
+                    "path_type": "oracle",
+                    "agent_version": "resume-suite",
+                    "seed": 11,
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": ["citation-check"],
+                        "source_job_dir": str(success_job),
+                    },
+                    {
+                        "run_name": "t0_heldout",
+                        "phase": "T0",
+                        "benchmark_split": "heldout",
+                        "task_ids": ["court-form-filling"],
+                        "source_job_dir": str(failure_job),
+                    },
+                    {
+                        "run_name": "t1_replay",
+                        "phase": "T1",
+                        "benchmark_split": "replay",
+                        "task_ids": ["citation-check"],
+                        "source_job_dir": str(success_job),
+                    },
+                    {
+                        "run_name": "t1_heldout",
+                        "phase": "T1",
+                        "benchmark_split": "heldout",
+                        "task_ids": ["court-form-filling"],
+                        "source_job_dir": str(failure_job),
+                    },
+                ],
+            }
+            config_path = tmp_path / "resume_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            initial_report = run_skillsbench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=True,
+            )
+            self.assertEqual(initial_report["run_count"], 4)
+            initial_combined = load_jsonl(Path(initial_report["combined_runs_path"]))
+            self.assertEqual(
+                [row["task_id"] for row in initial_combined if row["phase"] == "T0" and row["benchmark_split"] == "replay"],
+                ["citation-check"],
+            )
+
+            config["runs"][0]["task_ids"] = ["court-form-filling"]
+            config["runs"][0]["source_job_dir"] = str(failure_job)
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            resumed_report = run_skillsbench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=True,
+                selected_run_names={"t0_replay"},
+            )
+            self.assertEqual(resumed_report["run_count"], 4)
+
+            combined_runs = load_jsonl(Path(resumed_report["combined_runs_path"]))
+            t0_replay_rows = [
+                row for row in combined_runs if row["phase"] == "T0" and row["benchmark_split"] == "replay"
+            ]
+            t1_replay_rows = [
+                row for row in combined_runs if row["phase"] == "T1" and row["benchmark_split"] == "replay"
+            ]
+            self.assertEqual(len(combined_runs), 4)
+            self.assertEqual(len(t0_replay_rows), 1)
+            self.assertEqual(t0_replay_rows[0]["task_id"], "court-form-filling")
+            self.assertFalse(t0_replay_rows[0]["success"])
+            self.assertEqual(len(t1_replay_rows), 1)
+            self.assertEqual(t1_replay_rows[0]["task_id"], "citation-check")
+            self.assertTrue(t1_replay_rows[0]["success"])
 
     @patch("sip_bench.protocol_runner.validate_data_file")
     @patch("sip_bench.protocol_runner.import_skillsbench_job")

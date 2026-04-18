@@ -24,6 +24,9 @@ Highlights:
    - `scripts/run_release_checks.py`
    - CI now uses the shared release-check entrypoint
    - `.editorconfig` complements `.gitattributes` for line-ending discipline
+8. suite recovery hardening:
+   - `run_protocol.py --run-name ...` can rerun a subset of suite runs and rebuild the suite summary from mixed old-plus-new results
+   - real SkillsBench reruns now allocate a fresh Harbor job directory so stale job outputs cannot be re-imported accidentally
 
 Known release posture:
 

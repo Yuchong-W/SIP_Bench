@@ -2,8 +2,8 @@
   "schema_version": "0.1.0",
   "suite_name": "skillsbench-oracle-real-suite",
   "benchmark_name": "skillsbench",
-  "config_path": "E:\\Protocal_Bench\\protocol\\skillsbench_oracle_real_suite.json",
-  "out_root": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite",
+  "config_path": "/home/yuchong/Protocal_Bench/protocol/skillsbench_oracle_real_suite.json",
+  "out_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite",
   "execute_mode": "subprocess",
   "run_count": 4,
   "runs": [
@@ -13,11 +13,12 @@
       "benchmark_split": "replay",
       "path_type": "oracle",
       "seed": 0,
-      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t0_replay.json",
-      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t0_replay.json",
-      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t0_replay.json",
-      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_replay.jsonl",
-      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t0_replay",
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_replay.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/hydration/t0_replay.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/execution/t0_replay.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_replay.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t0_replay-attempt01-rerun02",
+      "job_name": "skillsbench-oracle-real-suite-t0_replay-attempt01-rerun02",
       "task_ids": [
         "dialogue-parser"
       ],
@@ -25,6 +26,78 @@
         "website/src/data",
         "tasks/dialogue-parser"
       ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ],
+          "citation-check": [
+            "citation_check_python_runtime"
+          ]
+        }
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-oracle-real-suite-t0_replay-attempt01-rerun02",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t0_replay-attempt01-rerun02",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "non_failed_record_present",
+            "remaining_attempts": 1,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/preparation/t0_replay.json",
       "execution_mode": "subprocess",
       "execution_summary": {
         "executed": 1,
@@ -37,8 +110,8 @@
       "success_count": 1,
       "failure_count": 0,
       "records_validation": {
-        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_replay.jsonl",
-        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_replay.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
         "input_format": "jsonl",
         "records_checked": 1,
         "valid": true,
@@ -52,11 +125,12 @@
       "benchmark_split": "heldout",
       "path_type": "oracle",
       "seed": 0,
-      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t0_heldout.json",
-      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t0_heldout.json",
-      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t0_heldout.json",
-      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_heldout.jsonl",
-      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t0_heldout",
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_heldout.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/hydration/t0_heldout.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/execution/t0_heldout.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_heldout.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t0_heldout-attempt01",
+      "job_name": "skillsbench-oracle-real-suite-t0_heldout-attempt01",
       "task_ids": [
         "citation-check"
       ],
@@ -64,6 +138,78 @@
         "website/src/data",
         "tasks/citation-check"
       ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ],
+          "citation-check": [
+            "citation_check_python_runtime"
+          ]
+        }
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-oracle-real-suite-t0_heldout-attempt01",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t0_heldout-attempt01",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "non_failed_record_present",
+            "remaining_attempts": 1,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/preparation/t0_heldout.json",
       "execution_mode": "subprocess",
       "execution_summary": {
         "executed": 1,
@@ -73,11 +219,11 @@
         "halted_early": false
       },
       "imported_records": 1,
-      "success_count": 0,
-      "failure_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
       "records_validation": {
-        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t0_heldout.jsonl",
-        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t0_heldout.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
         "input_format": "jsonl",
         "records_checked": 1,
         "valid": true,
@@ -91,11 +237,12 @@
       "benchmark_split": "replay",
       "path_type": "oracle",
       "seed": 0,
-      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_replay.json",
-      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t1_replay.json",
-      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t1_replay.json",
-      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_replay.jsonl",
-      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t1_replay",
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_replay.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/hydration/t1_replay.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/execution/t1_replay.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_replay.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t1_replay-attempt01",
+      "job_name": "skillsbench-oracle-real-suite-t1_replay-attempt01",
       "task_ids": [
         "dialogue-parser"
       ],
@@ -103,6 +250,78 @@
         "website/src/data",
         "tasks/dialogue-parser"
       ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ],
+          "citation-check": [
+            "citation_check_python_runtime"
+          ]
+        }
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-oracle-real-suite-t1_replay-attempt01",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t1_replay-attempt01",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "non_failed_record_present",
+            "remaining_attempts": 1,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/preparation/t1_replay.json",
       "execution_mode": "subprocess",
       "execution_summary": {
         "executed": 1,
@@ -115,8 +334,8 @@
       "success_count": 1,
       "failure_count": 0,
       "records_validation": {
-        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_replay.jsonl",
-        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_replay.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
         "input_format": "jsonl",
         "records_checked": 1,
         "valid": true,
@@ -130,11 +349,12 @@
       "benchmark_split": "heldout",
       "path_type": "oracle",
       "seed": 0,
-      "plan_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_heldout.json",
-      "hydration_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\hydration\\t1_heldout.json",
-      "execution_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\execution\\t1_heldout.json",
-      "records_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_heldout.jsonl",
-      "job_dir": "E:\\Protocal_Bench\\results\\real_jobs_protocol\\skillsbench-oracle-real-suite-t1_heldout",
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_heldout.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/hydration/t1_heldout.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/execution/t1_heldout.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_heldout.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t1_heldout-attempt01",
+      "job_name": "skillsbench-oracle-real-suite-t1_heldout-attempt01",
       "task_ids": [
         "citation-check"
       ],
@@ -142,6 +362,78 @@
         "website/src/data",
         "tasks/citation-check"
       ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ],
+          "citation-check": [
+            "citation_check_python_runtime"
+          ]
+        }
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-oracle-real-suite-t1_heldout-attempt01",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol/skillsbench-oracle-real-suite-t1_heldout-attempt01",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "non_failed_record_present",
+            "remaining_attempts": 1,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/preparation/t1_heldout.json",
       "execution_mode": "subprocess",
       "execution_summary": {
         "executed": 1,
@@ -151,11 +443,11 @@
         "halted_early": false
       },
       "imported_records": 1,
-      "success_count": 0,
-      "failure_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
       "records_validation": {
-        "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\runs\\t1_heldout.jsonl",
-        "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/runs/t1_heldout.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
         "input_format": "jsonl",
         "records_checked": 1,
         "valid": true,
@@ -164,10 +456,10 @@
       }
     }
   ],
-  "combined_runs_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\combined_runs.jsonl",
+  "combined_runs_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl",
   "runs_validation": {
-    "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\combined_runs.jsonl",
-    "schema_path": "E:\\Protocal_Bench\\schemas\\runs.schema.json",
+    "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl",
+    "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
     "input_format": "jsonl",
     "records_checked": 4,
     "valid": true,
@@ -176,12 +468,12 @@
   },
   "summary": {
     "attempted": true,
-    "summary_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\summary.jsonl",
+    "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl",
     "generated": true,
     "records": 1,
     "validation": {
-      "data_path": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\summary.jsonl",
-      "schema_path": "E:\\Protocal_Bench\\schemas\\summary.schema.json",
+      "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl",
+      "schema_path": "/home/yuchong/Protocal_Bench/schemas/summary.schema.json",
       "input_format": "jsonl",
       "records_checked": 1,
       "valid": true,

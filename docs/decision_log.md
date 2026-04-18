@@ -266,3 +266,16 @@ Why:
 2. hidden reruns would make release evidence and future paper artifacts harder to review
 3. attempt-level `plan`, `execution`, and `runs` artifacts let the suite absorb flaky Docker/package-network failures without pretending the benchmark never failed
 4. keeping retries narrow and explicit preserves the distinction between transient infra failures and deterministic benchmark failures such as missing reward files
+
+### D021
+
+Decision:
+
+Operator-triggered recovery reruns for a subset of suite runs should reuse the existing suite report but always allocate a fresh Harbor job directory.
+
+Why:
+
+1. real suite recovery often needs "rerun only `t0_replay`" instead of recomputing every phase-split run
+2. reusing the rest of the suite keeps aggregation deterministic and avoids clobbering already-reviewed successful runs
+3. reusing the same Harbor job directory on rerun can silently re-import stale `result.json` files even when a new execution happened
+4. fresh job-name allocation makes rerun provenance explicit and prevents false recovery caused by old trial directories

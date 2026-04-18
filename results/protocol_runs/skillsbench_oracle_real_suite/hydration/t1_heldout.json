@@ -1,8 +1,8 @@
 {
   "schema_version": "0.1.0",
   "action": "skillsbench_hydration",
-  "plan_source": "E:\\Protocal_Bench\\results\\protocol_runs\\skillsbench_oracle_real_suite\\plans\\t1_heldout.json",
-  "repo_root": "E:\\Protocal_Bench\\benchmarks\\skillsbench",
+  "plan_source": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_heldout.source.json",
+  "repo_root": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench",
   "split": "heldout",
   "selected_splits": [
     "heldout"
@@ -11,7 +11,7 @@
   "command": [
     "git",
     "-C",
-    "E:\\Protocal_Bench\\benchmarks\\skillsbench",
+    "/home/yuchong/Protocal_Bench/benchmarks/skillsbench",
     "sparse-checkout",
     "add",
     "website/src/data",
@@ -48,5 +48,5 @@
       "exists": true
     }
   ],
-  "generated_at": "2026-04-15T12:28:04Z"
+  "generated_at": "2026-04-18T08:20:14Z"
 }

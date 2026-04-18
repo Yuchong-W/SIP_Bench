@@ -34,6 +34,13 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip summary aggregation after combined runs are written.",
     )
+    skillsbench.add_argument(
+        "--run-name",
+        action="append",
+        dest="run_names",
+        default=[],
+        help="Only execute the named suite run. Repeat to execute multiple runs while reusing existing artifacts for the others.",
+    )
 
     tau_bench = subparsers.add_parser("run-tau-suite")
     tau_bench.add_argument("--config", required=True, help="Path to the protocol suite config JSON.")
@@ -52,6 +59,13 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip summary aggregation after combined runs are written.",
     )
+    tau_bench.add_argument(
+        "--run-name",
+        action="append",
+        dest="run_names",
+        default=[],
+        help="Only execute the named suite run. Repeat to execute multiple runs while reusing existing artifacts for the others.",
+    )
 
     return parser.parse_args()
 
@@ -64,6 +78,7 @@ def main() -> int:
             out_root=args.out_root,
             execute_mode=args.mode,
             aggregate=not args.no_aggregate,
+            selected_run_names=set(args.run_names) or None,
         )
         print(
             json.dumps(
@@ -85,6 +100,7 @@ def main() -> int:
             out_root=args.out_root,
             execute_mode=args.mode,
             aggregate=not args.no_aggregate,
+            selected_run_names=set(args.run_names) or None,
         )
         print(
             json.dumps(

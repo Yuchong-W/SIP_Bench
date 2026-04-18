@@ -13,6 +13,7 @@ Build a SkillsBench execution plan, hydrate a sparse SkillsBench checkout, execu
 
 4. `run_protocol.py`
 Run a config-driven SkillsBench or tau-bench protocol suite that executes/imports multiple phase-split runs, combines `runs.jsonl`, and writes a validated `summary.jsonl` when the suite is complete enough to aggregate.
+It can also rerun one or more named suite runs with `--run-name` while reusing the rest of an existing suite report.
 
 5. `validate_records.py`
 Validate `json` or `jsonl` artifacts against the authoritative SIP schemas.
@@ -58,6 +59,7 @@ Operational notes:
 9. `execute-plan` and `tau_bench_preflight` now resolve bare `python` or `python3` through the current environment so Linux hosts without a `python` alias still work.
 10. `run_release_checks.py` uses the current interpreter by default, so the same command works inside virtualenvs and CI without relying on an ambient `python` alias.
 11. The tracked `SkillsBench oracle` real-suite config now points at `scripts/harbor312`, with automatic `.cmd` fallback on Windows so the same config works on both release-facing Linux hosts and local Windows workflows.
+12. `run_protocol.py --run-name <name>` is the recovery path when a multi-run suite is interrupted or one real task needs to be rerun. The runner now allocates a fresh Harbor job directory for reruns so import does not accidentally reuse stale `result.json` files from an older attempt.
 
 Planned next:
 
@@ -71,6 +73,7 @@ Execute the golden-task suite after adapter or metric changes.
 
 ```bash
 python3 scripts/run_release_checks.py
+python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_oracle_real_suite.json --mode subprocess --run-name t0_replay
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/smoke_adapters.py
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture

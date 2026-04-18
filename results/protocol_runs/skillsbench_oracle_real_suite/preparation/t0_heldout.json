@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_task_preparation",
+  "prepared_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout",
+  "skill_mode": "keep",
+  "patched_files": [
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout/tasks/citation-check/solution/solve.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout/tasks/citation-check/tests/test.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout/tasks/citation-check/environment/Dockerfile",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout/tasks/citation-check/tests/test.sh"
+  ],
+  "tasks": [
+    {
+      "task_id": "citation-check",
+      "source_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/tasks/citation-check",
+      "prepared_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_oracle_real_suite/prepared/t0_heldout/tasks/citation-check",
+      "skill_mode": "keep",
+      "patches": [
+        "citation_check_python_runtime"
+      ]
+    }
+  ]
+}

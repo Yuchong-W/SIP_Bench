@@ -193,6 +193,7 @@ Current publication expectation:
 1. push directly from local `main` to `origin/main`
 2. use SSH transport on this machine
 3. do not assume GitHub CLI or PR automation is available locally
+4. `gh` is still not installed locally, so Git-based push is the active publication path
 
 ## Update 2026-04-17
 
@@ -212,3 +213,33 @@ Additional local-only exclusions:
 5. `protocol/.env.local`
 6. `protocol/*.env.local`
 7. `results/protocol_runs/skillsbench_codex_external_prepared_suite/`
+
+## Update 2026-04-18
+
+Additional release-facing suite provenance now intended for upload:
+
+1. `results/protocol_runs/skillsbench_oracle_real_suite/preparation/t0_replay.json`
+2. `results/protocol_runs/skillsbench_oracle_real_suite/preparation/t0_heldout.json`
+3. `results/protocol_runs/skillsbench_oracle_real_suite/preparation/t1_replay.json`
+4. `results/protocol_runs/skillsbench_oracle_real_suite/preparation/t1_heldout.json`
+5. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_replay.source.json`
+6. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t0_heldout.source.json`
+7. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_replay.source.json`
+8. `results/protocol_runs/skillsbench_oracle_real_suite/plans/t1_heldout.source.json`
+9. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.plan.json`
+10. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.execution.json`
+11. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_replay/attempt01.runs.jsonl`
+12. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.plan.json`
+13. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.execution.json`
+14. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t0_heldout/attempt01.runs.jsonl`
+15. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.plan.json`
+16. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.execution.json`
+17. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_replay/attempt01.runs.jsonl`
+18. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.plan.json`
+19. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.execution.json`
+20. `results/protocol_runs/skillsbench_oracle_real_suite/attempts/t1_heldout/attempt01.runs.jsonl`
+
+Rationale:
+
+1. the suite report now references preparation and attempt-level artifacts directly
+2. targeted rerun recovery is part of the release-facing protocol behavior and should remain auditable in the tracked artifact set
