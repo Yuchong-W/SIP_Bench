@@ -55,6 +55,10 @@
             "null"
           ]
         },
+        "agent_import_path": {
+          "type": "string",
+          "minLength": 1
+        },
         "harbor_bin": {
           "type": "string",
           "minLength": 1
@@ -234,6 +238,10 @@
               "string",
               "null"
             ]
+          },
+          "agent_import_path": {
+            "type": "string",
+            "minLength": 1
           },
           "harbor_bin": {
             "type": "string",

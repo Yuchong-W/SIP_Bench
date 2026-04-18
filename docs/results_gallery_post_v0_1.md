@@ -14,6 +14,7 @@ See also:
 | `results/dryrun/summary.jsonl` | `0.250` | `0.425` | `+0.175` | `0.600` | `0.525` | `-0.075` | `0.405 / -0.020` | `75` tokens, `2` tool calls, `4.0s` | Improvement is real, but it costs budget, hurts replay retention, and softens by `T2` |
 | `SkillsBench oracle real suite` | `1.000` | `1.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `184.16s` mean wall clock | The live protocol path is operationally valid, but this suite is evidence of execution correctness rather than improvement tradeoff |
 | `SkillsBench codex external prepared suite` | `0.000` | `0.000` | `0.000` | `0.000` | `0.000` | `0.000` | `n/a` | `152.10s` mean wall clock | The full prepared suite now executes end to end on this host, but without `OPENAI_API_KEY` the Harbor `codex` agent collapses both strip and keep paths into flat-zero verifier outcomes |
+| `SkillsBench codex host-auth custom-agent bundle` | `1.000` | `1.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `1031041` tokens, `601.54s` wall clock | A repo-local host-side `codex` agent can now produce a fully aggregated prepared-suite bundle with ChatGPT login state and no global Harbor edits; the current bundle is a real protocol artifact, but it is a ceiling-effect validation bundle rather than a tradeoff-revealing result |
 | `tau-bench historical/import-only` | `1.000` | `1.000` | `0.000` | `0.500` | `0.500` | `0.000` | `n/a` | `$0.01292` mean cost | Gives a second environment that is interpretable without private access, even though it is not yet a strong gain/retention stress test |
 
 Primary tracked sources:
@@ -21,7 +22,9 @@ Primary tracked sources:
 1. `results/dryrun/summary.jsonl`
 2. `results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl`
 3. `results/protocol_runs/skillsbench_codex_external_prepared_suite/summary.jsonl`
-4. `results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl`
+4. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl`
+5. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
+6. `results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl`
 
 ## Environment Coverage Table
 
@@ -30,6 +33,7 @@ Primary tracked sources:
 | `SkillsBench oracle real suite` | Supported | Release-critical | Real planning, hydration, execution import, suite aggregation, and retry-aware provenance | Current tracked suite is mostly orchestration evidence, not a strong self-improvement result |
 | `tau-bench historical/import-only` | Supported | Release-critical | Stable second environment without provider credentials | Historical/import-only path is weaker than live execution for operational realism |
 | `SkillsBench codex external prepared` | Experimental, but now fully executable | Optional | Best candidate for stronger protocol-vs-self-evolution comparisons | The suite now completes end to end, but without `OPENAI_API_KEY` it produces a flat-zero summary that reflects credential failure more than capability |
+| `SkillsBench codex host-auth custom agent` | Experimental, but now multi-run and summary-backed | Optional | Best candidate for using ChatGPT login state instead of API keys while preserving Harbor verification | The path is now viable for real bundles, but the current tracked task pair saturates at `1.0`, so stronger non-ceiling tasks are still needed for protocol-value claims |
 | `tau-bench` live provider-backed execution | Experimental | Optional | Best candidate for a more realistic second live environment | Requires provider credentials and explicit budget |
 
 Primary tracked sources:
@@ -46,6 +50,7 @@ Primary tracked sources:
 | Live suite execution in general | Docker / apt / environment issues can fail for infrastructure reasons rather than protocol logic | per-run `retry_policy`, `attempts/`, `preparation/`, and run-local provenance files are all tracked | keep retry policy explicit and preserve attempt-level artifacts | live suite remains auditable instead of looking like one opaque score | ordinary benchmark reporting usually compresses infra failure burden into one terminal status |
 | `tau-bench historical` release path | second environment needed to be interpretable without private credentials | tracked historical suite summary is versioned and schema-valid | use import-only historical artifacts as the public second environment | release can show two environments without gating on live provider access | a simple support matrix would not show which path is actually reproducible today |
 | `SkillsBench codex external prepared` full suite | the first probe failed in `dialogue-parser` Docker build, the second exposed missing model configuration, and the final tracked suite completed with a flat-zero summary | tracked `preparation/`, `attempts/`, `suite_report.json`, and probe artifacts show the progression from apt instability to explicit `model` wiring to `env_override_keys = []` and `0.0` verifier rewards across the final suite | add `dialogue_parser_apt_retry`, make the tracked config pass `model = "gpt-5.4"`, and thread SkillsBench env resolution through `.env.local` / `env_file` | the suite is now fully executable and schema-valid, but it still needs `OPENAI_API_KEY` to produce a meaningful non-zero comparison | a flat support label would hide both the engineering recovery and the fact that the remaining blocker is now credential state rather than protocol wiring |
+| `SkillsBench codex host-auth custom-agent` bundle | Harbor's built-in container-side `codex` agent could not consume ChatGPT login state directly | the repo-local custom agent path now leaves tracked `host-workspace`, `codex.txt`, `trajectory.json`, `runs/*.jsonl`, and a generated `summary.jsonl` instead of only `401` logs | add `agent_import_path`, run `codex exec` on the host, sync outputs back into the task container, and keep Harbor for environment/verifier orchestration | the new four-run bundle reaches `T0/T1 replay/heldout` with all scores at `1.0` and a valid summary using account auth and no global Harbor edits | a simple "needs key" label is now wrong, but the new caveat is ceiling effect: this bundle proves execution viability more than gain/retention tradeoff |
 
 Primary tracked sources:
 
@@ -56,6 +61,9 @@ Primary tracked sources:
 5. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_probe/runs/t0_replay.jsonl`
 6. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_retry_probe/runs/t0_replay.jsonl`
 7. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_model_probe/runs/t0_replay.jsonl`
+8. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl`
+9. `results/protocol_runs/skillsbench_codex_external_prepared_t0_heldout_host_agent_probe/runs/t0_heldout.jsonl`
+10. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
 
 ## Figures
 
@@ -118,6 +126,7 @@ Interpretation:
 
 ## Remaining Gaps
 
-1. the next high-value upgrade is to rerun the now-complete prepared suite with `OPENAI_API_KEY` so the comparison reflects capability instead of credential failure
-2. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
-3. the current provenance chart is based on one strong recovery case; a second tracked recovery family would make this part of the story materially stronger
+1. the next high-value upgrade is a stronger non-ceiling host-auth bundle so replay vs heldout behavior is measured on tasks that do not all saturate at `1.0`
+2. if the host-auth path stalls on harder task selections, the fallback remains rerunning the prepared suite with `OPENAI_API_KEY` so the comparison reflects capability instead of credential failure
+3. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
+4. the current provenance chart is based on one strong recovery case; a second tracked recovery family would make this part of the story materially stronger

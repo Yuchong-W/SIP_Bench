@@ -54,13 +54,17 @@ New constraint learned from the latest probe work:
 
 1. a repo-local Harbor-to-Codex login bridge now exists and avoids editing the global Harbor installation
 2. that isolated bridge is useful engineering infrastructure, but it still does not remove the effective credential requirement on the current Harbor `codex` noninteractive path
-3. the next prepared-suite comparison should therefore still be planned around `OPENAI_API_KEY`, not around an assumption that the local ChatGPT login state is already sufficient
+3. a repo-local custom agent path now exists that runs `codex exec` on the host with the user's ChatGPT login state and synchronizes outputs back into Harbor-managed verification
+4. that host-auth custom agent has already produced real verifier-backed prepared probe results on both `dialogue-parser` and `offer-letter-generator`, so `OPENAI_API_KEY` is no longer the only plausible route to stronger prepared-suite evidence
+5. that host-auth path now also has a real four-run `T0/T1 replay/heldout` bundle with a valid `summary.jsonl`, so it has crossed from probe infrastructure into usable experiment infrastructure
+6. however, the first summary-backed host-auth bundle saturates at `1.0` on every tracked task, so it demonstrates viability better than it demonstrates protocol tradeoffs
 
 Bottom line:
 
 1. design and interpretation work are no longer the main bottleneck
 2. additional experiments are still necessary
 3. the highest-value remaining work is now experimental, not presentational
+4. the next experimental bottleneck is not "can account auth work at all?" but "can account auth produce non-ceiling protocol evidence?"
 
 ## Workstreams
 
@@ -141,13 +145,11 @@ Goal:
 
 Priority experiments:
 
-1. rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that:
-   - the full tracked suite completes end to end
-   - the repo-local login bridge has been tested without modifying global Harbor files
-   - the current Harbor `codex` execution path still collapses to empty-key `401 Unauthorized` failures when no API key is supplied
-2. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
-3. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
-4. only then consider `tau-bench` live runs with explicit provider budget
+1. expand the repo-local host-auth custom agent from the first successful multi-run bundle to a stronger prepared comparison that can speak to replay vs held-out behavior without saturating at `1.0`
+2. keep `OPENAI_API_KEY` as the fallback route for the same prepared-suite comparison if the host-auth path stalls on harder task selections or larger bundles
+3. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
+4. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
+5. only then consider `tau-bench` live runs with explicit provider budget
 
 Minimum acceptable experimental upgrade:
 
@@ -157,7 +159,9 @@ Minimum acceptable experimental upgrade:
 
 Highest-value experimental package from here:
 
-1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas after `OPENAI_API_KEY` is supplied
+1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas using either:
+   - the repo-local host-auth custom agent if it generalizes beyond `dialogue-parser`, or
+   - `OPENAI_API_KEY` if the host-auth path stalls
 2. one second tracked recovery case with attempt-level provenance
 3. one updated results-gallery section that combines those new artifacts into a protocol-first comparison table
 
@@ -183,13 +187,14 @@ Not yet a priority:
 
 ### Phase 3: New Experimental Evidence
 
-1. rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
-2. add comparison tables that separate:
+1. try the prepared-suite expansion with the repo-local host-auth custom agent on a harder replay-plus-heldout bundle that is less likely to saturate
+2. if that stalls, rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
+3. add comparison tables that separate:
    - held-out improvement
    - replay retention
    - stability
    - operational failure burden
-3. decide whether the new evidence is strong enough to justify a paper-facing empirical section
+4. decide whether the new evidence is strong enough to justify a paper-facing empirical section
 
 ## Repo-Hosted Asset Standard
 
@@ -208,7 +213,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
-2. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
-3. update the results gallery with a protocol-first comparison table once those experiments exist
-4. postpone broader benchmark expansion until those experimental assets exist
+1. choose a harder host-auth replay/heldout task mix or add a second seed so the next bundle is less vulnerable to ceiling effect
+2. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on that stronger bundle
+3. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
+4. update the results gallery with a protocol-first comparison table once those experiments exist

@@ -49,6 +49,20 @@ class SkillsBenchAdapterTests(unittest.TestCase):
         self.assertEqual(command[:3], ["harbor", "run", "-p"])
         self.assertIn("tasks/citation-check", command[3].replace("\\", "/"))
 
+    def test_build_harbor_command_supports_agent_import_path(self) -> None:
+        adapter = SkillsBenchAdapter()
+        task = adapter.discover_tasks(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json")[0]
+        command = adapter.build_harbor_command(
+            repo_root="benchmarks/skillsbench",
+            task=task,
+            agent="codex",
+            model="gpt-5.4",
+            agent_import_path="sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+            harbor_bin="harbor",
+        )
+        self.assertIn("--agent-import-path", command)
+        self.assertIn("sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent", command)
+
     def test_parse_result_file_infers_path_types_and_registry_metadata(self) -> None:
         adapter = SkillsBenchAdapter()
         runs = adapter.parse_result_file(

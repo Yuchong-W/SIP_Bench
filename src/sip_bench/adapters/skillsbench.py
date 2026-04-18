@@ -49,6 +49,7 @@ class SkillsBenchAdapter(BenchmarkAdapter):
         task: TaskDescriptor,
         agent: str,
         model: str | None = None,
+        agent_import_path: str | None = None,
         harbor_bin: str = "harbor",
         extra_args: list[str] | None = None,
     ) -> list[str]:
@@ -57,9 +58,11 @@ class SkillsBenchAdapter(BenchmarkAdapter):
             "run",
             "-p",
             str(self.resolve_task_path(repo_root, task)),
-            "-a",
-            agent,
         ]
+        if agent_import_path:
+            command.extend(["--agent-import-path", agent_import_path])
+        else:
+            command.extend(["-a", agent])
         if model:
             command.extend(["-m", model])
         if extra_args:

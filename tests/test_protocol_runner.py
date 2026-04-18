@@ -15,6 +15,13 @@ if str(SRC) not in sys.path:
 
 from sip_bench.metrics import load_jsonl
 from sip_bench.harbor_codex_bridge import build_codex_agent_env, build_codex_auth_setup_command
+from sip_bench.harbor_codex_host_agent import (
+    create_task_helper_scripts,
+    extract_usage_from_codex_output,
+    infer_workdir_from_dockerfile,
+    rewrite_instruction_for_host_workspace,
+    seed_host_workspace_from_task_environment,
+)
 from sip_bench.protocol_runner import (
     _allocate_attempt_job_name,
     _apply_task_patch,
@@ -42,6 +49,84 @@ class ProtocolRunnerTests(unittest.TestCase):
     def test_build_codex_agent_env_omits_empty_api_key(self) -> None:
         env = build_codex_agent_env(codex_home="/tmp/codex-home", openai_api_key="", openai_base_url=None)
         self.assertEqual(env, {"CODEX_HOME": "/tmp/codex-home"})
+
+    def test_rewrite_instruction_for_host_workspace_mentions_container_mapping(self) -> None:
+        rewritten = rewrite_instruction_for_host_workspace(
+            instruction="Write output to /app/dialogue.json",
+            container_workdir="/app",
+            helper_scripts_available=True,
+        )
+        self.assertIn("host-side mirror", rewritten)
+        self.assertIn("`/app`", rewritten)
+        self.assertIn("./task_shell", rewritten)
+        self.assertIn("Write output to /app/dialogue.json", rewritten)
+
+    def test_create_task_helper_scripts_writes_docker_helpers(self) -> None:
+        class FakeEnvironment:
+            session_id = "dialogue-parser__AbC123"
+            environment_dir = Path("/tmp/dialogue-parser/environment")
+            _docker_compose_paths = [
+                Path("/tmp/compose-base.yaml"),
+                Path("/tmp/compose-build.yaml"),
+            ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workspace_dir = Path(tmpdir)
+            helper_paths = create_task_helper_scripts(
+                workspace_dir=workspace_dir,
+                environment=FakeEnvironment(),
+            )
+            self.assertEqual({path.name for path in helper_paths}, {"task_shell", "task_put", "task_get"})
+            task_shell = (workspace_dir / "task_shell").read_text(encoding="utf-8")
+            self.assertIn("'docker' 'compose' '-p' 'dialogue-parser__abc123'", task_shell)
+            self.assertIn("exec -T main bash -lc", task_shell)
+
+    def test_seed_host_workspace_from_task_environment_copies_inputs_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            task_dir = tmp_path / "task"
+            environment_dir = task_dir / "environment"
+            workspace_dir = tmp_path / "workspace"
+            environment_dir.mkdir(parents=True)
+            workspace_dir.mkdir()
+            (environment_dir / "Dockerfile").write_text("FROM ubuntu:24.04\n", encoding="utf-8")
+            (environment_dir / "script.txt").write_text("hello\n", encoding="utf-8")
+            (environment_dir / "nested").mkdir()
+            (environment_dir / "nested" / "config.json").write_text("{}", encoding="utf-8")
+
+            copied = seed_host_workspace_from_task_environment(
+                task_dir=task_dir,
+                workspace_dir=workspace_dir,
+            )
+
+            self.assertEqual({path.name for path in copied}, {"script.txt", "nested"})
+            self.assertFalse((workspace_dir / "Dockerfile").exists())
+            self.assertEqual((workspace_dir / "script.txt").read_text(encoding="utf-8"), "hello\n")
+            self.assertEqual((workspace_dir / "nested" / "config.json").read_text(encoding="utf-8"), "{}")
+
+    def test_infer_workdir_from_dockerfile_uses_last_workdir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dockerfile = Path(tmpdir) / "Dockerfile"
+            dockerfile.write_text("FROM ubuntu:24.04\nWORKDIR /tmp\nWORKDIR /app\n", encoding="utf-8")
+            self.assertEqual(infer_workdir_from_dockerfile(dockerfile), "/app")
+
+    def test_extract_usage_from_codex_output_reads_turn_completed_usage(self) -> None:
+        usage = extract_usage_from_codex_output(
+            '\n'.join(
+                [
+                    '{"type":"thread.started"}',
+                    '{"type":"turn.completed","usage":{"input_tokens":12,"cached_input_tokens":3,"output_tokens":4}}',
+                ]
+            )
+        )
+        self.assertEqual(
+            usage,
+            {
+                "input_tokens": 12,
+                "cached_input_tokens": 3,
+                "output_tokens": 4,
+            },
+        )
 
     def test_allocate_attempt_job_name_avoids_existing_job_dirs(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -140,6 +225,27 @@ class ProtocolRunnerTests(unittest.TestCase):
         self.assertEqual(plan["manifest"]["replay"][0]["task_id"], "citation-check")
         self.assertEqual(plan["manifest"]["heldout"][0]["task_id"], "court-form-filling")
         self.assertIn("--artifact", plan["commands"]["replay"][0])
+
+    def test_build_skillsbench_explicit_plan_threads_agent_import_path(self) -> None:
+        plan = build_skillsbench_explicit_plan(
+            registry_path=ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json",
+            repo_root="benchmarks/skillsbench",
+            split_task_ids={
+                "replay": ["citation-check"],
+                "adapt": [],
+                "heldout": [],
+                "drift": [],
+            },
+            agent="codex",
+            model="gpt-5.4",
+            agent_import_path="sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+            harbor_bin="harbor",
+        )
+        self.assertEqual(
+            plan["execution"]["agent_import_path"],
+            "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+        )
+        self.assertIn("--agent-import-path", plan["commands"]["replay"][0])
 
     def test_run_skillsbench_suite_import_only_aggregates(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

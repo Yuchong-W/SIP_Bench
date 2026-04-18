@@ -842,3 +842,107 @@ Observed result:
 4. Even with the local bridge in place, `agent/codex.txt` still shows repeated `401 Unauthorized` failures that report `Incorrect API key provided: ''`.
 5. The local ChatGPT/Codex login state therefore still does not substitute for `OPENAI_API_KEY` on the current Harbor `codex` noninteractive execution path, at least not with this bridge approach.
 6. The practical experimental conclusion is unchanged: the next full prepared-suite comparison should still be run with an env-file-backed `OPENAI_API_KEY`, while the repo-local bridge remains useful as contained infrastructure for future auth experiments.
+
+### Repo-Local Host-Auth Custom Agent Probe
+
+Work completed:
+
+1. Confirmed on the host that `codex exec --skip-git-repo-check --model gpt-5.4 --json -- 'Reply with exactly OK'` succeeds using the local ChatGPT login state, so the account itself is not the bottleneck.
+2. Extended the SkillsBench command builder and protocol suite schema to accept `agent_import_path`, allowing Harbor to instantiate repo-local custom agents without modifying the global Harbor installation.
+3. Added `src/sip_bench/harbor_codex_host_agent.py`, a repo-local `CodexLocalAuthAgent` that:
+   - runs `codex exec` on the host instead of inside the task container
+   - stages a host workspace mirror for the task
+   - syncs outputs back into the Harbor-managed container before verification
+   - records host-side token usage and execution metadata in the imported Harbor result
+4. Fixed a Harbor integration subtlety: if both `-a codex` and `--agent-import-path ...` are passed, Harbor still prefers the built-in agent name. The command builder now omits `-a` when a custom import path is present.
+5. Added helper coverage for:
+   - host-workspace instruction rewriting
+   - Docker `WORKDIR` inference
+   - usage extraction from `codex --json` output
+   - repo-local helper script generation for future container-aware host-auth tasks
+6. Ran a new prepared single-run `dialogue-parser` probe through the repo-local custom agent path.
+
+Tests run:
+
+1. `codex exec --skip-git-repo-check --model gpt-5.4 --json -- 'Reply with exactly OK'`
+2. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2.json --mode subprocess`
+3. `python3 -m unittest discover -s tests -p 'test_*.py'`
+
+Observed result:
+
+1. The host-side account-auth path is real on this machine; the direct host `codex exec` check succeeded before any Harbor integration work.
+2. The repo-local custom-agent probe produced a real Harbor trial result under `results/real_jobs_protocol_prepared_t0_replay_host_agent_probe2/.../dialogue-parser__Uyj6XK4/result.json`.
+3. The imported SIP record at `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl` is no longer a flat credential failure:
+   - `agent_name = codex-local-auth`
+   - `score = 0.667`
+   - `success = true`
+   - `token_input = 416082`
+   - `token_output = 9759`
+4. The custom agent created `solution.py`, `dialogue.json`, and `dialogue.dot` in the tracked host workspace and synchronized those outputs into the Harbor verifier path before test execution.
+5. The result proves that local ChatGPT login state can be turned into a verifier-backed prepared SkillsBench run without editing global Harbor files, provided the execution path runs `codex` on the host rather than through Harbor's built-in container-side `codex` agent.
+6. This does not yet replace the `OPENAI_API_KEY` fallback for the whole prepared suite, because the host-auth custom agent is only validated on `dialogue-parser` so far; the next question is whether it generalizes to `offer-letter-generator` and then to a multi-run prepared comparison.
+
+### Repo-Local Host-Auth Heldout Probe
+
+Work completed:
+
+1. Created a second isolated prepared-suite probe for `t0_heldout` so the repo-local host-auth custom agent could be tested on a different task family without perturbing tracked suite outputs.
+2. Reused the repo-local `CodexLocalAuthAgent` path with `agent_import_path = "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent"` and kept Harbor responsible for Docker environment startup plus verification.
+3. Ran the heldout probe on `offer-letter-generator`, which exercises `.docx` template filling rather than the replay-side graph/dialogue generation path used by `dialogue-parser`.
+4. Confirmed the host-auth workspace contained the task inputs, the generated `offer_letter_filled.docx`, and the synchronized verifier-facing output under `/root/offer_letter_filled.docx`.
+
+Tests run:
+
+1. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_heldout_host_agent_probe.json --mode subprocess`
+
+Observed result:
+
+1. The heldout probe produced a real Harbor trial result under `results/real_jobs_protocol_prepared_t0_heldout_host_agent_probe/.../offer-letter-generator__tjXg3Te/result.json`.
+2. The imported SIP record at `results/protocol_runs/skillsbench_codex_external_prepared_t0_heldout_host_agent_probe/runs/t0_heldout.jsonl` is verifier-backed and successful:
+   - `agent_name = codex-local-auth`
+   - `score = 1.0`
+   - `success = true`
+   - `token_input = 132376`
+   - `token_output = 7558`
+3. The verifier passed all `18` checks for placeholder replacement, nested table fields, and relocation-section handling, so this is not just an execution artifact but a clean prepared-task success.
+4. The account-auth custom-agent path is therefore no longer validated on only one replay task; it now holds on both:
+   - `dialogue-parser` (`t0_replay`, `score = 0.667`)
+   - `offer-letter-generator` (`t0_heldout`, `score = 1.0`)
+5. The next experimental question is no longer whether ChatGPT login state can work at all, but whether that repo-local host-auth path can be scaled into a multi-run prepared comparison bundle with useful replay-vs-heldout interpretation.
+
+### Repo-Local Host-Auth Bundle
+
+Work completed:
+
+1. Added a checked-in bundle config at `protocol/skillsbench_codex_external_prepared_host_auth_bundle.json` so the repo-local host-auth path could be exercised as a real `T0/T1 replay/heldout` experiment rather than only as isolated probes.
+2. Reused the same repo-local `CodexLocalAuthAgent` path and Harbor verification flow from the earlier probes, without introducing any global Harbor edits or API-key-only requirements.
+3. Ran the full four-run bundle end to end:
+   - `t0_replay`
+   - `t0_heldout`
+   - `t1_replay`
+   - `t1_heldout`
+4. Confirmed the bundle generated both validated `runs/*.jsonl` artifacts and a validated `summary.jsonl`, which means the account-auth path now supports real summary-backed protocol runs rather than just single-task probes.
+
+Tests run:
+
+1. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_codex_external_prepared_host_auth_bundle.json --mode subprocess`
+
+Observed result:
+
+1. The bundle completed successfully and produced `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`.
+2. All four runs were verifier-backed successes:
+   - `t0_replay = 1.0`
+   - `t0_heldout = 1.0`
+   - `t1_replay = 1.0`
+   - `t1_heldout = 1.0`
+3. The generated summary is schema-valid and reports:
+   - `fg_mean = 0.0`
+   - `br_mean = 0.0`
+   - `br_ratio_mean = 1.0`
+   - `token_total_mean = 1031041.0`
+   - `wall_clock_seconds_mean = 601.537843`
+4. This is the first tracked result showing that ChatGPT-login account auth is sufficient for a full replay/heldout prepared bundle under the repo-local custom-agent path.
+5. The scientific interpretation is narrower than the engineering one:
+   - engineering claim: the host-auth path is now real bundle infrastructure, not just a probe trick
+   - experimental claim: this first bundle is a ceiling-effect validation bundle, because every run saturates at `1.0`
+6. The next experiment should therefore target harder or more discriminative task selections rather than rerunning the same bundle and expecting new protocol insight from the same easy pair.

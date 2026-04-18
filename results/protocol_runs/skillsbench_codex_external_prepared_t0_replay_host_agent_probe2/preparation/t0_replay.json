@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_task_preparation",
+  "prepared_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay",
+  "skill_mode": "strip",
+  "patched_files": [
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser/solution/solve.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser/tests/test.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser/environment/skills",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser/environment/Dockerfile",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser/environment/Dockerfile"
+  ],
+  "tasks": [
+    {
+      "task_id": "dialogue-parser",
+      "source_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/tasks/dialogue-parser",
+      "prepared_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/prepared/t0_replay/tasks/dialogue-parser",
+      "skill_mode": "strip",
+      "patches": [
+        "dialogue_parser_apt_retry"
+      ]
+    }
+  ]
+}

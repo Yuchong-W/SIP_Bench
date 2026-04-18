@@ -243,6 +243,7 @@ def build_skillsbench_explicit_plan(
     split_task_ids: dict[str, list[str]],
     agent: str = "oracle",
     model: str | None = None,
+    agent_import_path: str | None = None,
     harbor_bin: str = "harbor",
     extra_args: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -267,6 +268,7 @@ def build_skillsbench_explicit_plan(
                 task=task,
                 agent=agent,
                 model=model,
+                agent_import_path=agent_import_path,
                 harbor_bin=harbor_bin,
                 extra_args=extra_args,
             )
@@ -289,6 +291,7 @@ def build_skillsbench_explicit_plan(
         "execution": {
             "agent": agent,
             "model": model,
+            "agent_import_path": agent_import_path,
             "harbor_bin": harbor_bin,
             "extra_args": extra_args or [],
         },
@@ -464,6 +467,7 @@ def _run_skillsbench_spec(
     seed = int(run_spec.get("seed", execution_defaults.get("seed", 0)))
     agent = run_spec.get("agent", execution_defaults["agent"])
     model = run_spec.get("model", execution_defaults.get("model"))
+    agent_import_path = run_spec.get("agent_import_path", execution_defaults.get("agent_import_path"))
     harbor_bin = _resolve_command_value(base_dir, run_spec.get("harbor_bin", execution_defaults["harbor_bin"]))
     job_name = run_spec.get("job_name", f"{suite_name}-{run_name}")
     jobs_dir_value = run_spec.get("jobs_dir", execution_defaults["jobs_dir"])
@@ -515,6 +519,7 @@ def _run_skillsbench_spec(
             split_task_ids=split_task_ids,
             agent=agent,
             model=model,
+            agent_import_path=agent_import_path,
             harbor_bin=harbor_bin,
             extra_args=[
                 "--jobs-dir",
@@ -531,6 +536,7 @@ def _run_skillsbench_spec(
             split_task_ids=split_task_ids,
             agent=agent,
             model=model,
+            agent_import_path=agent_import_path,
             harbor_bin=harbor_bin,
             extra_args=[
                 "--jobs-dir",
@@ -590,6 +596,7 @@ def _run_skillsbench_spec(
             split_task_ids=split_task_ids,
             agent=agent,
             model=model,
+            agent_import_path=agent_import_path,
             harbor_bin=harbor_bin,
             extra_args=[
                 "--jobs-dir",

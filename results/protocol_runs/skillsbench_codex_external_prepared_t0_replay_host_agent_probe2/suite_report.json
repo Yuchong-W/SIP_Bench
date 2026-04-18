@@ -1,0 +1,138 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-codex-external-prepared-t0-replay-host-agent-probe2",
+  "benchmark_name": "skillsbench",
+  "config_path": "/tmp/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2.json",
+  "out_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2",
+  "execute_mode": "subprocess",
+  "run_count": 1,
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/plans/t0_replay.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/hydration/t0_replay.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/execution/t0_replay.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_t0_replay_host_agent_probe2/skillsbench-codex-external-prepared-t0-replay-host-agent-probe2-t0_replay",
+      "job_name": "skillsbench-codex-external-prepared-t0-replay-host-agent-probe2-t0_replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/dialogue-parser"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "strip",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ]
+        }
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-codex-external-prepared-t0-replay-host-agent-probe2-t0_replay",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_t0_replay_host_agent_probe2/skillsbench-codex-external-prepared-t0-replay-host-agent-probe2-t0_replay",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/attempts/t0_replay/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/attempts/t0_replay/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/attempts/t0_replay/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/attempts/t0_replay/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/preparation/t0_replay.json",
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    }
+  ],
+  "combined_runs_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/combined_runs.jsonl",
+  "runs_validation": {
+    "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/combined_runs.jsonl",
+    "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+    "input_format": "jsonl",
+    "records_checked": 1,
+    "valid": true,
+    "error_count": 0,
+    "errors": []
+  },
+  "summary": {
+    "attempted": true,
+    "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/summary.jsonl",
+    "generated": false,
+    "error": "Missing score for seed=0, phase=T1, split=replay"
+  }
+}
