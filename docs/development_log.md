@@ -764,3 +764,20 @@ Observed result:
 1. The CI-equivalent validation passed `45` tests and `8/8` release-check steps at commit `be81239e47dbcffa619905e79ca1581129db7e20`.
 2. The repository's workflow logic appears healthy on the same Python major/minor version used by `.github/workflows/ci.yml`.
 3. The remaining uncertainty is specifically GitHub-side workflow visibility and status reporting, not whether the scripted CI path itself works.
+
+### v0.1.0 Tag Publication
+
+Work completed:
+
+1. Received manual confirmation that GitHub Actions was green on reviewed commit `f1472f0f945890f5939253846b4ecd08185dbcc5`.
+2. Published annotated tag `v0.1.0` from that reviewed commit.
+3. Kept the release anchor on the reviewed green commit instead of moving the tag to a newer bookkeeping-only documentation commit.
+
+Tests run:
+
+1. `git push origin v0.1.0`
+
+Observed result:
+
+1. GitHub accepted the new `v0.1.0` tag.
+2. The first public release now has a stable remote reference even though this session still lacks repository-level Actions and release-page visibility.

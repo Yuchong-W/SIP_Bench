@@ -61,7 +61,7 @@ This checklist is for the first public open-source release. It assumes:
 
 - [x] Minimal CI is configured for tests and schema validation.
 - [x] CI does not depend on unavailable private services.
-- [ ] CI status is green on the release branch.
+- [x] CI status was confirmed green on the reviewed release commit `f1472f0`.
 
 ## 8. Release Packaging
 
@@ -71,7 +71,7 @@ This checklist is for the first public open-source release. It assumes:
   - [x] supported benchmarks
   - [x] known limitations
   - [x] next planned steps
-- [ ] A tag is ready to publish from a reviewed commit.
+- [x] The `v0.1.0` tag was published from reviewed commit `f1472f0`.
 
 ## 9. Launch Materials
 

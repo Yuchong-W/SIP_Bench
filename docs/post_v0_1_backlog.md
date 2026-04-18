@@ -4,10 +4,9 @@ This backlog exists to keep the first public release tight.
 
 Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is promoted explicitly later.
 
-## Release Follow-Ups
+## Post-Tag Housekeeping
 
-1. Confirm GitHub Actions is green on the reviewed release commit.
-2. Cut and publish the `v0.1.0` tag from a reviewed commit.
+1. If desired, publish or polish a dedicated GitHub release page for `v0.1.0`.
 
 ## README And Docs Follow-Ups
 

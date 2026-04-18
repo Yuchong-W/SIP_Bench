@@ -26,8 +26,8 @@ Current snapshot as of `2026-04-18`:
 1. `M1 Release Narrative`: complete
 2. `M2 Repository Hygiene`: complete for the repository-facing release path
 3. `M3 Quickstart And Demo`: complete for the current public quickstart, artifact tour, and compact proof-of-value writeup
-4. `M4 Release-Grade Validation`: local validation, tracked real-suite validation, minimal proof-of-value example, fresh-clone validation, and a CI-like Python `3.12` rerun are in place; only remote GitHub CI confirmation still pending
-5. `M5 Release Cut`: release notes and launch materials are drafted and now include the compact value-proof narrative; final tag and release publication still pending
+4. `M4 Release-Grade Validation`: complete for `v0.1.0`, including manual confirmation that GitHub Actions was green on reviewed release commit `f1472f0`
+5. `M5 Release Cut`: the `v0.1.0` tag has been published from reviewed commit `f1472f0`; any later GitHub release-page polishing is post-tag housekeeping
 
 ## Why This Release Can Be Novel
 
