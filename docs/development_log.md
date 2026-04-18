@@ -982,3 +982,31 @@ Observed result:
 5. This is useful for the paper-facing plan because it turns `citation-check` into more than a raw score probe:
    - it is now a candidate for non-ceiling evidence if a clean rerun lands
    - and it is already a candidate failure-and-recovery family for provenance analysis if the build-drift pattern repeats and is later recovered
+
+### `citation-check` Recovery Classification
+
+Work completed:
+
+1. Fixed `citation_check_python_runtime` so the runtime-hardening patch no longer assumes a stripped prepared task still contains `environment/skills`.
+2. Added a targeted regression test for the stripped path and a second test that preserves the `COPY skills` lines when the task really does include environment skills.
+3. Reran only `t0_replay` against the checked-in runtime-hardened screening config, which allocated a fresh Harbor job name: `skillsbench-codex-external-prepared-host-auth-citation-replay-probe-runtime-hardened-t0_replay-attempt01-rerun03`.
+
+Tests run:
+
+1. `python3 -m unittest tests.test_protocol_runner`
+2. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened.json --mode subprocess --run-name t0_replay`
+
+Observed result:
+
+1. The patch fix removed the strip-path Docker build failure; the prepared `Dockerfile` for `t0_replay` now omits `COPY skills` when the stripped task has no `environment/skills` directory.
+2. The fresh `rerun03` completed end to end with real agent and verifier outputs:
+   - `t0_replay = 1.0`
+   - `token_total = 701338`
+   - `wall_clock_seconds = 261.441757`
+3. Combined with the earlier runtime-hardened `t1_replay = 1.0`, the recovered `citation-check` replay pair now saturates at `1.0 / 1.0`.
+4. That changes the experimental classification:
+   - `citation-check` remains a strong host-auth screening and recovery-family artifact
+   - it should not be promoted as the main non-ceiling evidence bundle seed
+5. The next evidence-oriented prepared experiment therefore needs a different task source:
+   - expand the local checkout to expose additional medium tasks
+   - or escalate directly to a hard-task host-auth candidate

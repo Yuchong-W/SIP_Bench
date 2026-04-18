@@ -1,0 +1,286 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe",
+  "benchmark_name": "skillsbench",
+  "config_path": "/home/yuchong/Protocal_Bench/protocol/skillsbench_codex_external_prepared_host_auth_citation_replay_probe.json",
+  "out_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe",
+  "execute_mode": "subprocess",
+  "run_count": 2,
+  "runs": [
+    {
+      "run_name": "t0_replay",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/plans/t0_replay.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/hydration/t0_replay.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/execution/t0_replay.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/runs/t0_replay.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02",
+      "job_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/citation-check"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "strip",
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 2,
+      "selected_attempt": 2,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt01",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt01",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": true,
+            "retry": true,
+            "reason": "exception_message:e: failed to fetch",
+            "remaining_attempts": 1,
+            "matched_failures": [
+              {
+                "kind": "import_failure",
+                "run_id": "skillsbench::harbor::replay::T0::external::0::codex-local-auth::gpt-5.4::citation-check::0",
+                "task_id": "citation-check",
+                "exception_type": "RuntimeError",
+                "reason": "exception_message:e: failed to fetch"
+              }
+            ]
+          }
+        },
+        {
+          "attempt_number": 2,
+          "attempt_label": "attempt02",
+          "job_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt02.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt02.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt02.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt02.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "no_retry_match",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/preparation/t0_replay.json",
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/runs/t0_replay.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_replay",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/plans/t1_replay.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/hydration/t1_replay.json",
+      "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/execution/t1_replay.json",
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/runs/t1_replay.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01",
+      "job_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [
+        "website/src/data",
+        "tasks/citation-check"
+      ],
+      "task_preparation": {
+        "mode": "copy",
+        "skill_mode": "keep",
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 2,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [
+          "failed"
+        ],
+        "retry_on_exception_types": [
+          "EnvironmentStartTimeoutError",
+          "EnvironmentBuildTimeoutError",
+          "AgentSetupTimeoutError"
+        ],
+        "retry_on_message_substrings": [
+          "e: failed to fetch",
+          "unable to fetch some archives",
+          "temporary failure resolving",
+          "connection was forcibly closed",
+          "timed out"
+        ]
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "job_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01",
+          "job_dir": "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t1_replay/attempt01.plan.json",
+          "execution_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t1_replay/attempt01.execution.json",
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t1_replay/attempt01.runs.jsonl",
+          "execution_mode": "subprocess",
+          "execution_summary": {
+            "executed": 1,
+            "status_counts": {
+              "success": 1
+            },
+            "halted_early": false
+          },
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t1_replay/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "non_failed_record_present",
+            "remaining_attempts": 1,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/preparation/t1_replay.json",
+      "execution_mode": "subprocess",
+      "execution_summary": {
+        "executed": 1,
+        "status_counts": {
+          "success": 1
+        },
+        "halted_early": false
+      },
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/runs/t1_replay.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    }
+  ],
+  "combined_runs_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/combined_runs.jsonl",
+  "runs_validation": {
+    "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/combined_runs.jsonl",
+    "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+    "input_format": "jsonl",
+    "records_checked": 2,
+    "valid": true,
+    "error_count": 0,
+    "errors": []
+  },
+  "summary": {
+    "attempted": true,
+    "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/summary.jsonl",
+    "generated": false,
+    "error": "Missing score for seed=0, phase=T0, split=heldout"
+  }
+}

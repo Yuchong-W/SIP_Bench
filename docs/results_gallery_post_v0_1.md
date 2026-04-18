@@ -51,6 +51,7 @@ Primary tracked sources:
 | `tau-bench historical` release path | second environment needed to be interpretable without private credentials | tracked historical suite summary is versioned and schema-valid | use import-only historical artifacts as the public second environment | release can show two environments without gating on live provider access | a simple support matrix would not show which path is actually reproducible today |
 | `SkillsBench codex external prepared` full suite | the first probe failed in `dialogue-parser` Docker build, the second exposed missing model configuration, and the final tracked suite completed with a flat-zero summary | tracked `preparation/`, `attempts/`, `suite_report.json`, and probe artifacts show the progression from apt instability to explicit `model` wiring to `env_override_keys = []` and `0.0` verifier rewards across the final suite | add `dialogue_parser_apt_retry`, make the tracked config pass `model = "gpt-5.4"`, and thread SkillsBench env resolution through `.env.local` / `env_file` | the suite is now fully executable and schema-valid, but it still needs `OPENAI_API_KEY` to produce a meaningful non-zero comparison | a flat support label would hide both the engineering recovery and the fact that the remaining blocker is now credential state rather than protocol wiring |
 | `SkillsBench codex host-auth custom-agent` bundle | Harbor's built-in container-side `codex` agent could not consume ChatGPT login state directly | the repo-local custom agent path now leaves tracked `host-workspace`, `codex.txt`, `trajectory.json`, `runs/*.jsonl`, and a generated `summary.jsonl` instead of only `401` logs | add `agent_import_path`, run `codex exec` on the host, sync outputs back into the task container, and keep Harbor for environment/verifier orchestration | the new four-run bundle reaches `T0/T1 replay/heldout` with all scores at `1.0` and a valid summary using account auth and no global Harbor edits | a simple "needs key" label is now wrong, but the new caveat is ceiling effect: this bundle proves execution viability more than gain/retention tradeoff |
+| `citation-check` host-auth screening | the medium screening task first failed in verifier bootstrap, then failed in Docker credential-helper startup, then exposed a strip-specific runtime-patch bug | two tracked screening directories keep the progression visible: `skillsbench_codex_external_prepared_host_auth_citation_replay_probe/` and `..._runtime_hardened/` | add runtime-hardening, extend retry coverage for Docker credential drift, fix the strip-path patch so `citation_check_python_runtime` does not assume `environment/skills` exists, and rerun `t0_replay` as `...rerun03` | recovered replay runs now land at `T0 = 1.0` and `T1 = 1.0`, so the case is valuable as failure/recovery provenance but not as the main non-ceiling evidence bundle | a final replay score of `1.0` would completely hide the fact that three distinct infrastructure or patch issues had to be recovered before the task could even be evaluated cleanly |
 
 Primary tracked sources:
 
@@ -64,6 +65,8 @@ Primary tracked sources:
 8. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl`
 9. `results/protocol_runs/skillsbench_codex_external_prepared_t0_heldout_host_agent_probe/runs/t0_heldout.jsonl`
 10. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
+11. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/suite_report.json`
+12. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/suite_report.json`
 
 ## Figures
 
@@ -126,7 +129,7 @@ Interpretation:
 
 ## Remaining Gaps
 
-1. the next high-value upgrade is a stronger non-ceiling host-auth bundle so replay vs heldout behavior is measured on tasks that do not all saturate at `1.0`
+1. the next high-value upgrade is a stronger non-ceiling host-auth bundle so replay vs heldout behavior is measured on tasks that do not all saturate at `1.0`; `citation-check` has now been screened and recovered, but it still lands in the ceiling bucket
 2. if the host-auth path stalls on harder task selections, the fallback remains rerunning the prepared suite with `OPENAI_API_KEY` so the comparison reflects capability instead of credential failure
 3. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
 4. the current provenance chart is based on one strong recovery case; a second tracked recovery family would make this part of the story materially stronger

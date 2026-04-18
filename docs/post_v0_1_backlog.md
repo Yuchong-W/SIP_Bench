@@ -26,8 +26,8 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 ## Benchmark Expansion
 
 1. Keep the current host-auth easy-task bundle as a smoke or regression artifact, not as the main evidence bundle.
-2. Build a medium-difficulty host-auth prepared bundle that is explicitly chosen to avoid ceiling effect.
-3. Escalate to a hard-task host-auth bundle if the medium bundle still saturates at `1.0`.
+2. Expand the local SkillsBench checkout or fetch additional prepared tasks so the next host-auth evidence bundle is not limited to the current ceiling-prone local task set.
+3. Build a medium-difficulty or hard-task host-auth prepared bundle that is explicitly chosen to avoid ceiling effect; treat `citation-check` as a screened recovery case rather than the default evidence task.
 4. Rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` only if the harder host-auth bundles stall or become too brittle.
 5. Add a stable public story for prepared-task comparisons only after the non-ceiling validation path is repeatable.
 6. Track a second repeatable failure-and-recovery family so provenance evidence is not based on one case.

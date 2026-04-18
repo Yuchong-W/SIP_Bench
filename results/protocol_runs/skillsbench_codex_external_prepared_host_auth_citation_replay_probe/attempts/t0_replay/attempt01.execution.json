@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/attempt01.plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "subprocess",
+  "split": "replay",
+  "cwd": "/home/yuchong/Protocal_Bench",
+  "artifacts_dir": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/artifacts/attempt01",
+  "env_override_keys": [],
+  "summary": {
+    "executed": 1,
+    "status_counts": {
+      "success": 1
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "replay",
+      "task_id": "citation-check",
+      "task_title": "citation-check",
+      "command": [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/prepared/t0_replay/tasks/citation-check",
+        "--agent-import-path",
+        "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe",
+        "--job-name",
+        "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt01",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ],
+      "resolved_command": [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/prepared/t0_replay/tasks/citation-check",
+        "--agent-import-path",
+        "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_citation_replay_probe",
+        "--job-name",
+        "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt01",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 548.8850649710002,
+      "started_at": "2026-04-18T15:15:12Z",
+      "finished_at": "2026-04-18T15:25:15Z",
+      "stdout_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/artifacts/attempt01/replay/000_citation-check/stdout.txt",
+      "stderr_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/attempts/t0_replay/artifacts/attempt01/replay/000_citation-check/stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-18T15:25:15Z"
+}

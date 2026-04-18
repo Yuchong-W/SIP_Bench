@@ -79,6 +79,15 @@ Current screening candidate:
      - likely less vulnerable to trivial saturation than the current easy pair
      - currently available in the local checkout without needing additional benchmark fetches
 
+Current outcome:
+
+1. `citation-check` is now validated as a real host-auth screening and recovery case:
+   - initial screening exposed verifier bootstrap drift
+   - runtime-hardened reruns exposed Docker credential-helper drift and then a strip-specific patch bug
+   - after the strip-path patch was fixed, the recovered `T0 replay` rerun returned to `score = 1.0`
+2. that makes `citation-check` useful for provenance and recovery analysis
+3. it does not make `citation-check` the right next evidence-bundle task, because the recovered replay pair now saturates at `1.0 / 1.0`
+
 Screening rule:
 
 1. do not promote a task into the next bundle solely because it is labeled `medium`
@@ -117,6 +126,7 @@ Desired structure:
 Promotion rule:
 
 1. only after screening identifies at least one non-ceiling candidate should a new bundle be treated as the main prepared evidence bundle
+2. `citation-check` currently fails that promotion rule because the clean recovered path saturates again once infrastructure drift is removed
 
 ### Stage 3: Hard Bundle
 
@@ -144,6 +154,9 @@ Implication:
 
 1. not every registry-listed medium or hard task is currently inspectable offline from this checkout
 2. screening should therefore start with locally available candidates unless the benchmark checkout is intentionally expanded first
+3. because the only currently local medium candidate (`citation-check`) saturates after recovery, the next evidence-focused host-auth bundle will likely require either:
+   - an expanded checkout with additional medium tasks
+   - or direct escalation to a hard-task candidate
 
 ## Fallback Policy
 
