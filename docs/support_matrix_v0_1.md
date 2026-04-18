@@ -17,7 +17,7 @@ This matrix describes the intended public support posture for `v0.1.0`.
 
 | Benchmark path | Status | Release role | Notes |
 | --- | --- | --- | --- |
-| `SkillsBench oracle real suite` | Supported | Release-critical | Main real-suite evidence path; Linux probe now closes the full suite loop |
+| `SkillsBench oracle real suite` | Supported | Release-critical | Main real-suite evidence path; Linux probe closes the full suite loop and tracked config includes explicit transient retry artifacts |
 | `SkillsBench Harbor job import` | Supported | Release-critical | Imports both success and failure outcomes |
 | `SkillsBench prepared task copies` | Experimental | Optional | Useful for frozen vs skill-enabled comparisons |
 | `tau-bench historical/import-only` | Supported | Release-critical | Current second-environment evidence path |

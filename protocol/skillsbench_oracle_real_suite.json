@@ -13,6 +13,24 @@
     "path_type": "oracle",
     "agent_version": "harbor312-oracle-protocol-v0",
     "seed": 0,
+    "retry_policy": {
+      "max_attempts": 2,
+      "retry_on_execution_statuses": [
+        "failed"
+      ],
+      "retry_on_exception_types": [
+        "EnvironmentStartTimeoutError",
+        "EnvironmentBuildTimeoutError",
+        "AgentSetupTimeoutError"
+      ],
+      "retry_on_message_substrings": [
+        "e: failed to fetch",
+        "unable to fetch some archives",
+        "temporary failure resolving",
+        "connection was forcibly closed",
+        "timed out"
+      ]
+    },
     "extra_args": [
       "--artifact",
       "/logs/verifier",

@@ -253,3 +253,16 @@ Why:
 2. `codex` connectivity is not available on every intended validation machine
 3. `tau-bench` live execution still depends on private provider credentials
 4. separating release-critical from experimental paths improves the open-source launch quality without blocking future research experiments
+
+### D020
+
+Decision:
+
+Transient retries in real `SkillsBench` suites should be explicit protocol configuration with attempt-level artifacts, not hidden reruns inside shell wrappers or manual operator habit.
+
+Why:
+
+1. the Linux real probe showed that some failures are clearly operational and transient, but they still need auditable provenance
+2. hidden reruns would make release evidence and future paper artifacts harder to review
+3. attempt-level `plan`, `execution`, and `runs` artifacts let the suite absorb flaky Docker/package-network failures without pretending the benchmark never failed
+4. keeping retries narrow and explicit preserves the distinction between transient infra failures and deterministic benchmark failures such as missing reward files

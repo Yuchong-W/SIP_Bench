@@ -157,6 +157,9 @@
         },
         "task_preparation": {
           "$ref": "#/$defs/taskPreparation"
+        },
+        "retry_policy": {
+          "$ref": "#/$defs/retryPolicy"
         }
       }
     },
@@ -342,6 +345,9 @@
           },
           "task_preparation": {
             "$ref": "#/$defs/taskPreparation"
+          },
+          "retry_policy": {
+            "$ref": "#/$defs/retryPolicy"
           }
         }
       }
@@ -378,6 +384,47 @@
             },
             "uniqueItems": true
           }
+        }
+      }
+    },
+    "retryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "require_all_records_failed": {
+          "type": "boolean"
+        },
+        "retry_on_execution_statuses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failed",
+              "missing_executable"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "retry_on_exception_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "retry_on_message_substrings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
         }
       }
     }

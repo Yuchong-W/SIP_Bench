@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
 from sip_bench.metrics import load_jsonl
 from sip_bench.protocol_runner import (
     _apply_task_patch,
+    _plan_skillsbench_retry,
     _resolve_command_value,
     _strip_skills_from_dockerfile_text,
     build_skillsbench_explicit_plan,
@@ -27,6 +28,42 @@ from sip_bench.protocol_runner import (
 
 
 class ProtocolRunnerTests(unittest.TestCase):
+    def test_plan_skillsbench_retry_matches_message_substrings(self) -> None:
+        decision = _plan_skillsbench_retry(
+            attempt_number=1,
+            execution_report={
+                "summary": {
+                    "executed": 1,
+                    "status_counts": {"success": 1},
+                    "halted_early": False,
+                }
+            },
+            imported_runs=[
+                {
+                    "run_id": "skillsbench::attempt01",
+                    "task_id": "dialogue-parser",
+                    "success": False,
+                    "metadata": {
+                        "exception_type": "RuntimeError",
+                        "exception_message": "E: Failed to fetch package because the connection was forcibly closed",
+                    },
+                }
+            ],
+            retry_policy={
+                "max_attempts": 2,
+                "require_all_records_failed": True,
+                "retry_on_execution_statuses": [],
+                "retry_on_exception_types": [],
+                "retry_on_message_substrings": [
+                    "e: failed to fetch",
+                    "connection was forcibly closed",
+                ],
+            },
+        )
+        self.assertTrue(decision["retry"])
+        self.assertEqual(decision["reason"], "exception_message:e: failed to fetch")
+        self.assertEqual(decision["matched_failures"][0]["task_id"], "dialogue-parser")
+
     def test_resolve_command_value_prefers_extensionless_wrapper_on_posix(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
@@ -159,6 +196,174 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(len(summary_rows), 1)
             self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
             self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
+
+    @patch("sip_bench.protocol_runner.validate_data_file")
+    @patch("sip_bench.protocol_runner.import_skillsbench_job")
+    @patch("sip_bench.protocol_runner.execute_command_plan")
+    @patch("sip_bench.protocol_runner.hydrate_skillsbench_checkout")
+    def test_run_skillsbench_suite_retries_transient_failures(
+        self,
+        hydrate_mock,
+        execute_mock,
+        import_mock,
+        validate_mock,
+    ) -> None:
+        validate_mock.return_value = {"valid": True, "errors": []}
+        hydrate_mock.return_value = {
+            "schema_version": "0.1.0",
+            "action": "skillsbench_hydration",
+            "hydrated_paths": ["tasks/citation-check"],
+        }
+        import_mock.side_effect = [
+            [
+                {
+                    "schema_version": "0.1.0",
+                    "run_id": "skillsbench::attempt01",
+                    "benchmark_name": "skillsbench",
+                    "benchmark_version": "skillsbench-upstream",
+                    "benchmark_split": "replay",
+                    "phase": "T0",
+                    "path_type": "oracle",
+                    "model_name": "oracle",
+                    "agent_name": "oracle",
+                    "agent_version": "retry-suite",
+                    "task_id": "citation-check",
+                    "attempt_index": 0,
+                    "score": 0.0,
+                    "success": False,
+                    "token_input": 0,
+                    "token_output": 0,
+                    "token_total": 0,
+                    "tool_calls_total": 0,
+                    "memory_reads": 0,
+                    "memory_writes": 0,
+                    "wall_clock_seconds": 1.0,
+                    "cost_usd": 0.0,
+                    "human_interventions": 0,
+                    "seed": 17,
+                    "started_at": "2026-04-18T01:00:00Z",
+                    "finished_at": "2026-04-18T01:00:01Z",
+                    "metadata": {
+                        "exception_type": "EnvironmentStartTimeoutError",
+                        "exception_message": "environment startup timed out",
+                    },
+                }
+            ],
+            [
+                {
+                    "schema_version": "0.1.0",
+                    "run_id": "skillsbench::attempt02",
+                    "benchmark_name": "skillsbench",
+                    "benchmark_version": "skillsbench-upstream",
+                    "benchmark_split": "replay",
+                    "phase": "T0",
+                    "path_type": "oracle",
+                    "model_name": "oracle",
+                    "agent_name": "oracle",
+                    "agent_version": "retry-suite",
+                    "task_id": "citation-check",
+                    "attempt_index": 0,
+                    "score": 1.0,
+                    "success": True,
+                    "token_input": 0,
+                    "token_output": 0,
+                    "token_total": 0,
+                    "tool_calls_total": 0,
+                    "memory_reads": 0,
+                    "memory_writes": 0,
+                    "wall_clock_seconds": 1.0,
+                    "cost_usd": 0.0,
+                    "human_interventions": 0,
+                    "seed": 17,
+                    "started_at": "2026-04-18T01:05:00Z",
+                    "finished_at": "2026-04-18T01:05:01Z",
+                    "metadata": {
+                        "score_source": "verifier_rewards",
+                    },
+                }
+            ],
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            repo_root = tmp_path / "benchmarks" / "skillsbench"
+            repo_root.mkdir(parents=True, exist_ok=True)
+            jobs_root = tmp_path / "jobs"
+
+            def execute_side_effect(*args, **kwargs):
+                plan_source = Path(kwargs["plan_source"])
+                payload = json.loads(plan_source.read_text(encoding="utf-8"))
+                command = payload["commands"]["replay"][0]
+                job_name = command[command.index("--job-name") + 1]
+                (jobs_root / job_name).mkdir(parents=True, exist_ok=True)
+                return {
+                    "schema_version": "0.1.0",
+                    "summary": {"executed": 1, "status_counts": {"success": 1}, "halted_early": False},
+                    "records": [],
+                }
+
+            execute_mock.side_effect = execute_side_effect
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "retry-suite",
+                "benchmark_name": "skillsbench",
+                "repo_root": str(repo_root),
+                "registry_path": str(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "agent": "oracle",
+                    "model": None,
+                    "harbor_bin": "harbor",
+                    "jobs_dir": str(jobs_root),
+                    "path_type": "oracle",
+                    "agent_version": "retry-suite",
+                    "seed": 17,
+                    "extra_args": [],
+                    "retry_policy": {
+                        "max_attempts": 2,
+                        "retry_on_exception_types": ["EnvironmentStartTimeoutError"],
+                    },
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": ["citation-check"],
+                    }
+                ],
+            }
+            config_path = tmp_path / "retry_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_skillsbench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=False,
+            )
+
+            run_report = report["runs"][0]
+            self.assertEqual(run_report["attempt_count"], 2)
+            self.assertEqual(run_report["selected_attempt"], 2)
+            self.assertEqual(run_report["success_count"], 1)
+            self.assertEqual(run_report["failure_count"], 0)
+            self.assertEqual(run_report["job_name"], "retry-suite-t0_replay-attempt02")
+            self.assertTrue(run_report["attempts"][0]["retry_decision"]["retry"])
+            self.assertEqual(
+                run_report["attempts"][0]["retry_decision"]["reason"],
+                "exception_type:EnvironmentStartTimeoutError",
+            )
+            self.assertFalse(run_report["attempts"][1]["retry_decision"]["retry"])
+            self.assertEqual(run_report["attempts"][1]["retry_decision"]["reason"], "non_failed_record_present")
+            self.assertIn("attempt01", run_report["attempts"][0]["plan_path"])
+            self.assertIn("attempt02", run_report["attempts"][1]["plan_path"])
+
+            combined_runs = load_jsonl(Path(report["combined_runs_path"]))
+            self.assertEqual(len(combined_runs), 1)
+            self.assertTrue(combined_runs[0]["success"])
+            self.assertEqual(combined_runs[0]["run_id"], "skillsbench::attempt02")
+            self.assertEqual(import_mock.call_count, 2)
+            self.assertEqual(execute_mock.call_count, 2)
 
     def test_build_tau_explicit_plan_preserves_split_assignment(self) -> None:
         plan = build_tau_explicit_plan(

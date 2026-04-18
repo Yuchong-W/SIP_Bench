@@ -318,7 +318,7 @@ Not finished yet:
 2. leaderboard rendering
 3. regression test harness over a frozen real-run corpus
 4. automatic aggregation over real `T0/T1/T2` SkillsBench jobs once multiple phases have been collected
-5. environment-level retries for flaky Docker build and package-network failures during real Harbor runs
+5. task-level Dockerfile hardening is still incomplete even though the suite runner now supports explicit transient-failure retries
 6. first fully successful non-`oracle` suite with stable Docker service behavior on this machine
 
 ## Next Engineering Steps
@@ -326,7 +326,7 @@ Not finished yet:
 1. Add a leaderboard builder from `summary.jsonl`.
 2. Add a regression suite over frozen Harbor job fixtures.
 3. Add multi-phase real-run orchestration so `FG/BR/IE` can be computed from imported job outputs.
-4. Add retry and failure-taxonomy reporting for Docker build and dependency-download errors.
+4. Expand the failure taxonomy and task-specific mitigations for Docker build and dependency-download errors beyond the current suite-level retry policy.
 
 ## Update: Real SkillsBench Bridge
 
@@ -569,3 +569,31 @@ Current verified behavior:
 2. `run_tau_bench_suite(...)` passes resolved env overrides into preflight
 3. `protocol/.env.local` is now the recommended gitignored local credential location, with `protocol/tau_openai.env.example` as the checked-in template
 4. Windows UTF-8 env files with BOM are handled via `utf-8-sig`, so PowerShell-written local env files resolve correctly
+
+## Update: Structured SkillsBench Retry Policy
+
+`SkillsBench` real suites now support explicit transient-failure retries without hiding retry provenance.
+
+Implemented path:
+
+1. `protocol_suite.schema.json` now supports `retry_policy` at both suite-execution and per-run level
+2. `run-skillsbench-suite(...)` now records each attempt under `attempts/<run_name>/`
+3. every attempt gets its own `plan`, `execution`, `runs`, and execution-artifact directory
+4. the final run report records both the full attempt list and the selected final attempt
+
+Why this was needed:
+
+1. the Linux real probe proved the protocol loop was sound, but upstream Docker builds still fail intermittently on package downloads
+2. hidden reruns would make benchmark evidence harder to audit
+3. the release-critical real suite needs a way to absorb transient infra failures without pretending deterministic benchmark failures succeeded
+
+Current verified behavior:
+
+1. unit coverage now exercises a transient failure on attempt 1 followed by a successful final attempt
+2. the tracked `SkillsBench oracle` real suite enables a conservative two-attempt policy for timeout-style failures and known apt/network fetch errors
+3. deterministic failures such as the observed `RewardFileNotFoundError` remain non-retriable by default
+
+Engineering implication:
+
+1. retry is now part of the protocol artifact model, not an undocumented shell habit
+2. remaining robustness work should focus on task-level Docker hardening and a sharper failure taxonomy

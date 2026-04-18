@@ -158,9 +158,10 @@ The current multi-run suite runner supports:
 1. per-run planning
 2. per-run hydration
 3. optional run-local task preparation
-4. per-run execution or import-only mode
-5. combined `runs.jsonl`
-6. aggregated `summary.jsonl`
+4. optional per-run `retry_policy` with attempt-level artifacts for transient infrastructure failures
+5. per-run execution or import-only mode
+6. combined `runs.jsonl`
+7. aggregated `summary.jsonl`
 
 The current tracked real suite is an orchestration validation suite, not a claim of meaningful self-improvement.
 

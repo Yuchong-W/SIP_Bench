@@ -663,3 +663,18 @@ Observed result:
    - Docker build failures caused by upstream apt/network instability
    - `RewardFileNotFoundError` after agent execution
 3. The release-critical protocol path is therefore real on Linux, even though the upstream benchmark tasks remain operationally flaky.
+
+### Structured SkillsBench Retry Policy
+
+Work completed:
+
+1. Added `retry_policy` to `schemas/protocol_suite.schema.json` for suite-level and per-run configuration.
+2. Extended `run-skillsbench-suite(...)` so each retry attempt writes separate `plan`, `execution`, and `runs` artifacts under `attempts/<run_name>/`.
+3. Updated the tracked `protocol/skillsbench_oracle_real_suite.json` config to allow one explicit retry for transient Docker timeout and package-fetch failures.
+4. Added regression coverage for the case where attempt 1 imports a transient failure and attempt 2 becomes the selected final artifact set.
+
+Observed result:
+
+1. Retry provenance now stays visible in the suite report instead of being hidden behind overwritten output files.
+2. The release-critical `SkillsBench oracle` suite can now distinguish "protocol is fine, infra was flaky once" from deterministic benchmark failures.
+3. `RewardFileNotFoundError` remains outside the default retry set until there is evidence that rerunning the same task reliably fixes it.

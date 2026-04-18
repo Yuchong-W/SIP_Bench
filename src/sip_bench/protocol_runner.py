@@ -29,6 +29,13 @@ DEFAULT_TASK_PREPARATION = {
     "skill_mode": "keep",
     "patches": {},
 }
+DEFAULT_RETRY_POLICY = {
+    "max_attempts": 1,
+    "require_all_records_failed": True,
+    "retry_on_execution_statuses": [],
+    "retry_on_exception_types": [],
+    "retry_on_message_substrings": [],
+}
 
 
 def run_skillsbench_suite(
@@ -373,6 +380,10 @@ def _run_skillsbench_spec(
         execution_defaults.get("task_preparation"),
         run_spec.get("task_preparation"),
     )
+    retry_policy = _merge_retry_policy(
+        execution_defaults.get("retry_policy"),
+        run_spec.get("retry_policy"),
+    )
 
     split_task_ids = {name: [] for name in DEFAULT_SPLITS}
     split_task_ids[split_name] = list(run_spec["task_ids"])
@@ -448,7 +459,30 @@ def _run_skillsbench_spec(
                 patches=task_preparation["patches"],
             )
             write_json(preparation_path, preparation_report)
-        plan_payload = build_skillsbench_explicit_plan(
+    effective_retry_policy = dict(retry_policy)
+    if source_job_dir_value:
+        effective_retry_policy["max_attempts"] = 1
+
+    attempts_root = suite_root / "attempts" / run_name
+    attempt_reports: list[dict[str, Any]] = []
+    final_plan_payload: dict[str, Any] | None = None
+    final_execution_report: dict[str, Any] | None = None
+    final_imported_runs: list[dict[str, Any]] | None = None
+    final_job_dir = job_dir
+    final_job_name = job_name
+
+    for attempt_number in range(1, effective_retry_policy["max_attempts"] + 1):
+        attempt_label = _format_attempt_label(attempt_number)
+        attempt_plan_path = attempts_root / f"{attempt_label}.plan.json"
+        attempt_execution_path = attempts_root / f"{attempt_label}.execution.json"
+        attempt_records_path = attempts_root / f"{attempt_label}.runs.jsonl"
+        attempt_job_name = _format_attempt_job_name(
+            base_job_name=job_name,
+            attempt_number=attempt_number,
+            max_attempts=effective_retry_policy["max_attempts"],
+        )
+        attempt_job_dir = job_dir if source_job_dir_value else jobs_dir / attempt_job_name
+        attempt_plan_payload = build_skillsbench_explicit_plan(
             registry_path=registry_path,
             repo_root=execution_repo_root,
             split_task_ids=split_task_ids,
@@ -459,36 +493,82 @@ def _run_skillsbench_spec(
                 "--jobs-dir",
                 str(jobs_dir),
                 "--job-name",
-                job_name,
+                attempt_job_name,
                 *extra_args,
             ],
         )
-        write_json(plan_path, plan_payload)
-        execution_report = execute_command_plan(
-            plan_source=plan_path,
-            out=execution_path,
-            split=split_name,
-            mode=execute_mode,
-            cwd=repo_root.parent.parent,
-        )
-        if not job_dir.exists():
-            raise RuntimeError(f"Expected Harbor job directory does not exist after execution: {job_dir}")
-    if source_job_dir_value:
-        write_json(plan_path, plan_payload)
+        write_json(attempt_plan_path, attempt_plan_payload)
 
-    imported_runs = import_skillsbench_job(
-        source=job_dir,
-        out=records_path,
-        benchmark_split=split_name,
-        phase=phase,
-        path_type=path_type,
-        seed=seed,
-        registry_source=registry_path,
-        repo_root=repo_root,
-        model_name=model_name,
-        agent_name=agent_name,
-        agent_version=agent_version,
-    )
+        attempt_execution_report: dict[str, Any] | None = None
+        if not source_job_dir_value:
+            attempt_execution_report = execute_command_plan(
+                plan_source=attempt_plan_path,
+                out=attempt_execution_path,
+                split=split_name,
+                mode=execute_mode,
+                cwd=repo_root.parent.parent,
+                artifacts_dir=attempts_root / "artifacts" / attempt_label,
+            )
+            if not attempt_job_dir.exists():
+                raise RuntimeError(f"Expected Harbor job directory does not exist after execution: {attempt_job_dir}")
+
+        attempt_imported_runs = import_skillsbench_job(
+            source=attempt_job_dir,
+            out=attempt_records_path,
+            benchmark_split=split_name,
+            phase=phase,
+            path_type=path_type,
+            seed=seed,
+            registry_source=registry_path,
+            repo_root=repo_root,
+            model_name=model_name,
+            agent_name=agent_name,
+            agent_version=agent_version,
+        )
+        attempt_records_validation = validate_data_file(
+            data_path=attempt_records_path,
+            schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+        )
+        retry_decision = _plan_skillsbench_retry(
+            attempt_number=attempt_number,
+            execution_report=attempt_execution_report,
+            imported_runs=attempt_imported_runs,
+            retry_policy=effective_retry_policy,
+        )
+        attempt_report = {
+            "attempt_number": attempt_number,
+            "attempt_label": attempt_label,
+            "job_name": attempt_job_name,
+            "job_dir": str(attempt_job_dir),
+            "plan_path": str(attempt_plan_path),
+            "execution_path": str(attempt_execution_path) if attempt_execution_report else None,
+            "records_path": str(attempt_records_path),
+            "execution_mode": execute_mode if attempt_execution_report else "import-only",
+            "execution_summary": attempt_execution_report["summary"] if attempt_execution_report else None,
+            "imported_records": len(attempt_imported_runs),
+            "success_count": sum(1 for record in attempt_imported_runs if record["success"]),
+            "failure_count": sum(1 for record in attempt_imported_runs if not record["success"]),
+            "records_validation": attempt_records_validation,
+            "retry_decision": retry_decision,
+        }
+        attempt_reports.append(attempt_report)
+
+        final_plan_payload = attempt_plan_payload
+        final_execution_report = attempt_execution_report
+        final_imported_runs = attempt_imported_runs
+        final_job_dir = attempt_job_dir
+        final_job_name = attempt_job_name
+        if not retry_decision["retry"]:
+            break
+
+    if final_plan_payload is None or final_imported_runs is None:
+        raise RuntimeError(f"SkillsBench run {run_name} did not produce any attempt output")
+
+    write_json(plan_path, final_plan_payload)
+    if final_execution_report:
+        write_json(execution_path, final_execution_report)
+        execution_report = final_execution_report
+    write_jsonl(records_path, final_imported_runs)
     records_validation = validate_data_file(
         data_path=records_path,
         schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
@@ -504,16 +584,21 @@ def _run_skillsbench_spec(
         "hydration_path": str(hydration_path),
         "execution_path": str(execution_path) if execution_report else None,
         "records_path": str(records_path),
-        "job_dir": str(job_dir),
+        "job_dir": str(final_job_dir),
+        "job_name": final_job_name,
         "task_ids": list(run_spec["task_ids"]),
         "hydrated_paths": hydration_report["hydrated_paths"] if hydration_report else [],
         "task_preparation": task_preparation,
+        "retry_policy": effective_retry_policy,
+        "attempt_count": len(attempt_reports),
+        "selected_attempt": attempt_reports[-1]["attempt_number"],
+        "attempts": attempt_reports,
         "preparation_path": str(preparation_path) if preparation_report else None,
         "execution_mode": execute_mode if execution_report else "import-only",
         "execution_summary": execution_report["summary"] if execution_report else None,
-        "imported_records": len(imported_runs),
-        "success_count": sum(1 for record in imported_runs if record["success"]),
-        "failure_count": sum(1 for record in imported_runs if not record["success"]),
+        "imported_records": len(final_imported_runs),
+        "success_count": sum(1 for record in final_imported_runs if record["success"]),
+        "failure_count": sum(1 for record in final_imported_runs if not record["success"]),
         "records_validation": records_validation,
     }
 
@@ -901,6 +986,129 @@ def _merge_task_preparation(
         if run_override.get("patches"):
             merged["patches"] = dict(run_override["patches"])
     return merged
+
+
+def _merge_retry_policy(
+    execution_defaults: dict[str, Any] | None,
+    run_override: dict[str, Any] | None,
+) -> dict[str, Any]:
+    merged = {
+        "max_attempts": DEFAULT_RETRY_POLICY["max_attempts"],
+        "require_all_records_failed": DEFAULT_RETRY_POLICY["require_all_records_failed"],
+        "retry_on_execution_statuses": list(DEFAULT_RETRY_POLICY["retry_on_execution_statuses"]),
+        "retry_on_exception_types": list(DEFAULT_RETRY_POLICY["retry_on_exception_types"]),
+        "retry_on_message_substrings": list(DEFAULT_RETRY_POLICY["retry_on_message_substrings"]),
+    }
+    for source in (execution_defaults, run_override):
+        if not source:
+            continue
+        if "max_attempts" in source:
+            merged["max_attempts"] = int(source["max_attempts"])
+        if "require_all_records_failed" in source:
+            merged["require_all_records_failed"] = bool(source["require_all_records_failed"])
+        for key in (
+            "retry_on_execution_statuses",
+            "retry_on_exception_types",
+            "retry_on_message_substrings",
+        ):
+            if key in source:
+                merged[key] = [str(item) for item in source[key]]
+    return merged
+
+
+def _format_attempt_label(attempt_number: int) -> str:
+    return f"attempt{attempt_number:02d}"
+
+
+def _format_attempt_job_name(*, base_job_name: str, attempt_number: int, max_attempts: int) -> str:
+    if max_attempts <= 1:
+        return base_job_name
+    return f"{base_job_name}-{_format_attempt_label(attempt_number)}"
+
+
+def _plan_skillsbench_retry(
+    *,
+    attempt_number: int,
+    execution_report: dict[str, Any] | None,
+    imported_runs: list[dict[str, Any]],
+    retry_policy: dict[str, Any],
+) -> dict[str, Any]:
+    remaining_attempts = max(0, int(retry_policy["max_attempts"]) - attempt_number)
+    decision = {
+        "eligible": False,
+        "retry": False,
+        "reason": "retry_policy_disabled",
+        "remaining_attempts": remaining_attempts,
+        "matched_failures": [],
+    }
+    if int(retry_policy["max_attempts"]) <= 1:
+        return decision
+
+    execution_statuses = set(retry_policy["retry_on_execution_statuses"])
+    if execution_report and execution_statuses:
+        status_counts = execution_report.get("summary", {}).get("status_counts", {})
+        matched_statuses = [status for status in sorted(execution_statuses) if status_counts.get(status)]
+        if matched_statuses:
+            decision.update(
+                {
+                    "eligible": True,
+                    "retry": remaining_attempts > 0,
+                    "reason": f"execution_status:{matched_statuses[0]}",
+                    "matched_failures": [
+                        {
+                            "kind": "execution_status",
+                            "status": status,
+                        }
+                        for status in matched_statuses
+                    ],
+                }
+            )
+            return decision
+
+    if retry_policy["require_all_records_failed"] and any(record.get("success") for record in imported_runs):
+        decision["reason"] = "non_failed_record_present"
+        return decision
+
+    exception_types = set(retry_policy["retry_on_exception_types"])
+    message_substrings = [item.lower() for item in retry_policy["retry_on_message_substrings"]]
+    matched_failures: list[dict[str, Any]] = []
+    for record in imported_runs:
+        metadata = record.get("metadata") or {}
+        exception_type = str(metadata.get("exception_type") or "")
+        exception_message = str(metadata.get("exception_message") or "")
+        matched_reason: str | None = None
+        if exception_type and exception_type in exception_types:
+            matched_reason = f"exception_type:{exception_type}"
+        if matched_reason is None and exception_message and message_substrings:
+            normalized_message = exception_message.lower()
+            for needle in message_substrings:
+                if needle and needle in normalized_message:
+                    matched_reason = f"exception_message:{needle}"
+                    break
+        if matched_reason is None:
+            continue
+        matched_failures.append(
+            {
+                "kind": "import_failure",
+                "run_id": record.get("run_id"),
+                "task_id": record.get("task_id"),
+                "exception_type": exception_type or None,
+                "reason": matched_reason,
+            }
+        )
+    if matched_failures:
+        decision.update(
+            {
+                "eligible": True,
+                "retry": remaining_attempts > 0,
+                "reason": matched_failures[0]["reason"],
+                "matched_failures": matched_failures,
+            }
+        )
+        return decision
+
+    decision["reason"] = "no_retry_match"
+    return decision
 
 
 def _list_json_files(root: Path) -> set[Path]:
