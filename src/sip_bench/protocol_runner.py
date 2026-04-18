@@ -1378,6 +1378,18 @@ def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list
             raise ValueError(f"Patch {patch_name} is only valid for citation-check, not {task_id}")
         dockerfile_path = task_root / "environment" / "Dockerfile"
         test_script_path = task_root / "tests" / "test.sh"
+        skills_dir = task_root / "environment" / "skills"
+        skill_copy_lines = ""
+        if skills_dir.exists():
+            skill_copy_lines = (
+                "COPY skills /root/.claude/skills\n"
+                "COPY skills /root/.codex/skills\n"
+                "COPY skills /root/.opencode/skill\n"
+                "COPY skills /root/.goose/skills\n"
+                "COPY skills /root/.factory/skills\n"
+                "COPY skills /root/.agents/skills\n"
+                "COPY skills /root/.gemini/skills\n"
+            )
         dockerfile_path.write_text(
             (
                 "FROM python:3.12.8-slim\n\n"
@@ -1386,13 +1398,7 @@ def _apply_task_patch(*, task_id: str, patch_name: str, task_root: Path) -> list
                 "    requests==2.32.3 \\\n"
                 "    bibtexparser==1.4.2\n\n"
                 "COPY test.bib /root/test.bib\n\n"
-                "COPY skills /root/.claude/skills\n"
-                "COPY skills /root/.codex/skills\n"
-                "COPY skills /root/.opencode/skill\n"
-                "COPY skills /root/.goose/skills\n"
-                "COPY skills /root/.factory/skills\n"
-                "COPY skills /root/.agents/skills\n"
-                "COPY skills /root/.gemini/skills\n"
+                f"{skill_copy_lines}"
             ),
             encoding="utf-8",
         )
