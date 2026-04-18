@@ -744,3 +744,23 @@ Observed result:
 1. The clean-checkout validation passed `8/8` checks at commit `620713f0a42d1b956217d950c239183038551dd3`.
 2. The documented public validation path does not rely on hidden local working-tree state.
 3. The remaining release-gating uncertainty is now remote CI confirmation and final tag publication, not quickstart drift.
+
+### CI-Like Python 3.12 Validation
+
+Work completed:
+
+1. Inspected the repository workflow and confirmed the GitHub Actions job is just `Python 3.12`, `pip install --upgrade pip jsonschema`, and `python scripts/run_release_checks.py`.
+2. Recreated that workflow in a new clean clone at `/tmp/protocol_bench_ci_validate_be81239`.
+3. Used a dedicated target directory for `pip` dependencies after `venv` creation failed locally because `python3.12-venv` is not installed on this machine.
+
+Tests run:
+
+1. `git clone /home/yuchong/Protocal_Bench /tmp/protocol_bench_ci_validate_be81239`
+2. `python3 -m pip install --upgrade pip jsonschema --target /tmp/protocol_bench_ci_validate_be81239/.pydeps`
+3. `PYTHONPATH=/tmp/protocol_bench_ci_validate_be81239/.pydeps python3 scripts/run_release_checks.py`
+
+Observed result:
+
+1. The CI-equivalent validation passed `45` tests and `8/8` release-check steps at commit `be81239e47dbcffa619905e79ca1581129db7e20`.
+2. The repository's workflow logic appears healthy on the same Python major/minor version used by `.github/workflows/ci.yml`.
+3. The remaining uncertainty is specifically GitHub-side workflow visibility and status reporting, not whether the scripted CI path itself works.
