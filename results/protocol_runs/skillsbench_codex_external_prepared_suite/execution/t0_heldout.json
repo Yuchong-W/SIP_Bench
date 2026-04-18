@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.1.0",
+  "plan_source": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/attempts/t0_heldout/attempt01.plan.json",
+  "benchmark_name": "skillsbench",
+  "mode": "subprocess",
+  "split": "heldout",
+  "cwd": "/home/yuchong/Protocal_Bench",
+  "artifacts_dir": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/attempts/t0_heldout/artifacts/attempt01",
+  "env_override_keys": [],
+  "summary": {
+    "executed": 1,
+    "status_counts": {
+      "success": 1
+    },
+    "halted_early": false
+  },
+  "records": [
+    {
+      "split": "heldout",
+      "task_id": "offer-letter-generator",
+      "task_title": "offer-letter-generator",
+      "command": [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t0_heldout/tasks/offer-letter-generator",
+        "-a",
+        "codex",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol",
+        "--job-name",
+        "skillsbench-codex-external-prepared-suite-t0_heldout-attempt01",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ],
+      "resolved_command": [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t0_heldout/tasks/offer-letter-generator",
+        "-a",
+        "codex",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol",
+        "--job-name",
+        "skillsbench-codex-external-prepared-suite-t0_heldout-attempt01",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ],
+      "mode": "subprocess",
+      "status": "success",
+      "exit_code": 0,
+      "duration_seconds": 894.3445744119999,
+      "started_at": "2026-04-18T12:19:48Z",
+      "finished_at": "2026-04-18T12:36:21Z",
+      "stdout_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/attempts/t0_heldout/artifacts/attempt01/heldout/000_offer-letter-generator/stdout.txt",
+      "stderr_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/attempts/t0_heldout/artifacts/attempt01/heldout/000_offer-letter-generator/stderr.txt",
+      "error": null
+    }
+  ],
+  "generated_at": "2026-04-18T12:36:21Z"
+}

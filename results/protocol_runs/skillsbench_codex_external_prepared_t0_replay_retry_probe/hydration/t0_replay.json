@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_hydration",
+  "plan_source": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_retry_probe/plans/t0_replay.source.json",
+  "repo_root": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench",
+  "split": "replay",
+  "selected_splits": [
+    "replay"
+  ],
+  "git_bin": "git",
+  "command": [
+    "git",
+    "-C",
+    "/home/yuchong/Protocal_Bench/benchmarks/skillsbench",
+    "sparse-checkout",
+    "add",
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "before_patterns": [
+    "tasks/citation-check",
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "after_patterns": [
+    "tasks/citation-check",
+    "tasks/court-form-filling",
+    "tasks/dialogue-parser",
+    "tasks/offer-letter-generator",
+    "tasks/powerlifting-coef-calc",
+    "website/src/data"
+  ],
+  "hydrated_paths": [
+    "website/src/data",
+    "tasks/dialogue-parser"
+  ],
+  "tasks": [
+    {
+      "task_id": "dialogue-parser",
+      "title": "dialogue-parser",
+      "source_path": "tasks/dialogue-parser",
+      "exists": true
+    }
+  ],
+  "generated_at": "2026-04-18T11:52:27Z"
+}

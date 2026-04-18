@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_task_preparation",
+  "prepared_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t1_heldout",
+  "skill_mode": "keep",
+  "patched_files": [
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t1_heldout/tasks/offer-letter-generator/solution/solve.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t1_heldout/tasks/offer-letter-generator/tests/test.sh",
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t1_heldout/tasks/offer-letter-generator/environment/Dockerfile"
+  ],
+  "tasks": [
+    {
+      "task_id": "offer-letter-generator",
+      "source_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/tasks/offer-letter-generator",
+      "prepared_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_suite/prepared/t1_heldout/tasks/offer-letter-generator",
+      "skill_mode": "keep",
+      "patches": [
+        "offer_letter_generator_system_docx"
+      ]
+    }
+  ]
+}

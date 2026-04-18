@@ -472,6 +472,11 @@ def _run_skillsbench_spec(
     agent_version = run_spec.get("agent_version", execution_defaults["agent_version"])
     agent_name = run_spec.get("agent_name")
     model_name = run_spec.get("model_name")
+    env_overrides = _resolve_suite_env(
+        base_dir=base_dir,
+        repo_root=repo_root,
+        env_file_value=run_spec.get("env_file", execution_defaults.get("env_file")),
+    )
     task_preparation = _merge_task_preparation(
         execution_defaults.get("task_preparation"),
         run_spec.get("task_preparation"),
@@ -605,6 +610,7 @@ def _run_skillsbench_spec(
                 mode=execute_mode,
                 cwd=repo_root.parent.parent,
                 artifacts_dir=attempts_root / "artifacts" / attempt_label,
+                env_overrides=env_overrides,
             )
             if not attempt_job_dir.exists():
                 raise RuntimeError(f"Expected Harbor job directory does not exist after execution: {attempt_job_dir}")
@@ -642,6 +648,7 @@ def _run_skillsbench_spec(
             "records_path": str(attempt_records_path),
             "execution_mode": execute_mode if attempt_execution_report else "import-only",
             "execution_summary": attempt_execution_report["summary"] if attempt_execution_report else None,
+            "env_override_keys": sorted(env_overrides.keys()),
             "imported_records": len(attempt_imported_runs),
             "success_count": sum(1 for record in attempt_imported_runs if record["success"]),
             "failure_count": sum(1 for record in attempt_imported_runs if not record["success"]),
@@ -693,6 +700,7 @@ def _run_skillsbench_spec(
         "preparation_path": str(preparation_path) if preparation_report else None,
         "execution_mode": execute_mode if execution_report else "import-only",
         "execution_summary": execution_report["summary"] if execution_report else None,
+        "env_override_keys": sorted(env_overrides.keys()),
         "imported_records": len(final_imported_runs),
         "success_count": sum(1 for record in final_imported_runs if record["success"]),
         "failure_count": sum(1 for record in final_imported_runs if not record["success"]),

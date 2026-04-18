@@ -484,6 +484,121 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(import_mock.call_count, 2)
             self.assertEqual(execute_mock.call_count, 2)
 
+    @patch("sip_bench.protocol_runner.validate_data_file")
+    @patch("sip_bench.protocol_runner.import_skillsbench_job")
+    @patch("sip_bench.protocol_runner.execute_command_plan")
+    @patch("sip_bench.protocol_runner.hydrate_skillsbench_checkout")
+    def test_run_skillsbench_suite_autodiscovers_local_env_file_for_execution(
+        self,
+        hydrate_mock,
+        execute_mock,
+        import_mock,
+        validate_mock,
+    ) -> None:
+        validate_mock.return_value = {"valid": True, "errors": []}
+        hydrate_mock.return_value = {
+            "schema_version": "0.1.0",
+            "action": "skillsbench_hydration",
+            "hydrated_paths": ["tasks/citation-check"],
+        }
+        import_mock.return_value = [
+            {
+                "schema_version": "0.1.0",
+                "run_id": "skillsbench::env-file",
+                "benchmark_name": "skillsbench",
+                "benchmark_version": "skillsbench-upstream",
+                "benchmark_split": "replay",
+                "phase": "T0",
+                "path_type": "external",
+                "model_name": "gpt-5.4",
+                "agent_name": "codex",
+                "agent_version": "env-suite",
+                "task_id": "citation-check",
+                "attempt_index": 0,
+                "score": 0.0,
+                "success": False,
+                "token_input": 0,
+                "token_output": 0,
+                "token_total": 0,
+                "tool_calls_total": 0,
+                "memory_reads": 0,
+                "memory_writes": 0,
+                "wall_clock_seconds": 1.0,
+                "cost_usd": 0.0,
+                "human_interventions": 0,
+                "seed": 19,
+                "started_at": "2026-04-18T02:00:00Z",
+                "finished_at": "2026-04-18T02:00:01Z",
+                "metadata": {
+                    "score_source": "exception_fallback",
+                    "exception_type": "ValueError",
+                    "exception_message": "Model name is required",
+                },
+            }
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            env_path = tmp_path / ".env.local"
+            env_path.write_text("OPENAI_API_KEY=test-key\n", encoding="utf-8")
+            repo_root = tmp_path / "benchmarks" / "skillsbench"
+            repo_root.mkdir(parents=True, exist_ok=True)
+            jobs_root = tmp_path / "jobs"
+
+            def execute_side_effect(*args, **kwargs):
+                plan_source = Path(kwargs["plan_source"])
+                payload = json.loads(plan_source.read_text(encoding="utf-8"))
+                command = payload["commands"]["replay"][0]
+                job_name = command[command.index("--job-name") + 1]
+                (jobs_root / job_name).mkdir(parents=True, exist_ok=True)
+                return {
+                    "schema_version": "0.1.0",
+                    "summary": {"executed": 1, "status_counts": {"success": 1}, "halted_early": False},
+                    "records": [],
+                }
+
+            execute_mock.side_effect = execute_side_effect
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "skillsbench-env-suite",
+                "benchmark_name": "skillsbench",
+                "repo_root": str(repo_root),
+                "registry_path": str(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "agent": "codex",
+                    "model": "gpt-5.4",
+                    "harbor_bin": "harbor",
+                    "jobs_dir": str(jobs_root),
+                    "path_type": "external",
+                    "agent_version": "env-suite",
+                    "seed": 19,
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": ["citation-check"],
+                    }
+                ],
+            }
+            config_path = tmp_path / "skillsbench_env_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_skillsbench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=False,
+            )
+
+            self.assertTrue(report["runs_validation"]["valid"])
+            execute_call = execute_mock.call_args
+            self.assertEqual(execute_call.kwargs["env_overrides"]["OPENAI_API_KEY"], "test-key")
+            self.assertEqual(report["runs"][0]["env_override_keys"], ["OPENAI_API_KEY"])
+            self.assertEqual(report["runs"][0]["attempts"][0]["env_override_keys"], ["OPENAI_API_KEY"])
+
     def test_build_tau_explicit_plan_preserves_split_assignment(self) -> None:
         plan = build_tau_explicit_plan(
             repo_root="benchmarks/tau-bench",

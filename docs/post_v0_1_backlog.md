@@ -25,7 +25,7 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 
 ## Benchmark Expansion
 
-1. Validate `SkillsBench codex external prepared suite` on a machine that can actually access the target agent.
+1. Rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that the tracked suite completes end to end and currently collapses to flat-zero outputs without credentials.
 2. Add a stable public story for prepared-task comparisons only after the validation path is repeatable.
 3. Track a second repeatable failure-and-recovery family so provenance evidence is not based on one case.
 4. Revisit `tau-bench` live execution once provider API access is available and budget is explicit.

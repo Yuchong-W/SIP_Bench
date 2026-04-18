@@ -1,0 +1,95 @@
+{
+  "benchmark_name": "skillsbench",
+  "registry_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "repo_root": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench",
+  "selection": {
+    "total_tasks": 86,
+    "filtered_tasks": 1,
+    "categories": [],
+    "difficulties": [],
+    "task_ids": {
+      "replay": [
+        "dialogue-parser"
+      ],
+      "adapt": [],
+      "heldout": [],
+      "drift": []
+    },
+    "seed": null,
+    "selection_mode": "explicit"
+  },
+  "execution": {
+    "agent": "codex",
+    "model": "gpt-5.4",
+    "harbor_bin": "/home/yuchong/Protocal_Bench/scripts/harbor312",
+    "extra_args": [
+      "--jobs-dir",
+      "/home/yuchong/Protocal_Bench/results/real_jobs_protocol",
+      "--job-name",
+      "skillsbench-codex-external-prepared-suite-t0_replay",
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4",
+      "--agent-setup-timeout-multiplier",
+      "4"
+    ]
+  },
+  "manifest": {
+    "counts": {
+      "replay": 1,
+      "adapt": 0,
+      "heldout": 0,
+      "drift": 0
+    },
+    "replay": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "dialogue-parser",
+        "source_path": "tasks/dialogue-parser",
+        "title": "dialogue-parser",
+        "category": "game",
+        "difficulty": "easy",
+        "metadata": {
+          "tags": [
+            "game development",
+            "parsing"
+          ],
+          "author_name": "scriptwonder",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:09.897Z"
+        }
+      }
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  },
+  "commands": {
+    "replay": [
+      [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/tasks/dialogue-parser",
+        "-a",
+        "codex",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol",
+        "--job-name",
+        "skillsbench-codex-external-prepared-suite-t0_replay",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ]
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  }
+}

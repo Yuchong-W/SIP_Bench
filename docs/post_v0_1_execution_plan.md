@@ -135,7 +135,7 @@ Goal:
 
 Priority experiments:
 
-1. validate `SkillsBench codex external prepared suite` on a machine that can actually access the target agent
+1. rerun `SkillsBench codex external prepared suite` with `OPENAI_API_KEY` now that the full tracked suite completes end to end and currently collapses to a flat-zero summary without credentials
 2. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
 3. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
 4. only then consider `tau-bench` live runs with explicit provider budget
@@ -148,7 +148,7 @@ Minimum acceptable experimental upgrade:
 
 Highest-value experimental package from here:
 
-1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas
+1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas after `OPENAI_API_KEY` is supplied
 2. one second tracked recovery case with attempt-level provenance
 3. one updated results-gallery section that combines those new artifacts into a protocol-first comparison table
 
@@ -174,7 +174,7 @@ Not yet a priority:
 
 ### Phase 3: New Experimental Evidence
 
-1. run the prepared-suite validation on an actually connected machine
+1. rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
 2. add comparison tables that separate:
    - held-out improvement
    - replay retention
@@ -199,7 +199,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. run the prepared-suite validation on a machine that can actually reach the target agent
+1. rerun the prepared-suite validation with env-file-backed `OPENAI_API_KEY`
 2. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
 3. update the results gallery with a protocol-first comparison table once those experiments exist
 4. postpone broader benchmark expansion until those experimental assets exist

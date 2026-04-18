@@ -781,3 +781,37 @@ Observed result:
 
 1. GitHub accepted the new `v0.1.0` tag.
 2. The first public release now has a stable remote reference even though this session still lacks repository-level Actions and release-page visibility.
+
+### SkillsBench Codex External Prepared Probe
+
+Work completed:
+
+1. Built isolated single-run `t0_replay` probe configs under `/tmp` so the prepared external path could be tested without colliding with the tracked suite outputs.
+2. Ran a real prepared `dialogue-parser` probe through `run-skillsbench-suite` with `harbor312`, `codex`, and Docker-backed task preparation.
+3. Re-ran the same probe with the tracked `dialogue_parser_apt_retry` patch plus the suite retry policy after the first run failed on transient Debian package fetch errors.
+4. Confirmed the installed Harbor `codex` agent now requires an explicit model name instead of inheriting the local Codex CLI default from `~/.codex/config.toml`.
+5. Updated the tracked `SkillsBench codex external prepared` suite config to use explicit model selection, prepared-task hardening for `dialogue-parser`, and env-file-backed execution overrides.
+6. Extended the SkillsBench suite runner so it resolves `.env.local` / `env_file` the same way `tau-bench` already does and passes only the override keys into execution provenance.
+7. Ran a third single-run probe with `model = "gpt-5.4"` and then reran the full tracked `protocol/skillsbench_codex_external_prepared_suite.json` to completion.
+
+Tests run:
+
+1. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_replay_probe.json --mode subprocess`
+2. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_replay_retry_probe.json --mode subprocess`
+3. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_t0_replay_model_probe.json --mode subprocess`
+4. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_codex_external_prepared_suite.json --mode subprocess`
+
+Observed result:
+
+1. The prepared external path is real on this machine: it reaches task preparation, Harbor job creation, Docker environment startup, and imported SIP run artifacts.
+2. The first probe failed in `dialogue-parser` environment build because `apt-get` hit transient package-fetch failures; the second probe hardened that layer and moved the failure boundary upward.
+3. After the Docker build issue was mitigated, the next real blocker became `ValueError: Model name is required`, which came from the installed Harbor `codex` agent rather than from SIP-Bench glue code; adding `model = "gpt-5.4"` removed that failure mode.
+4. The full tracked prepared suite now completes end to end and generates a valid summary on this host, with:
+   - `t0_replay_mean = 0.0`
+   - `t1_replay_mean = 0.0`
+   - `t0_heldout_mean = 0.0`
+   - `t1_heldout_mean = 0.0`
+   - `fg_mean = 0.0`
+   - `br_mean = 0.0`
+5. Agent-side `codex.txt` logs for both `dialogue-parser` and `offer-letter-generator` show repeated `401 Unauthorized` failures because the inherited `OPENAI_API_KEY` is empty, while the final imported SIP records collapse that state into verifier-backed `0.0` scores.
+6. The prepared-suite path therefore no longer belongs in the vague category of "maybe inaccessible on this host"; it is now a concrete experimental path whose remaining blocker is specifically credential state, not protocol wiring or task preparation.

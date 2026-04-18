@@ -7,12 +7,31 @@
   "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_suite",
   "execution": {
     "agent": "codex",
-    "model": null,
+    "model": "gpt-5.4",
+    "env_file": ".env.local",
     "harbor_bin": "../scripts/harbor312",
     "jobs_dir": "../results/real_jobs_protocol",
     "path_type": "external",
     "agent_version": "harbor312-codex-external-v0",
     "seed": 0,
+    "retry_policy": {
+      "max_attempts": 2,
+      "retry_on_execution_statuses": [
+        "failed"
+      ],
+      "retry_on_exception_types": [
+        "EnvironmentStartTimeoutError",
+        "EnvironmentBuildTimeoutError",
+        "AgentSetupTimeoutError"
+      ],
+      "retry_on_message_substrings": [
+        "e: failed to fetch",
+        "unable to fetch some archives",
+        "temporary failure resolving",
+        "connection was forcibly closed",
+        "timed out"
+      ]
+    },
     "extra_args": [
       "--artifact",
       "/logs/verifier",
@@ -32,7 +51,12 @@
       ],
       "task_preparation": {
         "mode": "copy",
-        "skill_mode": "strip"
+        "skill_mode": "strip",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ]
+        }
       }
     },
     {
@@ -61,7 +85,12 @@
       ],
       "task_preparation": {
         "mode": "copy",
-        "skill_mode": "keep"
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ]
+        }
       }
     },
     {
@@ -73,7 +102,12 @@
       ],
       "task_preparation": {
         "mode": "copy",
-        "skill_mode": "keep"
+        "skill_mode": "keep",
+        "patches": {
+          "dialogue-parser": [
+            "dialogue_parser_apt_retry"
+          ]
+        }
       }
     },
     {

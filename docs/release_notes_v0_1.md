@@ -117,5 +117,5 @@ Windows helper scripts remain in the repository for local machine-specific workf
 1. polish or publish a dedicated GitHub release page for `v0.1.0` if desired
 2. expand the minimal proof-of-value into a richer multi-example results section
 3. decide whether to add CI and license badges now that the release tag is live
-4. validate the experimental prepared-suite path only on a machine that can actually access the target agent
+4. rerun the experimental prepared-suite path with `OPENAI_API_KEY` now that the tracked suite completes end to end but currently collapses to flat-zero outputs without credentials
 5. revisit `tau-bench` live execution once provider credentials and budget are explicit
