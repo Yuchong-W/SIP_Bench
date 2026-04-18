@@ -678,3 +678,4 @@ Observed result:
 1. Retry provenance now stays visible in the suite report instead of being hidden behind overwritten output files.
 2. The release-critical `SkillsBench oracle` suite can now distinguish "protocol is fine, infra was flaky once" from deterministic benchmark failures.
 3. `RewardFileNotFoundError` remains outside the default retry set until there is evidence that rerunning the same task reliably fixes it.
+4. A real Linux `dialogue-parser` retry probe executed `attempt01` and `attempt02` Harbor jobs end to end, and both attempts were preserved as valid `runs.jsonl` artifacts with the retry trigger recorded as `exception_message:e: failed to fetch`.

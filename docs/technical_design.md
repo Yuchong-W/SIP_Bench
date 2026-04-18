@@ -592,6 +592,7 @@ Current verified behavior:
 1. unit coverage now exercises a transient failure on attempt 1 followed by a successful final attempt
 2. the tracked `SkillsBench oracle` real suite enables a conservative two-attempt policy for timeout-style failures and known apt/network fetch errors
 3. deterministic failures such as the observed `RewardFileNotFoundError` remain non-retriable by default
+4. a real Linux `dialogue-parser` probe triggered a retry from `attempt01` to `attempt02`, with both Harbor jobs imported into valid attempt-level `runs.jsonl` artifacts and the retry reason recorded as `exception_message:e: failed to fetch`
 
 Engineering implication:
 
