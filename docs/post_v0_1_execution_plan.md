@@ -34,6 +34,28 @@ The next phase is successful only if all of the following are true:
 4. at least one repeatable experiment bundle exists beyond the current `v0.1.0` release proof
 5. the design story and the evidence story point to the same claims
 
+## Current Status After The First Results Package
+
+Completed so far:
+
+1. the repository now has a positioning note that explains the protocol-first story and contrasts it with benchmark-first self-evolution evaluation
+2. the repository now has a results gallery with:
+   - `3` compact tables
+   - `4` repo-hosted figures
+3. the public-facing story is no longer dependent on only one minimal proof-of-value snippet in the README
+
+Still missing:
+
+1. a stronger experiment bundle beyond the tracked `v0.1.0` release artifacts
+2. prepared-suite evidence that can actually test the "protocol-first versus benchmark-first" comparison story
+3. a second repeatable failure-and-recovery family so provenance is not anchored on only one recovery case
+
+Bottom line:
+
+1. design and interpretation work are no longer the main bottleneck
+2. additional experiments are still necessary
+3. the highest-value remaining work is now experimental, not presentational
+
 ## Workstreams
 
 ### W1: Design And Positioning
@@ -113,17 +135,22 @@ Goal:
 
 Priority experiments:
 
-1. strengthen the current two-environment story:
-   - `SkillsBench oracle real suite`
-   - `tau-bench historical/import-only`
-2. validate `SkillsBench codex external prepared suite` on a machine that can actually access the target agent
-3. only then consider `tau-bench` live runs with explicit provider budget
+1. validate `SkillsBench codex external prepared suite` on a machine that can actually access the target agent
+2. strengthen the current two-environment story with at least one new matched comparison that exposes a protocol tradeoff hidden by plain success reporting
+3. capture a second repeatable failure-and-recovery case so attempt provenance is not based on one recovery story only
+4. only then consider `tau-bench` live runs with explicit provider budget
 
 Minimum acceptable experimental upgrade:
 
 1. one matched comparison where the protocol reveals a tradeoff hidden by a plain success score
 2. one run family that includes failure, retry, and recovery evidence
 3. one cross-environment summary table that does not depend on private access to interpret
+
+Highest-value experimental package from here:
+
+1. one prepared-suite comparison with interpretable `FG / BR / IE` deltas
+2. one second tracked recovery case with attempt-level provenance
+3. one updated results-gallery section that combines those new artifacts into a protocol-first comparison table
 
 Not yet a priority:
 
@@ -172,7 +199,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. link the expanded results gallery from the release-facing narrative and other public-facing docs
-2. use the positioning note to tighten README or paper-facing related-work language
-3. add prepared-suite evidence before expanding benchmark count
-4. postpone broader benchmark expansion until those repo-hosted assets exist
+1. run the prepared-suite validation on a machine that can actually reach the target agent
+2. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
+3. update the results gallery with a protocol-first comparison table once those experiments exist
+4. postpone broader benchmark expansion until those experimental assets exist

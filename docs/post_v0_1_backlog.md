@@ -16,7 +16,7 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 2. Consider adding CI and license badges once the release tag is live.
 3. Decide whether a dedicated docs site is worth the maintenance cost after `v0.1`.
 4. Add a short "how to integrate a new benchmark" walkthrough if external interest appears.
-5. Add a short positioning note that explains how `SIP-Bench` differs from benchmark-first self-evolution suites.
+5. Tighten README and any paper-facing text now that the positioning note exists.
 
 ## Validation Hardening
 
@@ -27,8 +27,9 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 
 1. Validate `SkillsBench codex external prepared suite` on a machine that can actually access the target agent.
 2. Add a stable public story for prepared-task comparisons only after the validation path is repeatable.
-3. Revisit `tau-bench` live execution once provider API access is available and budget is explicit.
-4. Do not add a third benchmark until the current two-environment story is stronger.
+3. Track a second repeatable failure-and-recovery family so provenance evidence is not based on one case.
+4. Revisit `tau-bench` live execution once provider API access is available and budget is explicit.
+5. Do not add a third benchmark until the current two-environment story is stronger.
 
 ## Paper Track
 
@@ -37,6 +38,7 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 3. Treat large-scale matched-budget comparisons as post-release research work, not release hygiene.
 4. Grow the `v0.1` proof-of-value into a multi-environment empirical case, not just a release-facing example.
 5. Prefer repo-hosted tables and figures over slide-only evidence while the empirical story is still forming.
+6. Treat prepared-suite evidence as the main experimental unlock for a stronger paper claim.
 
 ## Product And Community
 
