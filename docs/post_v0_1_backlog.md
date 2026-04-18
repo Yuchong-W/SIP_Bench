@@ -4,6 +4,8 @@ This backlog exists to keep the first public release tight.
 
 Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is promoted explicitly later.
 
+For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](post_v0_1_execution_plan.md).
+
 ## Post-Tag Housekeeping
 
 1. If desired, publish or polish a dedicated GitHub release page for `v0.1.0`.
@@ -14,6 +16,7 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 2. Consider adding CI and license badges once the release tag is live.
 3. Decide whether a dedicated docs site is worth the maintenance cost after `v0.1`.
 4. Add a short "how to integrate a new benchmark" walkthrough if external interest appears.
+5. Add a short positioning note that explains how `SIP-Bench` differs from benchmark-first self-evolution suites.
 
 ## Validation Hardening
 
@@ -33,6 +36,7 @@ Anything listed here is intentionally *not* a `v0.1.0` blocker unless it is prom
 2. Build the paper around `FG`, `BR`, and `IE` tradeoffs instead of a generic "agent got better" narrative.
 3. Treat large-scale matched-budget comparisons as post-release research work, not release hygiene.
 4. Grow the `v0.1` proof-of-value into a multi-environment empirical case, not just a release-facing example.
+5. Prefer repo-hosted tables and figures over slide-only evidence while the empirical story is still forming.
 
 ## Product And Community
 

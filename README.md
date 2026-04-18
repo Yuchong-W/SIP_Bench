@@ -62,6 +62,8 @@ Milestone, release-tracking, and post-release docs live here:
 3. [docs/support_matrix_v0_1.md](docs/support_matrix_v0_1.md)
 4. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
 5. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
+6. [docs/post_v0_1_execution_plan.md](docs/post_v0_1_execution_plan.md)
+7. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
 
 ## Supported Environments
 
