@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">Heldout vs Replay Delta</title>
+  <desc id="desc">Slope chart showing dry-run heldout mean rising from 0.250 to 0.425 while replay mean falls from 0.600 to 0.525 between T0 and T1.</desc>
+  <rect width="720" height="420" fill="#fbfaf6"/>
+  <text x="40" y="42" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2937">Heldout vs Replay Delta</text>
+  <text x="40" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#4b5563">Tracked dry-run summary: heldout improves while replay retention declines.</text>
+
+  <g stroke="#d1d5db" stroke-width="1">
+    <line x1="110" y1="330" x2="650" y2="330"/>
+    <line x1="110" y1="270" x2="650" y2="270"/>
+    <line x1="110" y1="210" x2="650" y2="210"/>
+    <line x1="110" y1="150" x2="650" y2="150"/>
+    <line x1="110" y1="90" x2="650" y2="90"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6b7280" text-anchor="end">
+    <text x="100" y="334">0.00</text>
+    <text x="100" y="274">0.25</text>
+    <text x="100" y="214">0.50</text>
+    <text x="100" y="154">0.75</text>
+    <text x="100" y="94">1.00</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#111827" text-anchor="middle">
+    <text x="220" y="360">T0</text>
+    <text x="520" y="360">T1</text>
+  </g>
+
+  <g stroke-width="4" fill="none" stroke-linecap="round">
+    <line x1="220" y1="270" x2="520" y2="228" stroke="#1f8a5b"/>
+    <line x1="220" y1="186" x2="520" y2="204" stroke="#c2410c"/>
+  </g>
+
+  <g>
+    <circle cx="220" cy="270" r="7" fill="#1f8a5b"/>
+    <circle cx="520" cy="228" r="7" fill="#1f8a5b"/>
+    <circle cx="220" cy="186" r="7" fill="#c2410c"/>
+    <circle cx="520" cy="204" r="7" fill="#c2410c"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700">
+    <text x="238" y="262" fill="#1f8a5b">Heldout 0.250</text>
+    <text x="538" y="220" fill="#1f8a5b">Heldout 0.425</text>
+    <text x="238" y="178" fill="#c2410c">Replay 0.600</text>
+    <text x="538" y="196" fill="#c2410c">Replay 0.525</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4b5563">
+    <text x="40" y="392">Source: results/dryrun/summary.jsonl</text>
+    <text x="475" y="392">FG = +0.175   BR = -0.075</text>
+  </g>
+</svg>

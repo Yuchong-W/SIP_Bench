@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+  <title id="title">Cost vs Gain Summary</title>
+  <desc id="desc">Two-panel SVG showing dry-run average cost signals and protocol gain metrics from the tracked summary artifact.</desc>
+  <rect width="760" height="430" fill="#fbfaf6"/>
+  <text x="40" y="42" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2937">Cost vs Gain Summary</text>
+  <text x="40" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#4b5563">Tracked dry-run summary keeps gain, retention, and budget in the same view.</text>
+
+  <rect x="36" y="92" width="326" height="284" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+  <rect x="398" y="92" width="326" height="284" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+
+  <text x="60" y="124" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#9a3412">Average Cost Signals</text>
+  <text x="422" y="124" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#1d4ed8">Protocol Gain Signals</text>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#7c2d12">
+    <text x="60" y="168">Token total mean</text>
+    <text x="60" y="240">Tool calls mean</text>
+    <text x="60" y="312">Wall clock mean</text>
+  </g>
+
+  <g>
+    <rect x="60" y="180" width="225" height="22" rx="6" fill="#fed7aa"/>
+    <rect x="60" y="252" width="120" height="22" rx="6" fill="#fdba74"/>
+    <rect x="60" y="324" width="140" height="22" rx="6" fill="#fb923c"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#7c2d12">
+    <text x="295" y="196">75 tokens</text>
+    <text x="190" y="268">2.0 calls</text>
+    <text x="210" y="340">4.0 seconds</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#1e3a8a">
+    <text x="422" y="170">Forward Gain</text>
+    <text x="422" y="232">Backward Retention</text>
+    <text x="422" y="294">Post-Delay Stability</text>
+    <text x="422" y="356">Improvement Efficiency</text>
+  </g>
+
+  <g>
+    <rect x="422" y="182" width="175" height="20" rx="6" fill="#60a5fa"/>
+    <rect x="422" y="244" width="75" height="20" rx="6" fill="#fca5a5"/>
+    <rect x="422" y="306" width="20" height="20" rx="6" fill="#fcd34d"/>
+    <rect x="422" y="368" width="25" height="20" rx="6" fill="#93c5fd"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">
+    <text x="608" y="198" fill="#1d4ed8">+0.175 FG</text>
+    <text x="508" y="260" fill="#b91c1c">-0.075 BR</text>
+    <text x="453" y="322" fill="#92400e">-0.020 PDS</text>
+    <text x="458" y="384" fill="#1d4ed8">0.0025 IE</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4b5563">
+    <text x="40" y="402">Source: results/dryrun/summary.jsonl</text>
+    <text x="454" y="402">Interpretation: improvement is positive, bounded, and not free.</text>
+  </g>
+</svg>
