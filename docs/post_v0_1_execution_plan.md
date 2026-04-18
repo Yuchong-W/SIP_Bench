@@ -172,7 +172,7 @@ Preferred locations:
 
 ## Immediate Next Actions
 
-1. add one positioning note that explains how `SIP-Bench` differs from benchmark-first self-evolution suites
-2. extend `docs/results_gallery_post_v0_1.md` with a dedicated `T0/T1/T2` stability figure
-3. add an attempt-provenance figure once one more repeatable failure-and-recovery run family is tracked
+1. add an attempt-provenance figure once one more repeatable failure-and-recovery run family is tracked
+2. link the expanded results gallery from the release-facing narrative
+3. use the positioning note to tighten README or paper-facing related-work language
 4. postpone broader benchmark expansion until those repo-hosted assets exist

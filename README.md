@@ -162,6 +162,8 @@ A plain post-adaptation score of `0.425` on held-out tasks would suggest "the ag
 
 The real `SkillsBench oracle` suite remains the release-critical evidence that the protocol works on a live benchmark path. The dry-run summary above is the compact release-facing example that shows why the protocol is useful.
 
+For the stronger post-`v0.1.0` table-and-figure package built from tracked artifacts, see [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md).
+
 ## Real Benchmark Paths
 
 ### SkillsBench

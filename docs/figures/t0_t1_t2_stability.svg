@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">T0 T1 T2 Stability</title>
+  <desc id="desc">Line chart showing dry-run heldout mean increasing from 0.250 at T0 to 0.425 at T1, then softening to 0.405 at T2.</desc>
+  <rect width="720" height="420" fill="#fbfaf6"/>
+  <text x="40" y="42" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2937">T0/T1/T2 Stability</text>
+  <text x="40" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#4b5563">Tracked dry-run heldout trajectory: improvement survives to T2, but not at full T1 strength.</text>
+
+  <g stroke="#d1d5db" stroke-width="1">
+    <line x1="110" y1="330" x2="650" y2="330"/>
+    <line x1="110" y1="270" x2="650" y2="270"/>
+    <line x1="110" y1="210" x2="650" y2="210"/>
+    <line x1="110" y1="150" x2="650" y2="150"/>
+    <line x1="110" y1="90" x2="650" y2="90"/>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6b7280" text-anchor="end">
+    <text x="100" y="334">0.00</text>
+    <text x="100" y="274">0.25</text>
+    <text x="100" y="214">0.50</text>
+    <text x="100" y="154">0.75</text>
+    <text x="100" y="94">1.00</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#111827" text-anchor="middle">
+    <text x="180" y="360">T0</text>
+    <text x="380" y="360">T1</text>
+    <text x="580" y="360">T2</text>
+  </g>
+
+  <polyline points="180,270 380,228 580,233" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="180" cy="270" r="7" fill="#2563eb"/>
+  <circle cx="380" cy="228" r="7" fill="#2563eb"/>
+  <circle cx="580" cy="233" r="7" fill="#2563eb"/>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#1d4ed8">
+    <text x="150" y="258">0.250</text>
+    <text x="352" y="216">0.425</text>
+    <text x="550" y="221">0.405</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#374151">
+    <text x="410" y="164">Peak post-adaptation heldout score</text>
+    <text x="485" y="190">T1 = 0.425</text>
+    <text x="470" y="292">PDS = -0.020</text>
+    <text x="415" y="314">The gain persists, but softens by T2</text>
+  </g>
+
+  <line x1="430" y1="196" x2="390" y2="225" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="500" y1="280" x2="575" y2="235" stroke="#6b7280" stroke-width="1.5"/>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4b5563">
+    <text x="40" y="392">Source: results/dryrun/summary.jsonl</text>
+    <text x="420" y="392">Interpretation: T1 improvement is not identical to long-run stability.</text>
+  </g>
+</svg>

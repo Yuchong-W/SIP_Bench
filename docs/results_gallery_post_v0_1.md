@@ -3,6 +3,10 @@
 This document is the first repo-hosted upgrade beyond the `v0.1.0` minimal proof-of-value.
 It turns already tracked artifacts into compact tables and figures that can support README, release, or paper-facing claims without relying on private slides.
 
+See also:
+
+1. [Positioning note: protocol-first vs benchmark-first self-evolution evaluation](positioning_note_post_v0_1.md)
+
 ## Protocol Value Snapshot
 
 | Evidence path | T0 heldout | T1 heldout | FG | T0 replay | T1 replay | BR | T2 heldout / PDS | Cost signal | Why it matters |
@@ -76,8 +80,22 @@ Interpretation:
 2. the gain is not free in token, tool, or time budget
 3. `IE` stays visible next to raw cost signals so "improvement" is not discussed as if it were costless
 
+### T0/T1/T2 Stability
+
+![T0/T1/T2 Stability](figures/t0_t1_t2_stability.svg)
+
+Source:
+
+1. `results/dryrun/summary.jsonl`
+
+Interpretation:
+
+1. the tracked held-out score rises sharply from `T0` to `T1`
+2. the gain remains positive at `T2`
+3. `PDS = -0.020` makes the softening explicit instead of letting `T1` stand in as the whole story
+
 ## Remaining Gaps
 
-1. `T0/T1/T2` stability still deserves its own figure once more than one tracked source exposes delayed behavior
-2. attempt provenance should become a dedicated chart after one more repeatable failure-and-recovery run family is checked in
-3. the next high-value upgrade is to add prepared-suite evidence, not to add a third benchmark prematurely
+1. attempt provenance should become a dedicated chart after one more repeatable failure-and-recovery run family is checked in
+2. the next high-value upgrade is to add prepared-suite evidence, not to add a third benchmark prematurely
+3. once a stronger prepared-suite comparison exists, the gallery should add a protocol-first vs benchmark-first comparison table
