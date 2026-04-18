@@ -58,6 +58,10 @@ New constraint learned from the latest probe work:
 4. that host-auth custom agent has already produced real verifier-backed prepared probe results on both `dialogue-parser` and `offer-letter-generator`, so `OPENAI_API_KEY` is no longer the only plausible route to stronger prepared-suite evidence
 5. that host-auth path now also has a real four-run `T0/T1 replay/heldout` bundle with a valid `summary.jsonl`, so it has crossed from probe infrastructure into usable experiment infrastructure
 6. however, the first summary-backed host-auth bundle saturates at `1.0` on every tracked task, so it demonstrates viability better than it demonstrates protocol tradeoffs
+7. the first medium screening task, `citation-check`, has already revealed two distinct infrastructure-side failure families:
+   - verifier bootstrap drift (`curl` or `uvx` bootstrap failures)
+   - Docker build or credential-helper drift (`error listing credentials`, `UtilAcceptVsock`)
+8. that means the screening program now has value even before a clean non-ceiling score lands, because it is surfacing repeatable operational burden that ordinary final-score reporting would flatten away
 
 Bottom line:
 
@@ -235,7 +239,8 @@ Preferred locations:
 
 1. freeze the current easy-task host-auth bundle as the tracked smoke baseline and stop treating it as the main evidence target
 2. select a medium-difficulty replay/heldout pair from the current SkillsBench registry and run the next host-auth bundle on that pair
-3. if the medium bundle still returns all `1.0`, promote at least one side of the bundle to a hard task instead of rerunning the same easy pair
-4. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on those stronger bundles
-5. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
+3. keep the checked-in `citation-check` screening configs aligned with observed failure families so reruns are reproducible and policy-driven rather than ad hoc
+4. if the medium bundle still returns all `1.0`, promote at least one side of the bundle to a hard task instead of rerunning the same easy pair
+5. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on those stronger bundles
+6. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
 6. update the results gallery with a protocol-first comparison table once those stronger experiments exist

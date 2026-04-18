@@ -946,3 +946,39 @@ Observed result:
    - engineering claim: the host-auth path is now real bundle infrastructure, not just a probe trick
    - experimental claim: this first bundle is a ceiling-effect validation bundle, because every run saturates at `1.0`
 6. The next experiment should therefore target harder or more discriminative task selections rather than rerunning the same bundle and expecting new protocol insight from the same easy pair.
+
+### Host-Auth `citation-check` Screening
+
+Work completed:
+
+1. Added `docs/host_auth_experiment_design.md` so the next prepared-stage experiments follow an explicit `Smoke -> Screening -> Evidence` ladder instead of ad hoc task picking.
+2. Added `scripts/audit_skillsbench_task_availability.py` and confirmed that the current local checkout exposes only five offline-inspectable tasks, with `citation-check` as the only locally available `medium` task.
+3. Added `protocol/skillsbench_codex_external_prepared_host_auth_citation_replay_probe.json` as the first checked-in medium-difficulty screening probe for the repo-local host-auth path.
+4. Ran that first screening probe and observed a split outcome:
+   - `t0_replay` imported as `score = 0.0` after the verifier bootstrap failed on `curl -LsSf https://astral.sh/uv/0.9.7/install.sh` and later `uvx: command not found`
+   - `t1_replay` imported as `score = 1.0` with passing verifier tests
+5. Escalated to the stronger `citation_check_python_runtime` patch and checked in `protocol/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened.json` so the runtime-hardened rerun has a stable, reproducible config rather than a `/tmp`-only file.
+6. Expanded retry coverage in the checked-in screening configs to include the second infrastructure failure family seen during the runtime-hardened rerun:
+   - `error listing credentials`
+   - `UtilAcceptVsock`
+   - `accept4 failed 110`
+
+Tests run:
+
+1. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_codex_external_prepared_host_auth_citation_replay_probe.json --mode subprocess`
+2. `python3 scripts/run_protocol.py run-skillsbench-suite --config /tmp/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened.json --mode subprocess`
+
+Observed result:
+
+1. `citation-check` is a legitimate screening candidate because it does not behave like the easy host-auth smoke bundle; even before a clean non-ceiling run lands, it is already surfacing operational burden worth tracking.
+2. The first screening probe exposed verifier bootstrap drift rather than a simple capability score:
+   - `t0_replay = 0.0`
+   - `t1_replay = 1.0`
+3. The follow-up runtime-hardened rerun removed the need to keep using an ad hoc `/tmp` config, but it also exposed a second infrastructure-side failure family on `t0_replay` before agent execution:
+   - Docker build failed with `error listing credentials`
+   - WSL reported `UtilAcceptVsock`
+   - the imported run fell back to `score_source = exception_fallback`
+4. At logging time, the runtime-hardened screening run is still in flight on `t1_replay`; the current conclusion is therefore about the failure-family map, not yet about final replay-side evidence quality.
+5. This is useful for the paper-facing plan because it turns `citation-check` into more than a raw score probe:
+   - it is now a candidate for non-ceiling evidence if a clean rerun lands
+   - and it is already a candidate failure-and-recovery family for provenance analysis if the build-drift pattern repeats and is later recovered

@@ -1,16 +1,16 @@
 {
   "schema_version": "0.1.0",
-  "suite_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe",
+  "suite_name": "skillsbench-codex-external-prepared-host-auth-citation-replay-probe-runtime-hardened",
   "benchmark_name": "skillsbench",
   "repo_root": "../benchmarks/skillsbench",
   "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
-  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe",
+  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened",
   "execution": {
     "agent": "codex",
     "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
     "model": "gpt-5.4",
     "harbor_bin": "../scripts/harbor312",
-    "jobs_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe",
+    "jobs_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe_runtime_hardened",
     "path_type": "external",
     "agent_version": "harbor312-codex-host-auth-v0",
     "seed": 0,
@@ -30,6 +30,8 @@
         "temporary failure resolving",
         "connection was forcibly closed",
         "timed out",
+        "curl: (22)",
+        "uvx: command not found",
         "error listing credentials",
         "utilacceptvsock",
         "accept4 failed 110"
@@ -57,7 +59,7 @@
         "skill_mode": "strip",
         "patches": {
           "citation-check": [
-            "citation_check_apt_retry"
+            "citation_check_python_runtime"
           ]
         }
       }
@@ -74,7 +76,7 @@
         "skill_mode": "keep",
         "patches": {
           "citation-check": [
-            "citation_check_apt_retry"
+            "citation_check_python_runtime"
           ]
         }
       }

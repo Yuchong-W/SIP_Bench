@@ -84,11 +84,23 @@ Screening rule:
 1. do not promote a task into the next bundle solely because it is labeled `medium`
 2. promote it only if the probe produces a nontrivial score, meaningful cost difference, or a clear operational failure mode worth tracking
 3. if the first blocker is environment drift rather than capability, apply the least invasive hardening patch first and rerun the same screening task before escalating to a different task
+4. if the rerun exposes a separate Docker build or credential-helper failure family, capture that family explicitly in checked-in retry coverage before rejecting the task as unusable
 
 Current patch ladder for `citation-check`:
 
 1. first use `citation_check_apt_retry` to reduce transient Ubuntu package-fetch failures while preserving the original task shape
 2. only if that remains too brittle should the stronger `citation_check_python_runtime` patch be used, because it rewrites more of the task bootstrap path
+
+Observed screening failure families for `citation-check` so far:
+
+1. verifier bootstrap drift
+   - signal: `curl: (22)` or `uvx: command not found`
+   - interpretation: the task can reach agent execution and still fail later because the verifier bootstrap path drifted
+   - mitigation: `citation_check_python_runtime`
+2. Docker build or credential-helper drift
+   - signal: `error listing credentials`, `UtilAcceptVsock`, or `accept4 failed 110`
+   - interpretation: the task can fail before agent execution for infrastructure reasons unrelated to model capability
+   - mitigation: keep explicit retry coverage in the screening config and only abandon the task if the failure persists after rerun
 
 ### Stage 2: Non-Ceiling Bundle
 
