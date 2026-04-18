@@ -40,9 +40,9 @@ flowchart LR
     J --> L[IE and NIS with cost fields]
 ```
 
-## Current Release Direction
+## v0.1.0 Release Posture
 
-The current `v0.1` release plan is optimized for a strong open-source launch:
+The published `v0.1.0` release is optimized for a strong open-source launch:
 
 1. official support target: `Linux-first`
 2. release-critical environments:
@@ -55,7 +55,7 @@ The current `v0.1` release plan is optimized for a strong open-source launch:
    - `SkillsBench codex external prepared suite`
    - `tau-bench` live runs that require provider credentials
 
-Milestone and release-tracking docs live here:
+Milestone, release-tracking, and post-release docs live here:
 
 1. [docs/milestone_plan_v0_1.md](docs/milestone_plan_v0_1.md)
 2. [docs/release_checklist_v0_1.md](docs/release_checklist_v0_1.md)

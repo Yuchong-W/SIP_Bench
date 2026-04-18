@@ -9,7 +9,7 @@ The MVP focuses on two benchmark families:
 1. `SkillsBench`
 2. `tau-bench`
 
-The current `v0.1` release direction is `Linux-first` and open-source-release-oriented. The release-critical evidence path is:
+The published `v0.1.0` release posture is `Linux-first` and open-source-release-oriented. The release-critical evidence path is:
 
 1. real `SkillsBench oracle` suite artifacts
 2. `tau-bench historical/import-only` suite artifacts
