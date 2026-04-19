@@ -140,11 +140,10 @@ Tracked example outputs and configs:
 3. Tracked sample summary with non-trivial `FG/BR/PDS/IE`: [results/dryrun/summary.jsonl](results/dryrun/summary.jsonl)
 4. Successful `SkillsBench` smoke import: [results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl](results/dryrun/skillsbench_dialogue_timeout4_runs.jsonl)
 5. Sample `tau-bench` imported runs: [results/dryrun/tau_runs.jsonl](results/dryrun/tau_runs.jsonl)
-6. Host-auth evidence suite (2-task replay/heldout aggregate, replay-probe style): [protocol/skillsbench_host_auth_evidence_replay_probe_suite.json](protocol/skillsbench_host_auth_evidence_replay_probe_suite.json)
-7. Real `SkillsBench` suite config: [protocol/skillsbench_oracle_real_suite.json](protocol/skillsbench_oracle_real_suite.json)
-8. Experimental prepared-suite config: [protocol/skillsbench_codex_external_prepared_suite.json](protocol/skillsbench_codex_external_prepared_suite.json)
-9. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
-10. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
+6. Real `SkillsBench` suite config: [protocol/skillsbench_oracle_real_suite.json](protocol/skillsbench_oracle_real_suite.json)
+7. Experimental prepared-suite config: [protocol/skillsbench_codex_external_prepared_suite.json](protocol/skillsbench_codex_external_prepared_suite.json)
+8. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
+9. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
 
 ## What to Read First (2-3 Minutes)
 
@@ -176,14 +175,6 @@ It intentionally shows a case where adaptation helps held-out tasks but slightly
 A plain post-adaptation score of `0.425` on held-out tasks would suggest "the agent improved." The protocol view is stricter: yes, held-out performance improved, but replay performance regressed, the gain softened by `T2`, and the improvement had an explicit interaction cost. That is the core reason `SIP-Bench` exists.
 
 The real `SkillsBench oracle` suite remains the release-critical evidence that the protocol works on a live benchmark path. The dry-run summary above is the compact release-facing example that shows why the protocol is useful.
-
-A concrete domain-ready evidence row that does not require fresh live API calls is:
-
-| Path | `T0 heldout` | `T1 heldout` | `FG` | `T0 replay` | `T1 replay` | `BR` | `PDS` | `status` |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [results/protocol_runs/skillsbench_host_auth_evidence_replay_probe/summary.jsonl](results/protocol_runs/skillsbench_host_auth_evidence_replay_probe/summary.jsonl) | `0.500` | `1.000` | `+0.500` | `0.3335` | `1.000` | `+0.667` | `-1.000` | `screening` |
-
-The same suite also shows stable replay-side non-ceiling behavior (`0.3335 -> 1.000`), positive forward gain, and a `T1->T2` decay to indicate stability risk.
 
 ## Non-Ceiling Definition
 

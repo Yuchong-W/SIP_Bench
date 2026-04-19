@@ -3,25 +3,25 @@
 <text x="80" y="22" font-family="Arial" font-size="16" font-weight="700">Cost and Metric Delta Summary</text>
 <line x1="80" y1="40" x2="80" y2="340" stroke="#6b7280" stroke-width="1"/>
 <line x1="80" y1="340" x2="860" y2="340" stroke="#6b7280" stroke-width="1"/>
-<rect x="106.00" y="340.00" width="78.00" height="0.00" fill="#2563eb" opacity="0.85"/>
-<text x="145.00" y="334.00" text-anchor="middle" font-size="11" fill="#111827">0.500</text>
+<rect x="106.00" y="339.30" width="78.00" height="0.70" fill="#2563eb" opacity="0.85"/>
+<text x="145.00" y="333.30" text-anchor="middle" font-size="11" fill="#111827">0.175</text>
 <text x="145.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">FG</text>
-<rect x="236.00" y="340.00" width="78.00" height="0.00" fill="#db2777" opacity="0.85"/>
-<text x="275.00" y="334.00" text-anchor="middle" font-size="11" fill="#111827">0.000</text>
+<rect x="236.00" y="339.99" width="78.00" height="0.01" fill="#db2777" opacity="0.85"/>
+<text x="275.00" y="333.99" text-anchor="middle" font-size="11" fill="#111827">0.002</text>
 <text x="275.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">IE</text>
-<rect x="366.00" y="340.00" width="78.00" height="0.00" fill="#f97316" opacity="0.85"/>
-<text x="405.00" y="334.00" text-anchor="middle" font-size="11" fill="#111827">0.666</text>
+<rect x="366.00" y="340.30" width="78.00" height="-0.30" fill="#f97316" opacity="0.85"/>
+<text x="405.00" y="334.30" text-anchor="middle" font-size="11" fill="#111827">-0.075</text>
 <text x="405.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">BR</text>
 <rect x="496.00" y="40.00" width="78.00" height="300.00" fill="#16a34a" opacity="0.85"/>
-<text x="535.00" y="34.00" text-anchor="middle" font-size="11" fill="#111827">2040001.000</text>
+<text x="535.00" y="34.00" text-anchor="middle" font-size="11" fill="#111827">75.000</text>
 <text x="535.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">Tokens</text>
-<rect x="626.00" y="340.00" width="78.00" height="0.00" fill="#9333ea" opacity="0.85"/>
-<text x="665.00" y="334.00" text-anchor="middle" font-size="11" fill="#111827">0.000</text>
+<rect x="626.00" y="332.00" width="78.00" height="8.00" fill="#9333ea" opacity="0.85"/>
+<text x="665.00" y="326.00" text-anchor="middle" font-size="11" fill="#111827">2.000</text>
 <text x="665.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">Tool calls</text>
-<rect x="756.00" y="339.80" width="78.00" height="0.20" fill="#111827" opacity="0.85"/>
-<text x="795.00" y="333.80" text-anchor="middle" font-size="11" fill="#111827">1333.325</text>
+<rect x="756.00" y="324.00" width="78.00" height="16.00" fill="#111827" opacity="0.85"/>
+<text x="795.00" y="318.00" text-anchor="middle" font-size="11" fill="#111827">4.000</text>
 <text x="795.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">Wall clock (s)</text>
 <text x="14" y="392" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">0.0</text>
-<text x="870" y="342" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">2040001.00</text>
+<text x="870" y="342" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">75.00</text>
 <text x="450.0" y="404" text-anchor="middle" font-size="12" fill="#374151">Metric / Cost Magnitude</text>
 </svg>
