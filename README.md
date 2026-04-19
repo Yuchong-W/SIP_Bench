@@ -59,16 +59,12 @@ The published `v0.1.0` release is optimized for a strong open-source launch:
    - `SkillsBench codex external prepared suite`
    - `tau-bench` live runs that require provider credentials
 
-Milestone, release-tracking, and post-release docs live here:
+Milestone, release-tracking, and post-release docs are collected in the documentation index:
 
-1. [docs/milestone_plan_v0_1.md](docs/milestone_plan_v0_1.md)
-2. [docs/release_checklist_v0_1.md](docs/release_checklist_v0_1.md)
-3. [docs/support_matrix_v0_1.md](docs/support_matrix_v0_1.md)
-4. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
-5. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
-6. [docs/post_v0_1_execution_plan.md](docs/post_v0_1_execution_plan.md)
-7. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
-8. [docs/overview.md](docs/overview.md)
+1. [docs/README.md](docs/README.md)
+2. [docs/repository_structure.md](docs/repository_structure.md)
+3. [docs/overview.md](docs/overview.md)
+4. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
 
 ## Supported Environments
 
@@ -250,21 +246,14 @@ This layer is what enables frozen-style versus skill-enabled comparisons without
 
 ## Repository Map
 
-1. [docs/technical_design.md](docs/technical_design.md)
-2. [docs/development_log.md](docs/development_log.md)
-3. [docs/decision_log.md](docs/decision_log.md)
-4. [docs/known_limitations.md](docs/known_limitations.md)
-5. [docs/release_manifest.md](docs/release_manifest.md)
-6. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
-7. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
-8. [docs/evidence_readme.md](docs/evidence_readme.md)
-9. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
-10. [docs/figures/README.md](docs/figures/README.md)
-11. [docs/results_table_data/](docs/results_table_data)
-12. [docs/post_v0_1_extended_todo.md](docs/post_v0_1_extended_todo.md)
-13. [scripts/README.md](scripts/README.md)
-14. [src/sip_bench/](src/sip_bench)
-15. [tests/README.md](tests/README.md)
+1. [docs/README.md](docs/README.md) — full documentation index by purpose
+2. [docs/repository_structure.md](docs/repository_structure.md) — concise structural orientation
+3. [docs/overview.md](docs/overview.md) — project story and positioning
+4. [docs/technical_design.md](docs/technical_design.md) — protocol architecture
+5. [docs/evidence_readme.md](docs/evidence_readme.md) — reproducible evidence workflow
+6. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md) — key visual outputs
+7. [src/sip_bench/](src/sip_bench) — protocol implementation
+8. [tests/README.md](tests/README.md) — validation scope
 
 ## Repository Structure (Brief)
 
