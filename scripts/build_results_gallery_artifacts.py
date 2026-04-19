@@ -45,7 +45,8 @@ def parse_args() -> argparse.Namespace:
         "--summary",
         required=True,
         nargs="+",
-        help="Path to summary.jsonl file(s).",
+        action="append",
+        help="Path to summary.jsonl file(s). Can be repeated.",
     )
     parser.add_argument(
         "--out-dir",
@@ -331,7 +332,15 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rows: list[tuple[Path, dict[str, Any]]] = []
+    summary_paths: list[Path] = []
     for summary in args.summary:
+        if isinstance(summary, list):
+            summary_paths.extend(summary)
+        else:
+            summary_paths.append(summary)
+
+    rows: list[tuple[Path, dict[str, Any]]] = []
+    for summary in summary_paths:
         summary_path = Path(summary)
         row = load_summary_row(summary_path)
         if row:
