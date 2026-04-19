@@ -1,16 +1,16 @@
 {
   "schema_version": "0.1.0",
-  "suite_name": "skillsbench-codex-external-prepared-host-auth-bundle",
+  "suite_name": "skillsbench-codex-external-prepared-host-auth-hard-candidate",
   "benchmark_name": "skillsbench",
   "repo_root": "../benchmarks/skillsbench",
   "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
-  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle",
+  "out_root": "../results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle",
   "execution": {
     "agent": "codex",
     "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
     "model": "gpt-5.4",
     "harbor_bin": "../scripts/harbor312",
-    "jobs_dir": "../results/real_jobs_protocol_prepared_host_auth_bundle",
+    "jobs_dir": "../results/real_jobs_protocol_prepared_host_auth_hard_candidate_bundle",
     "path_type": "external",
     "agent_version": "harbor312-codex-host-auth-v0",
     "task_preparation": {
@@ -32,7 +32,12 @@
         "unable to fetch some archives",
         "temporary failure resolving",
         "connection was forcibly closed",
-        "timed out"
+        "timed out",
+        "error listing credentials",
+        "UtilAcceptVsock",
+        "accept4 failed 110",
+        "curl: (22)",
+        "uvx: command not found"
       ]
     },
     "extra_args": [
@@ -50,15 +55,13 @@
       "phase": "T0",
       "benchmark_split": "replay",
       "task_ids": [
-        "dialogue-parser"
+        "enterprise-information-search"
       ],
       "task_preparation": {
         "mode": "copy",
         "skill_mode": "strip",
         "patches": {
-          "dialogue-parser": [
-            "dialogue_parser_apt_retry"
-          ]
+          "enterprise-information-search": []
         }
       }
     },
@@ -67,15 +70,13 @@
       "phase": "T0",
       "benchmark_split": "heldout",
       "task_ids": [
-        "offer-letter-generator"
+        "financial-modeling-qa"
       ],
       "task_preparation": {
         "mode": "copy",
         "skill_mode": "strip",
         "patches": {
-          "offer-letter-generator": [
-            "offer_letter_generator_system_docx"
-          ]
+          "financial-modeling-qa": []
         }
       }
     },
@@ -84,15 +85,13 @@
       "phase": "T1",
       "benchmark_split": "replay",
       "task_ids": [
-        "dialogue-parser"
+        "enterprise-information-search"
       ],
       "task_preparation": {
         "mode": "copy",
         "skill_mode": "keep",
         "patches": {
-          "dialogue-parser": [
-            "dialogue_parser_apt_retry"
-          ]
+          "enterprise-information-search": []
         }
       }
     },
@@ -101,15 +100,13 @@
       "phase": "T1",
       "benchmark_split": "heldout",
       "task_ids": [
-        "offer-letter-generator"
+        "financial-modeling-qa"
       ],
       "task_preparation": {
         "mode": "copy",
         "skill_mode": "keep",
         "patches": {
-          "offer-letter-generator": [
-            "offer_letter_generator_system_docx"
-          ]
+          "financial-modeling-qa": []
         }
       }
     }

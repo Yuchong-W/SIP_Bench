@@ -15,6 +15,7 @@ See also:
 | `SkillsBench oracle real suite` | `1.000` | `1.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `184.16s` mean wall clock | The live protocol path is operationally valid, but this suite is evidence of execution correctness rather than improvement tradeoff |
 | `SkillsBench codex external prepared suite` | `0.000` | `0.000` | `0.000` | `0.000` | `0.000` | `0.000` | `n/a` | `152.10s` mean wall clock | The full prepared suite now executes end to end on this host, but without `OPENAI_API_KEY` the Harbor `codex` agent collapses both strip and keep paths into flat-zero verifier outcomes |
 | `SkillsBench codex host-auth custom-agent bundle` | `1.000` | `1.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `1031041` tokens, `601.54s` wall clock | A repo-local host-side `codex` agent can now produce a fully aggregated prepared-suite bundle with ChatGPT login state and no global Harbor edits; the current bundle is a real protocol artifact, but it is a ceiling-effect validation bundle rather than a tradeoff-revealing result |
+| `SkillsBench codex host-auth hard-candidate bundle` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `enterprise-information-search` replay and `financial-modeling-qa` heldout were attempted, but no valid summary exists yet due repeated infra-level environment-build failures |
 | `tau-bench historical/import-only` | `1.000` | `1.000` | `0.000` | `0.500` | `0.500` | `0.000` | `n/a` | `$0.01292` mean cost | Gives a second environment that is interpretable without private access, even though it is not yet a strong gain/retention stress test |
 
 Primary tracked sources:
@@ -34,6 +35,7 @@ Primary tracked sources:
 | `tau-bench historical/import-only` | Supported | Release-critical | Stable second environment without provider credentials | Historical/import-only path is weaker than live execution for operational realism |
 | `SkillsBench codex external prepared` | Experimental, but now fully executable | Optional | Best candidate for stronger protocol-vs-self-evolution comparisons | The suite now completes end to end, but without `OPENAI_API_KEY` it produces a flat-zero summary that reflects credential failure more than capability |
 | `SkillsBench codex host-auth custom agent` | Experimental, but now multi-run and summary-backed | Optional | Best candidate for using ChatGPT login state instead of API keys while preserving Harbor verification | The path is now viable for real bundles, but the current tracked task pair saturates at `1.0`, so stronger non-ceiling tasks are still needed for protocol-value claims |
+| `SkillsBench codex host-auth hard candidate` | Experimental and blocked at run-time | Optional | Valuable as a hard-path infra gate and candidate for future non-ceiling protocol contrast | Repeated environment build signatures (`UtilBindVsockAnyPort`, `error listing credentials`) currently prevent a full suite summary |
 | `tau-bench` live provider-backed execution | Experimental | Optional | Best candidate for a more realistic second live environment | Requires provider credentials and explicit budget |
 
 Primary tracked sources:
@@ -52,6 +54,7 @@ Primary tracked sources:
 | `SkillsBench codex external prepared` full suite | the first probe failed in `dialogue-parser` Docker build, the second exposed missing model configuration, and the final tracked suite completed with a flat-zero summary | tracked `preparation/`, `attempts/`, `suite_report.json`, and probe artifacts show the progression from apt instability to explicit `model` wiring to `env_override_keys = []` and `0.0` verifier rewards across the final suite | add `dialogue_parser_apt_retry`, make the tracked config pass `model = "gpt-5.4"`, and thread SkillsBench env resolution through `.env.local` / `env_file` | the suite is now fully executable and schema-valid, but it still needs `OPENAI_API_KEY` to produce a meaningful non-zero comparison | a flat support label would hide both the engineering recovery and the fact that the remaining blocker is now credential state rather than protocol wiring |
 | `SkillsBench codex host-auth custom-agent` bundle | Harbor's built-in container-side `codex` agent could not consume ChatGPT login state directly | the repo-local custom agent path now leaves tracked `host-workspace`, `codex.txt`, `trajectory.json`, `runs/*.jsonl`, and a generated `summary.jsonl` instead of only `401` logs | add `agent_import_path`, run `codex exec` on the host, sync outputs back into the task container, and keep Harbor for environment/verifier orchestration | the new four-run bundle reaches `T0/T1 replay/heldout` with all scores at `1.0` and a valid summary using account auth and no global Harbor edits | a simple "needs key" label is now wrong, but the new caveat is ceiling effect: this bundle proves execution viability more than gain/retention tradeoff |
 | `citation-check` host-auth screening | the medium screening task first failed in verifier bootstrap, then failed in Docker credential-helper startup, then exposed a strip-specific runtime-patch bug | two tracked screening directories keep the progression visible: `skillsbench_codex_external_prepared_host_auth_citation_replay_probe/` and `..._runtime_hardened/` | add runtime-hardening, extend retry coverage for Docker credential drift, fix the strip-path patch so `citation_check_python_runtime` does not assume `environment/skills` exists, and rerun `t0_replay` as `...rerun03` | recovered replay runs now land at `T0 = 1.0` and `T1 = 1.0`, so the case is valuable as failure/recovery provenance but not as the main non-ceiling evidence bundle | a final replay score of `1.0` would completely hide the fact that three distinct infrastructure or patch issues had to be recovered before the task could even be evaluated cleanly |
+| `SkillsBench host-auth hard-candidate` | hard-path replay/heldout pair is selected for non-ceiling capability pressure | `suite` config and attempt artifacts now hold deterministic failure families on hard tasks | no valid runs were emitted for the hard bundle before environment/build errors; protocol still preserves attempt metadata and command provenance | pending an infrastructure-stabilized rerun; no recovery result yet | without these artifacts the hard-path failure would be interpreted as a missing capability, rather than environment startup instability |
 
 Primary tracked sources:
 
@@ -67,6 +70,7 @@ Primary tracked sources:
 10. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
 11. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/suite_report.json`
 12. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/suite_report.json`
+13. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/attempts/t0_replay/attempt01.plan.json`
 
 ## Figures
 
@@ -126,6 +130,23 @@ Interpretation:
 1. the `t0_replay` recovery path is now a tracked in-repo story instead of a hidden rerun
 2. the suite keeps the rerun-specific job name visible: `...rerun02`
 3. the final `1.0` suite summary is still useful, but no longer erases the engineering provenance behind recovery
+
+### Host-Auth Progress
+
+![Host-Auth Progress](figures/host_auth_progress.svg)
+
+Source:
+
+1. `docs/host_auth_experiment_design.md`
+2. `docs/development_log.md`
+3. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/*`
+4. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/*`
+
+Interpretation:
+
+1. the host-auth ladder now has a complete smoke artifact and a screened recovery artifact (`citation-check`)
+2. hard-task exploration has exposed reproducible infra barriers before any non-ceiling protocol metric can be generated
+3. the next evidentiary step is either stabilized rerun for the hard pair or a controlled `OPENAI_API_KEY` comparator
 
 ## Remaining Gaps
 

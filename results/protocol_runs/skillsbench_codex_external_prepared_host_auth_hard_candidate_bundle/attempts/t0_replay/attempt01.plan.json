@@ -1,0 +1,97 @@
+{
+  "benchmark_name": "skillsbench",
+  "registry_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "repo_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/prepared/t0_replay",
+  "selection": {
+    "total_tasks": 86,
+    "filtered_tasks": 1,
+    "categories": [],
+    "difficulties": [],
+    "task_ids": {
+      "replay": [
+        "enterprise-information-search"
+      ],
+      "adapt": [],
+      "heldout": [],
+      "drift": []
+    },
+    "seed": null,
+    "selection_mode": "explicit"
+  },
+  "execution": {
+    "agent": "codex",
+    "model": "gpt-5.4",
+    "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+    "harbor_bin": "/home/yuchong/Protocal_Bench/scripts/harbor312",
+    "extra_args": [
+      "--jobs-dir",
+      "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_hard_candidate_bundle",
+      "--job-name",
+      "skillsbench-codex-external-prepared-host-auth-hard-candidate-t0_replay-attempt01-rerun03",
+      "--artifact",
+      "/logs/verifier",
+      "--environment-build-timeout-multiplier",
+      "4",
+      "--agent-setup-timeout-multiplier",
+      "4"
+    ]
+  },
+  "manifest": {
+    "counts": {
+      "replay": 1,
+      "adapt": 0,
+      "heldout": 0,
+      "drift": 0
+    },
+    "replay": [
+      {
+        "benchmark_name": "skillsbench",
+        "task_id": "enterprise-information-search",
+        "source_path": "tasks/enterprise-information-search",
+        "title": "enterprise-information-search",
+        "category": "enterprise-search",
+        "difficulty": "hard",
+        "metadata": {
+          "tags": [
+            "information-retrieval",
+            "question-answering",
+            "heterogeneous-data"
+          ],
+          "author_name": "Liqiang Jing",
+          "version": "1.0",
+          "updated_at": "2026-02-09T08:15:10.031Z"
+        }
+      }
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  },
+  "commands": {
+    "replay": [
+      [
+        "/home/yuchong/Protocal_Bench/scripts/harbor312",
+        "run",
+        "-p",
+        "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/prepared/t0_replay/tasks/enterprise-information-search",
+        "--agent-import-path",
+        "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+        "-m",
+        "gpt-5.4",
+        "--jobs-dir",
+        "/home/yuchong/Protocal_Bench/results/real_jobs_protocol_prepared_host_auth_hard_candidate_bundle",
+        "--job-name",
+        "skillsbench-codex-external-prepared-host-auth-hard-candidate-t0_replay-attempt01-rerun03",
+        "--artifact",
+        "/logs/verifier",
+        "--environment-build-timeout-multiplier",
+        "4",
+        "--agent-setup-timeout-multiplier",
+        "4"
+      ]
+    ],
+    "adapt": [],
+    "heldout": [],
+    "drift": []
+  }
+}

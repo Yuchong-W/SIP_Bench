@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="420" viewBox="0 0 940 420" role="img" aria-labelledby="title desc">
+  <title id="title">Host-Auth Progress Ladder</title>
+  <desc id="desc">Three-stage ladder of the host-auth pathway: smoke success, screened recovery, and hard infra-blocked status.</desc>
+  <rect width="940" height="420" fill="#fbfaf6"/>
+  <text x="40" y="42" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1f2937">Host-Auth Progress Ladder</text>
+  <text x="40" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#4b5563">Current repository state shows both evidence gain and hard-path gating in the same branch.</text>
+
+  <rect x="40" y="108" width="210" height="108" rx="14" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+  <text x="58" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#166534">Stage 1 · Smoke</text>
+  <text x="58" y="160" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#166534">Bundle: `host_auth_bundle`</text>
+  <text x="58" y="182" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#166534">Output: 4 valid runs</text>
+  <text x="58" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#166534">`1.0` everywhere</text>
+
+  <rect x="310" y="108" width="240" height="108" rx="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="328" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#92400e">Stage 2 · Screening</text>
+  <text x="328" y="160" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#92400e">Task: `citation-check` replay pair</text>
+  <text x="328" y="182" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#92400e">Recovery trace: attempt01 → attempt02 → rerun03</text>
+  <text x="328" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#92400e">Final status: recovered (`1.0 / 1.0`)</text>
+
+  <rect x="590" y="108" width="280" height="108" rx="14" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+  <text x="608" y="136" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#991b1b">Stage 3 · Hard Gate</text>
+  <text x="608" y="160" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#991b1b">Task: `enterprise-information-search` / `financial-modeling-qa`</text>
+  <text x="608" y="182" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#991b1b">Failure family: `UtilBindVsockAnyPort`, `error listing credentials`</text>
+  <text x="608" y="204" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#991b1b">No suite summary yet (environment startup) </text>
+
+  <g stroke="#9ca3af" stroke-width="2" fill="none" stroke-linecap="round">
+    <line x1="250" y1="162" x2="310" y2="162"/>
+    <line x1="550" y1="162" x2="590" y2="162"/>
+    <line x1="770" y1="216" x2="770" y2="262"/>
+  </g>
+  <g fill="#9ca3af">
+    <polygon points="310,162 300,157 300,167"/>
+    <polygon points="590,162 580,157 580,167"/>
+    <polygon points="770,262 765,252 775,252"/>
+  </g>
+
+  <rect x="40" y="266" width="830" height="110" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="58" y="296" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1f2937">Decision Gate (current)</text>
+  <text x="58" y="324" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Primary protocol claim target remains on the hard-gate branch.</text>
+  <text x="58" y="346" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Next run path should be either repeatable infra-stable hard rerun or controlled API-key comparator.</text>
+  <text x="58" y="368" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Until then, hard-task status stays in recovery class, not evidence class.</text>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4b5563">
+    <text x="40" y="400">Source: tracked protocol artifacts under `results/protocol_runs/*` and `docs/development_log.md`</text>
+  </g>
+</svg>

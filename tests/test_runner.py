@@ -105,6 +105,68 @@ class RunnerTests(unittest.TestCase):
             saved = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(saved["returncode"], 0)
 
+    @patch("sip_bench.runner.subprocess.run")
+    def test_hydrate_skillsbench_checkout_skips_remote_add_when_paths_local(self, run_mock) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            repo_root = tmp_path / "skillsbench"
+            (repo_root / "tasks" / "citation-check").mkdir(parents=True)
+            (repo_root / "website" / "src" / "data").mkdir(parents=True)
+
+            plan = {
+                "benchmark_name": "skillsbench",
+                "manifest": {
+                    "counts": {"replay": 1, "adapt": 0, "heldout": 0, "drift": 0},
+                    "replay": [
+                        {
+                            "benchmark_name": "skillsbench",
+                            "task_id": "citation-check",
+                            "source_path": "tasks/citation-check",
+                            "title": "citation-check",
+                            "category": "research",
+                            "difficulty": "medium",
+                            "metadata": {},
+                        }
+                    ],
+                    "adapt": [],
+                    "heldout": [],
+                    "drift": [],
+                },
+                "commands": {"replay": [], "adapt": [], "heldout": [], "drift": []},
+            }
+            plan_path = tmp_path / "plan.json"
+            plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+            report_path = tmp_path / "hydration.json"
+            run_mock.side_effect = [
+                subprocess.CompletedProcess(
+                    args=["git", "sparse-checkout", "list"],
+                    returncode=0,
+                    stdout="tasks/citation-check\n",
+                    stderr="",
+                ),
+                subprocess.CompletedProcess(
+                    args=["git", "sparse-checkout", "list"],
+                    returncode=0,
+                    stdout="tasks/citation-check\n",
+                    stderr="",
+                ),
+            ]
+
+            report = hydrate_skillsbench_checkout(
+                plan_source=plan_path,
+                repo_root=repo_root,
+                out=report_path,
+                split="replay",
+                skip_hydration_if_local=True,
+            )
+            self.assertEqual(run_mock.call_count, 2)
+            self.assertEqual(report["command"], [])
+            self.assertEqual(report["hydrated_paths"], [])
+            self.assertTrue(report["skip_hydration_if_local"])
+            self.assertEqual(report["missing_task_paths"], [])
+            saved = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(saved["returncode"], 0)
+
     def test_import_tau_results_writes_runs_jsonl(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "tau_runs.jsonl"

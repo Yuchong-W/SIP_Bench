@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1.0",
+  "action": "skillsbench_task_preparation",
+  "prepared_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/prepared/t0_replay",
+  "skill_mode": "strip",
+  "patched_files": [
+    "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/prepared/t0_replay/tasks/enterprise-information-search/environment/Dockerfile"
+  ],
+  "tasks": [
+    {
+      "task_id": "enterprise-information-search",
+      "source_path": "/home/yuchong/Protocal_Bench/benchmarks/skillsbench/tasks/enterprise-information-search",
+      "prepared_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle/prepared/t0_replay/tasks/enterprise-information-search",
+      "skill_mode": "strip",
+      "patches": []
+    }
+  ]
+}

@@ -595,6 +595,7 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(run_report["attempts"][1]["retry_decision"]["reason"], "non_failed_record_present")
             self.assertIn("attempt01", run_report["attempts"][0]["plan_path"])
             self.assertIn("attempt02", run_report["attempts"][1]["plan_path"])
+            self.assertEqual(hydrate_mock.call_args_list[0].kwargs["skip_hydration_if_local"], False)
 
             combined_runs = load_jsonl(Path(report["combined_runs_path"]))
             self.assertEqual(len(combined_runs), 1)
@@ -717,6 +718,124 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(execute_call.kwargs["env_overrides"]["OPENAI_API_KEY"], "test-key")
             self.assertEqual(report["runs"][0]["env_override_keys"], ["OPENAI_API_KEY"])
             self.assertEqual(report["runs"][0]["attempts"][0]["env_override_keys"], ["OPENAI_API_KEY"])
+
+    @patch("sip_bench.protocol_runner.validate_data_file")
+    @patch("sip_bench.protocol_runner.import_skillsbench_job")
+    @patch("sip_bench.protocol_runner.execute_command_plan")
+    @patch("sip_bench.protocol_runner.hydrate_skillsbench_checkout")
+    def test_run_skillsbench_suite_respects_local_hydration_short_circuit(
+        self,
+        hydrate_mock,
+        execute_mock,
+        import_mock,
+        validate_mock,
+    ) -> None:
+        validate_mock.return_value = {"valid": True, "errors": []}
+        hydrate_mock.return_value = {
+            "schema_version": "0.1.0",
+            "action": "skillsbench_hydration",
+            "hydrated_paths": [],
+            "skip_hydration_if_local": True,
+        }
+        import_mock.return_value = [
+            {
+                "schema_version": "0.1.0",
+                "run_id": "skillsbench::attempt01",
+                "benchmark_name": "skillsbench",
+                "benchmark_version": "skillsbench-upstream",
+                "benchmark_split": "replay",
+                "phase": "T0",
+                "path_type": "external",
+                "model_name": "gpt-5.4",
+                "agent_name": "codex",
+                "agent_version": "local-auth-suite",
+                "task_id": "citation-check",
+                "attempt_index": 0,
+                "score": 1.0,
+                "success": True,
+                "token_input": 0,
+                "token_output": 0,
+                "token_total": 0,
+                "tool_calls_total": 0,
+                "memory_reads": 0,
+                "memory_writes": 0,
+                "wall_clock_seconds": 1.0,
+                "cost_usd": 0.0,
+                "human_interventions": 0,
+                "seed": 11,
+                "started_at": "2026-04-18T01:00:00Z",
+                "finished_at": "2026-04-18T01:00:01Z",
+                "metadata": {
+                    "score_source": "verifier_rewards",
+                },
+            }
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            repo_root = tmp_path / "benchmarks" / "skillsbench"
+            (repo_root / "tasks" / "citation-check").mkdir(parents=True, exist_ok=True)
+            jobs_root = tmp_path / "jobs"
+
+            def execute_side_effect(*args, **kwargs):
+                plan_source = Path(kwargs["plan_source"])
+                payload = json.loads(plan_source.read_text(encoding="utf-8"))
+                command = payload["commands"]["replay"][0]
+                job_name = command[command.index("--job-name") + 1]
+                (jobs_root / job_name).mkdir(parents=True, exist_ok=True)
+                return {
+                    "schema_version": "0.1.0",
+                    "summary": {
+                        "executed": 1,
+                        "status_counts": {"success": 1},
+                        "halted_early": False,
+                    },
+                    "records": [],
+                }
+
+            execute_mock.side_effect = execute_side_effect
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "local-auth-suite",
+                "benchmark_name": "skillsbench",
+                "repo_root": str(repo_root),
+                "registry_path": str(ROOT / "tests" / "fixtures" / "skillsbench_registry_sample.json"),
+                "out_root": str(tmp_path / "suite_out"),
+                "execution": {
+                    "agent": "codex",
+                    "model": "gpt-5.4",
+                    "harbor_bin": "harbor",
+                    "jobs_dir": str(jobs_root),
+                    "path_type": "external",
+                    "agent_version": "local-auth-suite",
+                    "seed": 11,
+                    "task_preparation": {"skip_hydration_if_local": True},
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": ["citation-check"],
+                    }
+                ],
+            }
+            config_path = tmp_path / "local_auth_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_skillsbench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=False,
+            )
+
+            self.assertTrue(report["runs"][0]["attempt_count"] == 1)
+            self.assertEqual(report["runs"][0]["task_preparation"]["skip_hydration_if_local"], True)
+            self.assertEqual(
+                hydrate_mock.call_args_list[0].kwargs["skip_hydration_if_local"],
+                True,
+            )
 
     def test_build_tau_explicit_plan_preserves_split_assignment(self) -> None:
         plan = build_tau_explicit_plan(

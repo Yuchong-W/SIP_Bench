@@ -138,6 +138,30 @@ Goal:
 
 1. bring in at least one `hard` task while preserving reproducibility and runtime practicality
 
+Current status (2026-04-19):
+
+1. the hard bundle is configured and executed as `protocol/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle.json`
+2. the replay side task is `enterprise-information-search` (`hard`, `enterprise-search`)
+3. the heldout side task is `financial-modeling-qa` (`hard`)
+4. this run has not produced a valid suite-level `summary.jsonl` in the tracked output directory
+5. environment startup still fails with infrastructure-level Docker credential/VSock errors (`UtilBindVsockAnyPort`, `error listing credentials`) before verifier scoring can run
+6. this moves the immediate blocker from task choice to container runtime stability for the hard-path host-auth branch
+
+Decision rule after this hard pass:
+
+1. if the same infrastructure signatures persist after one targeted hard-pipeline pass, do not claim protocol-evidence from the hard path yet
+2. do one of these next:
+   - test a different single hard task (`financial-modeling-qa`) under the same host-auth path
+   - or run the same pair with `OPENAI_API_KEY` as a controlled comparator
+3. classify the next outcome as:
+   - **Evidence** if stable non-ceiling protocol metrics appear
+   - **Screening / recovery family** if infra signatures persist but remain reproducible
+
+Current experimental classification:
+
+1. `citation-check` remains a screened recovery family (recoverable, non-ceiling once stable)
+2. `enterprise-information-search` is currently a hard-path infra-readiness case and cannot yet support Evidence claims
+
 ## Local Availability Constraint
 
 The current local `benchmarks/skillsbench` checkout is not a full offline mirror of every task in the registry.
@@ -157,6 +181,7 @@ Implication:
 3. because the only currently local medium candidate (`citation-check`) saturates after recovery, the next evidence-focused host-auth bundle will likely require either:
    - an expanded checkout with additional medium tasks
    - or direct escalation to a hard-task candidate
+4. as of `2026-04-19`, the first hard candidate (`enterprise-information-search`) suggests infra readiness is the nearer gating issue than task saturation
 
 ## Fallback Policy
 

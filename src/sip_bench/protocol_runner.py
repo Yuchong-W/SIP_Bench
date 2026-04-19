@@ -28,6 +28,7 @@ DEFAULT_TASK_PREPARATION = {
     "mode": "source",
     "skill_mode": "keep",
     "patches": {},
+    "skip_hydration_if_local": False,
 }
 DEFAULT_RETRY_POLICY = {
     "max_attempts": 1,
@@ -553,6 +554,7 @@ def _run_skillsbench_spec(
             repo_root=repo_root,
             out=hydration_path,
             split=split_name,
+            skip_hydration_if_local=task_preparation["skip_hydration_if_local"],
         )
         execution_repo_root = repo_root
         if task_preparation["mode"] == "copy":
@@ -1088,6 +1090,7 @@ def _merge_task_preparation(
     merged = {
         "mode": DEFAULT_TASK_PREPARATION["mode"],
         "skill_mode": DEFAULT_TASK_PREPARATION["skill_mode"],
+        "skip_hydration_if_local": DEFAULT_TASK_PREPARATION["skip_hydration_if_local"],
         "patches": dict(DEFAULT_TASK_PREPARATION["patches"]),
     }
     if execution_defaults:

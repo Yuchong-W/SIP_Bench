@@ -1010,3 +1010,27 @@ Observed result:
 5. The next evidence-oriented prepared experiment therefore needs a different task source:
    - expand the local checkout to expose additional medium tasks
    - or escalate directly to a hard-task host-auth candidate
+
+### Host-Auth Hard-Candidate Attempt (Hard-Path Gate)
+
+Work completed:
+
+1. Added and ran `protocol/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle.json` as the next hard-path bundle for the repo-local host-auth custom-agent route.
+2. Configured the hard pair to exercise:
+   - `enterprise-information-search` in replay
+   - `financial-modeling-qa` in heldout
+3. Kept host-auth custom-agent execution settings and environment build/agent setup multipliers from earlier stable paths.
+4. Recorded attempt-level artifacts under `attempts/t0_replay/` and preserved rerun-tracked command context for future gate checks.
+
+Tests run:
+
+1. `python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_codex_external_prepared_host_auth_hard_candidate_bundle.json --mode subprocess`
+
+Observed result:
+
+1. The hard bundle has not produced a valid suite-level `summary.jsonl` yet.
+2. Repeated infra-level environment-startup errors were seen before verifier scoring, including:
+   - `UtilBindVsockAnyPort`
+   - `error listing credentials`
+3. This indicates the hard-path gate is currently an environment readiness issue rather than a proven protocol/credential regression.
+4. The path remains classified as **hard-path screening/recovery evidence** and therefore should not yet be used to claim non-ceiling protocol gains.

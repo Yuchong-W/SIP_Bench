@@ -395,6 +395,9 @@
             },
             "uniqueItems": true
           }
+        },
+        "skip_hydration_if_local": {
+          "type": "boolean"
         }
       }
     },

@@ -105,6 +105,7 @@ def hydrate_skillsbench_checkout(
     split: str = "all",
     git_bin: str = "git",
     include_registry: bool = True,
+    skip_hydration_if_local: bool = False,
 ) -> dict[str, Any]:
     plan = load_json(plan_source)
     if plan.get("benchmark_name") != "skillsbench":
@@ -115,19 +116,36 @@ def hydrate_skillsbench_checkout(
     if not task_records:
         raise ValueError("No SkillsBench tasks were selected for hydration")
 
+    selected_task_paths = sorted({str(task["source_path"]).replace("\\", "/") for task in task_records})
+    missing_task_paths = [
+        source_path
+        for source_path in selected_task_paths
+        if not (Path(repo_root) / source_path).exists()
+    ]
+    include_registry_path = "website/src/data"
+    should_include_registry = include_registry and not (Path(repo_root) / include_registry_path).exists()
     patterns: list[str] = []
-    if include_registry:
-        patterns.append("website/src/data")
-    patterns.extend(sorted({str(task["source_path"]).replace("\\", "/") for task in task_records}))
+    if should_include_registry:
+        patterns.append(include_registry_path)
+    if skip_hydration_if_local:
+        patterns.extend(missing_task_paths)
+    else:
+        patterns.extend(selected_task_paths)
+    patterns = sorted(set(patterns))
 
     before_patterns = _read_sparse_patterns(repo_root=repo_root, git_bin=git_bin)
-    command = [git_bin, "-C", str(repo_root), "sparse-checkout", "add", *patterns]
-    completed = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    command: list[str] = []
+    if patterns:
+        command = [git_bin, "-C", str(repo_root), "sparse-checkout", "add", *patterns]
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    else:
+        completed = subprocess.CompletedProcess(args=[git_bin, "-C", str(repo_root), "sparse-checkout", "list"], returncode=0, stdout="", stderr="")
+
     after_patterns = _read_sparse_patterns(repo_root=repo_root, git_bin=git_bin)
     report = {
         "schema_version": "0.1.0",
@@ -138,6 +156,9 @@ def hydrate_skillsbench_checkout(
         "selected_splits": selected_splits,
         "git_bin": git_bin,
         "command": command,
+        "skip_hydration_if_local": skip_hydration_if_local,
+        "selected_task_paths": selected_task_paths,
+        "missing_task_paths": missing_task_paths,
         "returncode": completed.returncode,
         "stdout": completed.stdout,
         "stderr": completed.stderr,

@@ -41,14 +41,16 @@ Completed so far:
 1. the repository now has a positioning note that explains the protocol-first story and contrasts it with benchmark-first self-evolution evaluation
 2. the repository now has a results gallery with:
    - `3` compact tables
-   - `4` repo-hosted figures
+   - `5` repo-hosted figures
 3. the public-facing story is no longer dependent on only one minimal proof-of-value snippet in the README
+4. the host-auth hard-candidate probe is now executed through 3 independent prepared attempts, giving a stable infra-failure lineage for hard tasks
 
 Still missing:
 
 1. a stronger non-ceiling experiment bundle beyond the tracked `v0.1.0` release artifacts
 2. prepared-suite evidence that can actually test the "protocol-first versus benchmark-first" comparison story instead of only execution viability
-3. a second repeatable failure-and-recovery family so provenance is not anchored on only one recovery case
+3. a second repeatable failure-and-recovery family that includes a successful recovery branch, not only infrastructure-only failures
+4. a protocol-first comparison table that separates Smoke, Screening, Hard, and Evidence stages with explicit stage criteria
 
 New constraint learned from the latest probe work:
 
@@ -60,16 +62,31 @@ New constraint learned from the latest probe work:
 6. however, the first summary-backed host-auth bundle saturates at `1.0` on every tracked task, so it demonstrates viability better than it demonstrates protocol tradeoffs
 7. the first medium screening task, `citation-check`, has already revealed two distinct infrastructure-side failure families:
    - verifier bootstrap drift (`curl` or `uvx` bootstrap failures)
-   - Docker build or credential-helper drift (`error listing credentials`, `UtilAcceptVsock`)
+   - Docker build or credential-helper drift (`error listing credentials`, `UtilBindVsockAnyPort`)
 8. that means the screening program now has value even before a clean non-ceiling score lands, because it is surfacing repeatable operational burden that ordinary final-score reporting would flatten away
 9. after the strip-path runtime patch was fixed and `t0_replay` was rerun successfully, `citation-check` recovered to a clean `1.0 / 1.0` replay pair, so it is now better classified as a recovery-family artifact than as the main non-ceiling evidence candidate
+10. the hard-candidate path (`enterprise-information-search`) now has 3 consecutive attempts with identical environment-build failure in Docker compose (`UtilBindVsockAnyPort`, `error listing credentials`)
+11. the hard-candidate bundle has not produced a valid suite-level summary yet, so the path remains in a screened recovery stage, not Evidence
+
+Latest hard-path decision snapshot (2026-04-19):
+
+1. attempted pair: `enterprise-information-search` + `financial-modeling-qa` under host-auth custom agent
+2. latest repeated outcome: pre-verifier infra/build failure before any stable success path
+3. consequence: no new `fg`, `br`, or `ie` protocol metrics from this bundle
+4. active bottleneck is now container startup consistency rather than protocol orchestration logic
+
+Current interpretation:
+
+1. the short-term bottleneck is no longer account-auth feasibility but repeatable hard-task environment readiness
+2. infra-failure provenance is now sufficiently stable to support the next decision gate in the plan
+3. the next decision gate is whether infra hardening or keyed fallback is needed before the next hard candidate can be used for protocol claims
 
 Bottom line:
 
 1. design and interpretation work are no longer the main bottleneck
 2. additional experiments are still necessary
 3. the highest-value remaining work is now experimental, not presentational
-4. the next experimental bottleneck is not "can account auth work at all?" but "can account auth produce non-ceiling protocol evidence?"
+4. the next experimental bottleneck is not "can account auth work at all?" but "can account auth produce non-ceiling protocol evidence on hard tasks?"
 
 ## Locked Decisions From The Latest Round
 
@@ -79,6 +96,8 @@ The plan should now assume all of the following unless new evidence overturns th
 2. treat the repo-local host-auth custom agent as the primary prepared-suite path
 3. treat `OPENAI_API_KEY` as a contingency path, not the default next step
 4. keep the current easy-task host-auth bundle as a smoke or regression asset, not as the main evidence bundle
+
+5. add a hard-candidate infra-readiness gate before any hard-task capability claim is made public
 
 ## Workstreams
 
@@ -239,9 +258,11 @@ Preferred locations:
 ## Immediate Next Actions
 
 1. freeze the current easy-task host-auth bundle as the tracked smoke baseline and stop treating it as the main evidence target
-2. select a medium-difficulty replay/heldout pair from the current SkillsBench registry and run the next host-auth bundle on that pair
-3. treat the checked-in `citation-check` screening configs as the canonical recovery-family harness, not as the main evidence bundle seed
-4. expand the local checkout or promote at least one side of the next host-auth bundle to a hard task, because the currently local medium candidate saturates after recovery
-5. keep `OPENAI_API_KEY` as the fallback path only if the host-auth route fails on those stronger bundles
+2. treat the checked-in `citation-check` screening configs as the canonical recovery-family harness, not as the main evidence bundle seed
+3. decide whether to continue the hard path with:
+   - a targeted retry hardening pass for `enterprise-information-search`, or
+   - a controlled comparator run with `OPENAI_API_KEY` on the same hard pair
+4. if hard infra is reproduced, keep the hard path as Screening/Recovery status and avoid protocol Evidence claims
+5. if hard infra clears and non-ceiling scores emerge, move to next-stage protocol Evidence row in the gallery
 6. capture one more repeatable failure-and-recovery family and turn it into tracked provenance artifacts
-7. update the results gallery with a protocol-first comparison table once those stronger experiments exist
+7. publish the updated results gallery row and gate changes on explicit table+figure updates
