@@ -1,0 +1,850 @@
+{
+  "snapshot_version": "v1",
+  "registry_source": "benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "total_tasks": 86,
+  "local_available_tasks": 8,
+  "difficulty_summary": {
+    "easy": 6,
+    "hard": 27,
+    "medium": 53
+  },
+  "category_summary": {
+    "3d-graphics": 2,
+    "astronomy": 2,
+    "audio-visual": 1,
+    "bgp-route": 1,
+    "chemistry": 1,
+    "code reproduction": 1,
+    "code translation": 1,
+    "compilation & build": 2,
+    "control-systems": 3,
+    "data statistics": 1,
+    "data visualization": 1,
+    "data-analysis": 3,
+    "data-comparison": 1,
+    "data-processing": 2,
+    "data-science": 2,
+    "data-validation": 1,
+    "devops-analytics": 1,
+    "document-editing": 1,
+    "document-generation": 1,
+    "document-processing": 1,
+    "economics": 1,
+    "energy": 3,
+    "engineering": 1,
+    "enterprise-search": 1,
+    "environmental-modeling": 1,
+    "erlang bugfix": 1,
+    "file-management": 1,
+    "finance": 1,
+    "financial modeling": 1,
+    "financial-analysis": 4,
+    "flink": 1,
+    "formal method": 1,
+    "game": 1,
+    "games": 1,
+    "geophysics": 1,
+    "healthcare": 1,
+    "image-processing": 1,
+    "latex-extraction": 1,
+    "legacy systems": 1,
+    "manufacturing": 3,
+    "materials_science": 1,
+    "media-processing": 1,
+    "ml-implementation": 1,
+    "ml/nlp": 1,
+    "multimodal-processing": 1,
+    "multimodal-video-dubbing": 1,
+    "office operation": 1,
+    "office-suite": 1,
+    "parallelization": 1,
+    "pedestrian traffic counting": 1,
+    "quantum-simulation": 1,
+    "research": 4,
+    "scheduling": 1,
+    "security": 5,
+    "security & ctf": 1,
+    "seismology": 2,
+    "speech-synthesis": 1,
+    "spreadsheet": 1,
+    "travel-planning": 1,
+    "video-analysis": 1,
+    "web-performance": 2
+  },
+  "records": [
+    {
+      "task_id": "3d-scan-calc",
+      "path": "tasks/3d-scan-calc",
+      "difficulty": "hard",
+      "category": "engineering",
+      "local_available": false,
+      "title": "3d-scan-calc",
+      "updatedAt": "2026-02-09T08:15:09.812Z"
+    },
+    {
+      "task_id": "adaptive-cruise-control",
+      "path": "tasks/adaptive-cruise-control",
+      "difficulty": "medium",
+      "category": "control-systems",
+      "local_available": false,
+      "title": "adaptive-cruise-control",
+      "updatedAt": "2026-02-09T08:15:09.814Z"
+    },
+    {
+      "task_id": "azure-bgp-oscillation-route-leak",
+      "path": "tasks/azure-bgp-oscillation-route-leak",
+      "difficulty": "medium",
+      "category": "bgp-route",
+      "local_available": false,
+      "title": "azure-bgp-oscillation-route-leak",
+      "updatedAt": "2026-02-09T08:15:09.816Z"
+    },
+    {
+      "task_id": "citation-check",
+      "path": "tasks/citation-check",
+      "difficulty": "medium",
+      "category": "research",
+      "local_available": true,
+      "title": "citation-check",
+      "updatedAt": "2026-02-09T08:15:09.819Z"
+    },
+    {
+      "task_id": "civ6-adjacency-optimizer",
+      "path": "tasks/civ6-adjacency-optimizer",
+      "difficulty": "hard",
+      "category": "games",
+      "local_available": false,
+      "title": "civ6-adjacency-optimizer",
+      "updatedAt": "2026-02-09T08:15:09.822Z"
+    },
+    {
+      "task_id": "court-form-filling",
+      "path": "tasks/court-form-filling",
+      "difficulty": "easy",
+      "category": "document-processing",
+      "local_available": true,
+      "title": "court-form-filling",
+      "updatedAt": "2026-02-09T08:15:09.826Z"
+    },
+    {
+      "task_id": "crystallographic-wyckoff-position-analysis",
+      "path": "tasks/crystallographic-wyckoff-position-analysis",
+      "difficulty": "medium",
+      "category": "materials_science",
+      "local_available": false,
+      "title": "crystallographic-wyckoff-position-analysis",
+      "updatedAt": "2026-02-09T08:15:09.830Z"
+    },
+    {
+      "task_id": "dapt-intrusion-detection",
+      "path": "tasks/dapt-intrusion-detection",
+      "difficulty": "hard",
+      "category": "security",
+      "local_available": false,
+      "title": "dapt-intrusion-detection",
+      "updatedAt": "2026-02-09T08:15:09.886Z"
+    },
+    {
+      "task_id": "data-to-d3",
+      "path": "tasks/data-to-d3",
+      "difficulty": "medium",
+      "category": "data visualization",
+      "local_available": false,
+      "title": "data-to-d3",
+      "updatedAt": "2026-02-09T08:15:09.895Z"
+    },
+    {
+      "task_id": "dialogue-parser",
+      "path": "tasks/dialogue-parser",
+      "difficulty": "easy",
+      "category": "game",
+      "local_available": true,
+      "title": "dialogue-parser",
+      "updatedAt": "2026-02-09T08:15:09.897Z"
+    },
+    {
+      "task_id": "dynamic-object-aware-egomotion",
+      "path": "tasks/dynamic-object-aware-egomotion",
+      "difficulty": "medium",
+      "category": "video-analysis",
+      "local_available": false,
+      "title": "dynamic-object-aware-egomotion",
+      "updatedAt": "2026-02-09T08:15:09.899Z"
+    },
+    {
+      "task_id": "earthquake-phase-association",
+      "path": "tasks/earthquake-phase-association",
+      "difficulty": "hard",
+      "category": "seismology",
+      "local_available": false,
+      "title": "earthquake-phase-association",
+      "updatedAt": "2026-02-09T08:15:09.978Z"
+    },
+    {
+      "task_id": "earthquake-plate-calculation",
+      "path": "tasks/earthquake-plate-calculation",
+      "difficulty": "medium",
+      "category": "geophysics",
+      "local_available": false,
+      "title": "earthquake-plate-calculation",
+      "updatedAt": "2026-02-09T08:15:09.982Z"
+    },
+    {
+      "task_id": "econ-detrending-correlation",
+      "path": "tasks/econ-detrending-correlation",
+      "difficulty": "medium",
+      "category": "economics",
+      "local_available": false,
+      "title": "econ-detrending-correlation",
+      "updatedAt": "2026-02-09T08:15:09.984Z"
+    },
+    {
+      "task_id": "energy-ac-optimal-power-flow",
+      "path": "tasks/energy-ac-optimal-power-flow",
+      "difficulty": "medium",
+      "category": "energy",
+      "local_available": false,
+      "title": "energy-ac-optimal-power-flow",
+      "updatedAt": "2026-02-09T08:15:09.985Z"
+    },
+    {
+      "task_id": "energy-market-pricing",
+      "path": "tasks/energy-market-pricing",
+      "difficulty": "hard",
+      "category": "energy",
+      "local_available": false,
+      "title": "energy-market-pricing",
+      "updatedAt": "2026-02-09T08:15:09.988Z"
+    },
+    {
+      "task_id": "enterprise-information-search",
+      "path": "tasks/enterprise-information-search",
+      "difficulty": "hard",
+      "category": "enterprise-search",
+      "local_available": true,
+      "title": "enterprise-information-search",
+      "updatedAt": "2026-02-09T08:15:10.031Z"
+    },
+    {
+      "task_id": "exceltable-in-ppt",
+      "path": "tasks/exceltable-in-ppt",
+      "difficulty": "medium",
+      "category": "office operation",
+      "local_available": false,
+      "title": "exceltable-in-ppt",
+      "updatedAt": "2026-02-09T08:15:10.040Z"
+    },
+    {
+      "task_id": "exoplanet-detection-period",
+      "path": "tasks/exoplanet-detection-period",
+      "difficulty": "medium",
+      "category": "astronomy",
+      "local_available": false,
+      "title": "exoplanet-detection-period",
+      "updatedAt": "2026-02-09T08:15:10.043Z"
+    },
+    {
+      "task_id": "financial-modeling-qa",
+      "path": "tasks/financial-modeling-qa",
+      "difficulty": "hard",
+      "category": "financial modeling",
+      "local_available": true,
+      "title": "financial-modeling-qa",
+      "updatedAt": "2026-02-09T08:15:10.048Z"
+    },
+    {
+      "task_id": "find-topk-similiar-chemicals",
+      "path": "tasks/find-topk-similiar-chemicals",
+      "difficulty": "medium",
+      "category": "chemistry",
+      "local_available": false,
+      "title": "find-topk-similiar-chemicals",
+      "updatedAt": "2026-02-09T08:15:10.052Z"
+    },
+    {
+      "task_id": "fix-build-agentops",
+      "path": "tasks/fix-build-agentops",
+      "difficulty": "easy",
+      "category": "compilation & build",
+      "local_available": false,
+      "title": "fix-build-agentops",
+      "updatedAt": "2026-02-09T08:15:10.054Z"
+    },
+    {
+      "task_id": "fix-build-google-auto",
+      "path": "tasks/fix-build-google-auto",
+      "difficulty": "easy",
+      "category": "compilation & build",
+      "local_available": false,
+      "title": "fix-build-google-auto",
+      "updatedAt": "2026-02-09T08:15:10.056Z"
+    },
+    {
+      "task_id": "fix-druid-loophole-cve",
+      "path": "tasks/fix-druid-loophole-cve",
+      "difficulty": "hard",
+      "category": "security",
+      "local_available": false,
+      "title": "fix-druid-loophole-cve",
+      "updatedAt": "2026-02-09T08:15:10.060Z"
+    },
+    {
+      "task_id": "fix-erlang-ssh-cve",
+      "path": "tasks/fix-erlang-ssh-cve",
+      "difficulty": "hard",
+      "category": "erlang bugfix",
+      "local_available": false,
+      "title": "fix-erlang-ssh-cve",
+      "updatedAt": "2026-02-09T08:15:10.063Z"
+    },
+    {
+      "task_id": "fix-visual-stability",
+      "path": "tasks/fix-visual-stability",
+      "difficulty": "hard",
+      "category": "web-performance",
+      "local_available": true,
+      "title": "fix-visual-stability",
+      "updatedAt": "2026-02-09T08:15:10.071Z"
+    },
+    {
+      "task_id": "flink-query",
+      "path": "tasks/flink-query",
+      "difficulty": "hard",
+      "category": "flink",
+      "local_available": false,
+      "title": "flink-query",
+      "updatedAt": "2026-02-09T08:15:10.079Z"
+    },
+    {
+      "task_id": "flood-risk-analysis",
+      "path": "tasks/flood-risk-analysis",
+      "difficulty": "medium",
+      "category": "data-processing",
+      "local_available": false,
+      "title": "flood-risk-analysis",
+      "updatedAt": "2026-02-09T08:15:10.081Z"
+    },
+    {
+      "task_id": "gh-repo-analytics",
+      "path": "tasks/gh-repo-analytics",
+      "difficulty": "medium",
+      "category": "devops-analytics",
+      "local_available": false,
+      "title": "gh-repo-analytics",
+      "updatedAt": "2026-02-09T08:15:10.081Z"
+    },
+    {
+      "task_id": "glm-lake-mendota",
+      "path": "tasks/glm-lake-mendota",
+      "difficulty": "hard",
+      "category": "environmental-modeling",
+      "local_available": false,
+      "title": "glm-lake-mendota",
+      "updatedAt": "2026-02-09T08:15:10.095Z"
+    },
+    {
+      "task_id": "gravitational-wave-detection",
+      "path": "tasks/gravitational-wave-detection",
+      "difficulty": "medium",
+      "category": "astronomy",
+      "local_available": false,
+      "title": "gravitational-wave-detection",
+      "updatedAt": "2026-02-09T08:15:10.099Z"
+    },
+    {
+      "task_id": "grid-dispatch-operator",
+      "path": "tasks/grid-dispatch-operator",
+      "difficulty": "medium",
+      "category": "energy",
+      "local_available": false,
+      "title": "grid-dispatch-operator",
+      "updatedAt": "2026-02-09T08:15:10.101Z"
+    },
+    {
+      "task_id": "hvac-control",
+      "path": "tasks/hvac-control",
+      "difficulty": "medium",
+      "category": "control-systems",
+      "local_available": false,
+      "title": "hvac-control",
+      "updatedAt": "2026-02-09T08:15:10.103Z"
+    },
+    {
+      "task_id": "invoice-fraud-detection",
+      "path": "tasks/invoice-fraud-detection",
+      "difficulty": "hard",
+      "category": "data-validation",
+      "local_available": false,
+      "title": "invoice-fraud-detection",
+      "updatedAt": "2026-02-09T08:15:10.106Z"
+    },
+    {
+      "task_id": "jax-computing-basics",
+      "path": "tasks/jax-computing-basics",
+      "difficulty": "medium",
+      "category": "research",
+      "local_available": false,
+      "title": "jax-computing-basics",
+      "updatedAt": "2026-02-09T08:15:10.109Z"
+    },
+    {
+      "task_id": "jpg-ocr-stat",
+      "path": "tasks/jpg-ocr-stat",
+      "difficulty": "hard",
+      "category": "data statistics",
+      "local_available": false,
+      "title": "jpg-ocr-stat",
+      "updatedAt": "2026-02-09T08:15:10.136Z"
+    },
+    {
+      "task_id": "lab-unit-harmonization",
+      "path": "tasks/lab-unit-harmonization",
+      "difficulty": "medium",
+      "category": "healthcare",
+      "local_available": false,
+      "title": "lab-unit-harmonization",
+      "updatedAt": "2026-02-09T08:15:10.142Z"
+    },
+    {
+      "task_id": "lake-warming-attribution",
+      "path": "tasks/lake-warming-attribution",
+      "difficulty": "medium",
+      "category": "data-processing",
+      "local_available": false,
+      "title": "lake-warming-attribution",
+      "updatedAt": "2026-02-09T08:15:10.143Z"
+    },
+    {
+      "task_id": "latex-formula-extraction",
+      "path": "tasks/latex-formula-extraction",
+      "difficulty": "medium",
+      "category": "latex-extraction",
+      "local_available": false,
+      "title": "latex-formula-extraction",
+      "updatedAt": "2026-02-09T08:15:10.146Z"
+    },
+    {
+      "task_id": "lean4-proof",
+      "path": "tasks/lean4-proof",
+      "difficulty": "medium",
+      "category": "formal method",
+      "local_available": false,
+      "title": "lean4-proof",
+      "updatedAt": "2026-02-09T08:15:10.154Z"
+    },
+    {
+      "task_id": "manufacturing-codebook-normalization",
+      "path": "tasks/manufacturing-codebook-normalization",
+      "difficulty": "medium",
+      "category": "manufacturing",
+      "local_available": false,
+      "title": "manufacturing-codebook-normalization",
+      "updatedAt": "2026-02-09T08:15:10.159Z"
+    },
+    {
+      "task_id": "manufacturing-equipment-maintenance",
+      "path": "tasks/manufacturing-equipment-maintenance",
+      "difficulty": "medium",
+      "category": "manufacturing",
+      "local_available": false,
+      "title": "manufacturing-equipment-maintenance",
+      "updatedAt": "2026-02-09T08:15:10.167Z"
+    },
+    {
+      "task_id": "manufacturing-fjsp-optimization",
+      "path": "tasks/manufacturing-fjsp-optimization",
+      "difficulty": "medium",
+      "category": "manufacturing",
+      "local_available": false,
+      "title": "manufacturing-fjsp-optimization",
+      "updatedAt": "2026-02-09T08:15:10.169Z"
+    },
+    {
+      "task_id": "mario-coin-counting",
+      "path": "tasks/mario-coin-counting",
+      "difficulty": "medium",
+      "category": "image-processing",
+      "local_available": false,
+      "title": "mario-coin-counting",
+      "updatedAt": "2026-02-09T08:15:10.191Z"
+    },
+    {
+      "task_id": "mars-clouds-clustering",
+      "path": "tasks/mars-clouds-clustering",
+      "difficulty": "hard",
+      "category": "data-science",
+      "local_available": false,
+      "title": "mars-clouds-clustering",
+      "updatedAt": "2026-02-09T08:15:10.239Z"
+    },
+    {
+      "task_id": "mhc-layer-impl",
+      "path": "tasks/mhc-layer-impl",
+      "difficulty": "hard",
+      "category": "ml-implementation",
+      "local_available": false,
+      "title": "mhc-layer-impl",
+      "updatedAt": "2026-02-09T08:15:10.243Z"
+    },
+    {
+      "task_id": "multilingual-video-dubbing",
+      "path": "tasks/multilingual-video-dubbing",
+      "difficulty": "medium",
+      "category": "multimodal-video-dubbing",
+      "local_available": false,
+      "title": "multilingual-video-dubbing",
+      "updatedAt": "2026-02-09T08:15:10.246Z"
+    },
+    {
+      "task_id": "offer-letter-generator",
+      "path": "tasks/offer-letter-generator",
+      "difficulty": "easy",
+      "category": "document-generation",
+      "local_available": true,
+      "title": "offer-letter-generator",
+      "updatedAt": "2026-02-09T08:15:10.247Z"
+    },
+    {
+      "task_id": "organize-messy-files",
+      "path": "tasks/organize-messy-files",
+      "difficulty": "medium",
+      "category": "file-management",
+      "local_available": false,
+      "title": "organize-messy-files",
+      "updatedAt": "2026-02-09T08:15:10.321Z"
+    },
+    {
+      "task_id": "paper-anonymizer",
+      "path": "tasks/paper-anonymizer",
+      "difficulty": "medium",
+      "category": "document-editing",
+      "local_available": false,
+      "title": "paper-anonymizer",
+      "updatedAt": "2026-02-09T08:15:10.331Z"
+    },
+    {
+      "task_id": "parallel-tfidf-search",
+      "path": "tasks/parallel-tfidf-search",
+      "difficulty": "medium",
+      "category": "parallelization",
+      "local_available": false,
+      "title": "parallel-tfidf-search",
+      "updatedAt": "2026-02-09T08:15:10.334Z"
+    },
+    {
+      "task_id": "pddl-tpp-planning",
+      "path": "tasks/pddl-tpp-planning",
+      "difficulty": "medium",
+      "category": "research",
+      "local_available": false,
+      "title": "pddl-tpp-planning",
+      "updatedAt": "2026-02-09T08:15:10.339Z"
+    },
+    {
+      "task_id": "pdf-excel-diff",
+      "path": "tasks/pdf-excel-diff",
+      "difficulty": "medium",
+      "category": "data-comparison",
+      "local_available": false,
+      "title": "pdf-excel-diff",
+      "updatedAt": "2026-02-09T08:15:10.341Z"
+    },
+    {
+      "task_id": "pedestrian-traffic-counting",
+      "path": "tasks/pedestrian-traffic-counting",
+      "difficulty": "hard",
+      "category": "pedestrian traffic counting",
+      "local_available": false,
+      "title": "pedestrian-traffic-counting",
+      "updatedAt": "2026-02-09T08:15:10.369Z"
+    },
+    {
+      "task_id": "pg-essay-to-audiobook",
+      "path": "tasks/pg-essay-to-audiobook",
+      "difficulty": "medium",
+      "category": "speech-synthesis",
+      "local_available": false,
+      "title": "pg-essay-to-audiobook",
+      "updatedAt": "2026-02-09T08:15:10.371Z"
+    },
+    {
+      "task_id": "powerlifting-coef-calc",
+      "path": "tasks/powerlifting-coef-calc",
+      "difficulty": "easy",
+      "category": "data-analysis",
+      "local_available": true,
+      "title": "powerlifting-coef-calc",
+      "updatedAt": "2026-02-09T08:15:10.373Z"
+    },
+    {
+      "task_id": "pptx-reference-formatting",
+      "path": "tasks/pptx-reference-formatting",
+      "difficulty": "medium",
+      "category": "office-suite",
+      "local_available": false,
+      "title": "pptx-reference-formatting",
+      "updatedAt": "2026-02-09T08:15:10.382Z"
+    },
+    {
+      "task_id": "protein-expression-analysis",
+      "path": "tasks/protein-expression-analysis",
+      "difficulty": "medium",
+      "category": "data-analysis",
+      "local_available": false,
+      "title": "protein-expression-analysis",
+      "updatedAt": "2026-02-09T08:15:10.384Z"
+    },
+    {
+      "task_id": "python-scala-translation",
+      "path": "tasks/python-scala-translation",
+      "difficulty": "medium",
+      "category": "code translation",
+      "local_available": false,
+      "title": "python-scala-translation",
+      "updatedAt": "2026-02-09T08:15:10.388Z"
+    },
+    {
+      "task_id": "quantum-numerical-simulation",
+      "path": "tasks/quantum-numerical-simulation",
+      "difficulty": "medium",
+      "category": "quantum-simulation",
+      "local_available": false,
+      "title": "quantum-numerical-simulation",
+      "updatedAt": "2026-02-09T08:15:10.390Z"
+    },
+    {
+      "task_id": "r2r-mpc-control",
+      "path": "tasks/r2r-mpc-control",
+      "difficulty": "medium",
+      "category": "control-systems",
+      "local_available": false,
+      "title": "r2r-mpc-control",
+      "updatedAt": "2026-02-09T08:15:10.392Z"
+    },
+    {
+      "task_id": "react-performance-debugging",
+      "path": "tasks/react-performance-debugging",
+      "difficulty": "hard",
+      "category": "web-performance",
+      "local_available": false,
+      "title": "react-performance-debugging",
+      "updatedAt": "2026-02-09T08:15:10.400Z"
+    },
+    {
+      "task_id": "reserves-at-risk-calc",
+      "path": "tasks/reserves-at-risk-calc",
+      "difficulty": "medium",
+      "category": "financial-analysis",
+      "local_available": false,
+      "title": "reserves-at-risk-calc",
+      "updatedAt": "2026-02-09T08:15:10.402Z"
+    },
+    {
+      "task_id": "sales-pivot-analysis",
+      "path": "tasks/sales-pivot-analysis",
+      "difficulty": "medium",
+      "category": "data-analysis",
+      "local_available": false,
+      "title": "sales-pivot-analysis",
+      "updatedAt": "2026-02-09T08:15:10.404Z"
+    },
+    {
+      "task_id": "scheduling-email-assistant",
+      "path": "tasks/scheduling-email-assistant",
+      "difficulty": "medium",
+      "category": "scheduling",
+      "local_available": false,
+      "title": "scheduling-email-assistant",
+      "updatedAt": "2026-02-09T08:15:10.409Z"
+    },
+    {
+      "task_id": "sec-financial-report",
+      "path": "tasks/sec-financial-report",
+      "difficulty": "hard",
+      "category": "finance",
+      "local_available": false,
+      "title": "sec-financial-report",
+      "updatedAt": "2026-02-09T08:15:10.558Z"
+    },
+    {
+      "task_id": "seismic-phase-picking",
+      "path": "tasks/seismic-phase-picking",
+      "difficulty": "hard",
+      "category": "seismology",
+      "local_available": false,
+      "title": "seismic-phase-picking",
+      "updatedAt": "2026-02-09T08:15:10.578Z"
+    },
+    {
+      "task_id": "setup-fuzzing-py",
+      "path": "tasks/setup-fuzzing-py",
+      "difficulty": "medium",
+      "category": "security",
+      "local_available": false,
+      "title": "setup-fuzzing-py",
+      "updatedAt": "2026-02-09T08:15:10.580Z"
+    },
+    {
+      "task_id": "shock-analysis-demand",
+      "path": "tasks/shock-analysis-demand",
+      "difficulty": "medium",
+      "category": "financial-analysis",
+      "local_available": false,
+      "title": "shock-analysis-demand",
+      "updatedAt": "2026-02-09T08:15:10.582Z"
+    },
+    {
+      "task_id": "shock-analysis-supply",
+      "path": "tasks/shock-analysis-supply",
+      "difficulty": "hard",
+      "category": "financial-analysis",
+      "local_available": false,
+      "title": "shock-analysis-supply",
+      "updatedAt": "2026-02-09T08:15:10.584Z"
+    },
+    {
+      "task_id": "simpo-code-reproduction",
+      "path": "tasks/simpo-code-reproduction",
+      "difficulty": "hard",
+      "category": "code reproduction",
+      "local_available": false,
+      "title": "simpo-code-reproduction",
+      "updatedAt": "2026-02-09T08:15:10.604Z"
+    },
+    {
+      "task_id": "software-dependency-audit",
+      "path": "tasks/software-dependency-audit",
+      "difficulty": "medium",
+      "category": "security",
+      "local_available": false,
+      "title": "software-dependency-audit",
+      "updatedAt": "2026-02-09T08:15:10.606Z"
+    },
+    {
+      "task_id": "speaker-diarization-subtitles",
+      "path": "tasks/speaker-diarization-subtitles",
+      "difficulty": "hard",
+      "category": "audio-visual",
+      "local_available": false,
+      "title": "speaker-diarization-subtitles",
+      "updatedAt": "2026-02-09T08:15:10.614Z"
+    },
+    {
+      "task_id": "spring-boot-jakarta-migration",
+      "path": "tasks/spring-boot-jakarta-migration",
+      "difficulty": "hard",
+      "category": "legacy systems",
+      "local_available": false,
+      "title": "spring-boot-jakarta-migration",
+      "updatedAt": "2026-02-09T08:15:10.618Z"
+    },
+    {
+      "task_id": "suricata-custom-exfil",
+      "path": "tasks/suricata-custom-exfil",
+      "difficulty": "medium",
+      "category": "security & ctf",
+      "local_available": false,
+      "title": "suricata-custom-exfil",
+      "updatedAt": "2026-02-09T08:15:10.620Z"
+    },
+    {
+      "task_id": "syzkaller-ppdev-syzlang",
+      "path": "tasks/syzkaller-ppdev-syzlang",
+      "difficulty": "medium",
+      "category": "security",
+      "local_available": false,
+      "title": "syzkaller-ppdev-syzlang",
+      "updatedAt": "2026-02-09T08:15:10.621Z"
+    },
+    {
+      "task_id": "taxonomy-tree-merge",
+      "path": "tasks/taxonomy-tree-merge",
+      "difficulty": "hard",
+      "category": "ml/nlp",
+      "local_available": false,
+      "title": "taxonomy-tree-merge",
+      "updatedAt": "2026-02-09T08:15:10.627Z"
+    },
+    {
+      "task_id": "threejs-structure-parser",
+      "path": "tasks/threejs-structure-parser",
+      "difficulty": "medium",
+      "category": "3d-graphics",
+      "local_available": false,
+      "title": "threejs-structure-parser",
+      "updatedAt": "2026-02-09T08:15:10.644Z"
+    },
+    {
+      "task_id": "threejs-to-obj",
+      "path": "tasks/threejs-to-obj",
+      "difficulty": "medium",
+      "category": "3d-graphics",
+      "local_available": false,
+      "title": "threejs-to-obj",
+      "updatedAt": "2026-02-09T08:15:10.646Z"
+    },
+    {
+      "task_id": "travel-planning",
+      "path": "tasks/travel-planning",
+      "difficulty": "medium",
+      "category": "travel-planning",
+      "local_available": false,
+      "title": "travel-planning",
+      "updatedAt": "2026-02-09T08:15:10.704Z"
+    },
+    {
+      "task_id": "trend-anomaly-causal-inference",
+      "path": "tasks/trend-anomaly-causal-inference",
+      "difficulty": "hard",
+      "category": "data-science",
+      "local_available": false,
+      "title": "trend-anomaly-causal-inference",
+      "updatedAt": "2026-02-09T08:15:10.707Z"
+    },
+    {
+      "task_id": "video-filler-word-remover",
+      "path": "tasks/video-filler-word-remover",
+      "difficulty": "medium",
+      "category": "media-processing",
+      "local_available": false,
+      "title": "video-filler-word-remover",
+      "updatedAt": "2026-02-09T08:15:10.740Z"
+    },
+    {
+      "task_id": "video-tutorial-indexer",
+      "path": "tasks/video-tutorial-indexer",
+      "difficulty": "hard",
+      "category": "multimodal-processing",
+      "local_available": false,
+      "title": "video-tutorial-indexer",
+      "updatedAt": "2026-02-09T08:15:10.822Z"
+    },
+    {
+      "task_id": "virtualhome-agent-planning",
+      "path": "tasks/virtualhome-agent-planning",
+      "difficulty": "medium",
+      "category": "research",
+      "local_available": false,
+      "title": "virtualhome-agent-planning",
+      "updatedAt": "2026-02-09T08:15:10.862Z"
+    },
+    {
+      "task_id": "weighted-gdp-calc",
+      "path": "tasks/weighted-gdp-calc",
+      "difficulty": "medium",
+      "category": "financial-analysis",
+      "local_available": false,
+      "title": "weighted-gdp-calc",
+      "updatedAt": "2026-02-09T08:15:10.863Z"
+    },
+    {
+      "task_id": "xlsx-recover-data",
+      "path": "tasks/xlsx-recover-data",
+      "difficulty": "medium",
+      "category": "spreadsheet",
+      "local_available": false,
+      "title": "xlsx-recover-data",
+      "updatedAt": "2026-02-09T08:15:10.865Z"
+    }
+  ]
+}

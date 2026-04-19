@@ -162,6 +162,23 @@ A plain post-adaptation score of `0.425` on held-out tasks would suggest "the ag
 
 The real `SkillsBench oracle` suite remains the release-critical evidence that the protocol works on a live benchmark path. The dry-run summary above is the compact release-facing example that shows why the protocol is useful.
 
+## 非天花板（Non-Ceiling）定义
+
+A run family is considered non-ceiling (非天花板) when protocol dynamics are still informative instead of saturated at near-perfect task completion:
+
+1. any metric in `{t0_replay_mean, t1_replay_mean, t0_heldout_mean, t1_heldout_mean, t2_heldout_mean, t2_replay_mean}` drops below `1 - ceiling_gap` where `ceiling_gap = 0.02`, or
+2. `abs(FG)` or `abs(BR)` reaches `>= 0.02`, or
+3. `abs(IE)` reaches `>= 0.0005`.
+
+The suite evidence gate additionally requires at least `min_repeat_count = 3` attempt attempts before a status can be upgraded to `evidence`.
+Otherwise, results are kept as `screening` for recovery/protocol-debugging visibility.
+
+For offline checks, run:
+
+```bash
+python3 scripts/evidence_gate.py --summary <path>/summary.jsonl
+```
+
 For the stronger post-`v0.1.0` table-and-figure package built from tracked artifacts, see [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md).
 
 ## Real Benchmark Paths

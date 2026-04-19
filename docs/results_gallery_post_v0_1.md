@@ -88,6 +88,26 @@ Interpretation:
 2. the replay line falls from `0.600` to `0.525`
 3. this is the smallest tracked example of why protocol structure adds value beyond a single post-adaptation score
 
+The figure is reproducible with:
+
+```bash
+python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --out-dir docs/figures
+```
+
+### FG / BR / IE Profile
+
+![FG / BR / IE Profile](figures/fg_br_ie.svg)
+
+Source:
+
+1. `results/dryrun/summary.jsonl`
+
+Interpretation:
+
+1. `FG=0.175` and `|BR|=0.075` show measurable adaptation-tradeoff dynamics.
+2. `IE=0.0025` is present but small, illustrating that measured gain is not free.
+3. this pair is the current non-ceiling minimum example used to justify protocol metrics versus single scores
+
 ### Cost vs Gain Summary
 
 ![Cost vs Gain Summary](figures/cost_vs_gain.svg)

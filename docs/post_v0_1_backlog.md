@@ -9,6 +9,7 @@ For the concrete next-phase execution plan, see [post_v0_1_execution_plan.md](po
 ## Post-Tag Housekeeping
 
 1. If desired, publish or polish a dedicated GitHub release page for `v0.1.0`.
+2. Track the extended 75-item execution list in [post_v0_1_extended_todo.md](post_v0_1_extended_todo.md) and execute top-priority blocks first, then lower-priority paper-readiness tasks.
 
 ## README And Docs Follow-Ups
 

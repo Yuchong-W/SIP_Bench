@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import stat
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,276 @@ DEFAULT_RETRY_POLICY = {
     "retry_on_exception_types": [],
     "retry_on_message_substrings": [],
 }
+
+EVIDENCE_DEFAULTS = {
+    "ceiling_gap": 0.02,
+    "min_repeat_count": 3,
+    "min_protocol_effect": 0.02,
+    "min_ie_effect": 0.0005,
+}
+
+EVIDENCE_FAMILY_KEYWORDS = {
+    "docker": (
+        (
+            "EnvironmentStartTimeoutError",
+            "EnvironmentBuildTimeoutError",
+            "AgentSetupTimeoutError",
+        ),
+        (
+            "error listing credentials",
+            "utilacceptvsock",
+            "utilbindvsock",
+            "unable to fetch",
+            "failed to fetch",
+            "e: failed to fetch",
+            "accept4 failed",
+            "curl: (22)",
+            "uvx: command not found",
+            "unable to connect to the Docker",
+            "docker",
+        ),
+    ),
+    "credentials": (
+        tuple(),
+        (
+            "authentication failed",
+            "401 unauthorized",
+            "403 forbidden",
+            "permission denied",
+            "credential",
+        ),
+    ),
+    "network": (
+        tuple(),
+        (
+            "temporary failure resolving",
+            "connection was forcibly closed",
+            "timed out",
+            "could not resolve",
+            "network is unreachable",
+            "name or service not known",
+        ),
+    ),
+    "verifier": (
+        tuple(),
+        (
+            "verifier",
+            "reward",
+            "pytest",
+            "ctrf",
+            "no reward",
+            "score source",
+        ),
+    ),
+    "script": (
+        tuple(),
+        (
+            "script",
+            "runtime",
+            "command",
+            "exit code",
+            "return code",
+            "permission denied",
+        ),
+    ),
+}
+
+INFRA_EXCEPTION_TYPES = {
+    "EnvironmentStartTimeoutError",
+    "EnvironmentBuildTimeoutError",
+    "AgentSetupTimeoutError",
+}
+
+INFRA_EXCEPTION_MESSAGES = (
+    "error listing credentials",
+    "utilacceptvsock",
+    "utilbindvsock",
+    "accept4 failed",
+    "unable to fetch some archives",
+    "failed to fetch",
+    "e: failed to fetch",
+    "temporary failure resolving",
+    "connection was forcibly closed",
+)
+INFRA_EXCEPTION_TYPE_SET = {entry.lower() for entry in INFRA_EXCEPTION_TYPES}
+INFRA_EXCEPTION_MESSAGE_SET = {entry.lower() for entry in INFRA_EXCEPTION_MESSAGES}
+
+
+def _normalize_text(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+def _infer_failure_family(*, exception_type: str | None = None, exception_message: str | None = None) -> str | None:
+    normalized_type = _normalize_text(exception_type)
+    normalized_message = _normalize_text(exception_message)
+
+    if normalized_type and normalized_type in INFRA_EXCEPTION_TYPE_SET:
+        return "docker"
+
+    if normalized_message and any(
+        message in normalized_message for message in sorted(INFRA_EXCEPTION_MESSAGE_SET)
+    ):
+        return "docker"
+
+    for family, (types, messages) in EVIDENCE_FAMILY_KEYWORDS.items():
+        for value in types:
+            if normalized_type and normalized_type == _normalize_text(value):
+                return family
+        for value in messages:
+            candidate = _normalize_text(value)
+            if candidate and candidate in normalized_message:
+                return family
+
+    return None
+
+
+def _summarize_failure_signatures(records: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], str]:
+    counters: Counter[str] = Counter()
+    examples: dict[str, list[dict[str, Any]]] = {}
+
+    for record in records:
+        if record.get("success"):
+            continue
+        metadata = record.get("metadata") or {}
+        family = _infer_failure_family(
+            exception_type=metadata.get("exception_type"),
+            exception_message=metadata.get("exception_message"),
+        ) or "unknown"
+        counters[family] += 1
+        family_examples = examples.setdefault(family, [])
+        if len(family_examples) < 2:
+            family_examples.append(
+                {
+                    "run_id": record.get("run_id"),
+                    "task_id": record.get("task_id"),
+                    "exception_type": metadata.get("exception_type"),
+                    "exception_message": metadata.get("exception_message"),
+                }
+            )
+
+    failure_signatures = [
+        {
+            "family": family,
+            "count": count,
+            "examples": examples[family],
+        }
+        for family, count in sorted(counters.items())
+    ]
+
+    infra_families = {"docker", "credentials", "network"}
+    if not counters:
+        infra_type = "none"
+    elif set(counters) <= infra_families:
+        infra_type = "infrastructure"
+    elif set(counters) & infra_families:
+        infra_type = "mixed"
+    else:
+        infra_type = "non_infrastructure"
+
+    return failure_signatures, infra_type
+
+
+def _scores_non_ceiling(scores: list[float]) -> bool:
+    return any(score < 1.0 - EVIDENCE_DEFAULTS["ceiling_gap"] for score in scores)
+
+
+def _build_attempt_summary(*, attempt_imported_runs: list[dict[str, Any]]) -> dict[str, Any]:
+    scores = [float(record.get("score", 0.0) or 0.0) for record in attempt_imported_runs]
+    return {
+        "records": len(attempt_imported_runs),
+        "success_count": sum(1 for record in attempt_imported_runs if record.get("success")),
+        "failure_count": sum(1 for record in attempt_imported_runs if not record.get("success")),
+        "score_count": len(scores),
+        "score_mean": sum(scores) / len(scores) if scores else 0.0,
+        "score_min": min(scores) if scores else None,
+        "score_max": max(scores) if scores else None,
+        "has_non_ceiling": _scores_non_ceiling(scores),
+    }
+
+
+def _classify_evidence(*, runs: list[dict[str, Any]], summary_report: dict[str, Any]) -> dict[str, Any]:
+    if not summary_report.get("generated"):
+        return {
+            "evidence_status": "blocked",
+            "non_ceiling": False,
+            "infra_type": "none",
+            "failure_signatures": [],
+            "required_repeats": EVIDENCE_DEFAULTS["min_repeat_count"],
+            "max_repeats_observed": 0,
+        }
+
+    summary_rows = load_jsonl(summary_report["summary_path"]) if summary_report.get("generated") else []
+    if not summary_rows:
+        return {
+            "evidence_status": "blocked",
+            "non_ceiling": False,
+            "infra_type": "none",
+            "failure_signatures": [],
+            "required_repeats": EVIDENCE_DEFAULTS["min_repeat_count"],
+            "max_repeats_observed": 0,
+        }
+
+    row_family_count: Counter[str] = Counter()
+    for run in runs:
+        for signature in run.get("failure_signatures", []):
+            row_family_count.update({signature.get("family", "unknown"): int(signature.get("count", 0))})
+
+    if not row_family_count:
+        suite_infra_type = "none"
+    else:
+        families = set(row_family_count)
+        infra_families = {"docker", "credentials", "network"}
+        if families <= infra_families:
+            suite_infra_type = "infrastructure"
+        elif families & infra_families:
+            suite_infra_type = "mixed"
+        else:
+            suite_infra_type = "non_infrastructure"
+
+    repeats = [int(run.get("attempt_count", 0) or 0) for run in runs]
+    if not repeats:
+        repeats = [int(row.get("attempts", 0) or 0) for row in summary_rows if "attempts" in row]
+    repeats_achieved = max(repeats) if repeats else 0
+    repeats_ok = repeats_achieved >= EVIDENCE_DEFAULTS["min_repeat_count"]
+
+    suite_non_ceiling = False
+    for row in summary_rows:
+        metrics = row.get("metrics", {})
+        score_fields = [
+            metrics.get("t0_replay_mean"),
+            metrics.get("t1_replay_mean"),
+            metrics.get("t0_heldout_mean"),
+            metrics.get("t1_heldout_mean"),
+            metrics.get("t2_heldout_mean"),
+            metrics.get("t2_replay_mean"),
+        ]
+        if any(value is not None and value < 1.0 - EVIDENCE_DEFAULTS["ceiling_gap"] for value in score_fields):
+            suite_non_ceiling = True
+
+        protocol_shift = max(
+            abs(float(metrics.get("fg_mean", 0.0) or 0.0)),
+            abs(float(metrics.get("br_mean", 0.0) or 0.0)),
+        )
+        ie_mean = metrics.get("ie_mean")
+        if protocol_shift >= EVIDENCE_DEFAULTS["min_protocol_effect"]:
+            suite_non_ceiling = True
+        if ie_mean is not None and abs(float(ie_mean)) >= EVIDENCE_DEFAULTS["min_ie_effect"]:
+            suite_non_ceiling = True
+
+    status = "smoke"
+    if not repeats_ok:
+        status = "screening"
+    elif suite_non_ceiling:
+        status = "evidence"
+
+    return {
+        "evidence_status": status,
+        "non_ceiling": bool(suite_non_ceiling),
+        "infra_type": suite_infra_type,
+        "failure_signatures": [{"family": family, "count": count} for family, count in sorted(row_family_count.items())],
+        "required_repeats": EVIDENCE_DEFAULTS["min_repeat_count"],
+        "max_repeats_observed": repeats_achieved,
+    }
 
 
 def run_skillsbench_suite(
@@ -113,6 +384,7 @@ def run_skillsbench_suite(
         out_path=summary_path,
         aggregate=aggregate,
     )
+    evidence_report = _classify_evidence(runs=run_reports, summary_report=summary_report)
 
     report = {
         "schema_version": SUITE_SCHEMA_VERSION,
@@ -126,6 +398,7 @@ def run_skillsbench_suite(
         "combined_runs_path": str(combined_runs_path),
         "runs_validation": runs_validation,
         "summary": summary_report,
+        "evidence": evidence_report,
     }
     write_json(suite_root / "suite_report.json", report)
     return report
@@ -574,6 +847,9 @@ def _run_skillsbench_spec(
 
     attempts_root = suite_root / "attempts" / run_name
     attempt_reports: list[dict[str, Any]] = []
+    attempt_summaries: list[dict[str, Any]] = []
+    run_failure_signature_counts: Counter[str] = Counter()
+    run_non_ceiling = False
     final_plan_payload: dict[str, Any] | None = None
     final_execution_report: dict[str, Any] | None = None
     final_imported_runs: list[dict[str, Any]] | None = None
@@ -641,6 +917,29 @@ def _run_skillsbench_spec(
             data_path=attempt_records_path,
             schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
         )
+        attempt_failure_signatures, attempt_infra_type = _summarize_failure_signatures(attempt_imported_runs)
+        run_non_ceiling = run_non_ceiling or _scores_non_ceiling(
+            [float(record.get("score", 0.0) or 0.0) for record in attempt_imported_runs]
+        )
+        for signature in attempt_failure_signatures:
+            run_failure_signature_counts[signature["family"]] += int(signature.get("count", 0))
+
+        attempt_summary = _build_attempt_summary(attempt_imported_runs=attempt_imported_runs)
+        attempt_summary_path = attempts_root / attempt_label / "summary.json"
+        attempt_summary.update(
+            {
+                "attempt_number": attempt_number,
+                "attempt_label": attempt_label,
+                "task_name": run_name,
+                "summary_path": str(attempt_summary_path),
+                "infra_type": attempt_infra_type,
+                "failure_signatures": attempt_failure_signatures,
+            }
+        )
+        attempt_summary_path.parent.mkdir(parents=True, exist_ok=True)
+        write_json(attempt_summary_path, attempt_summary)
+        attempt_summaries.append(attempt_summary)
+
         retry_decision = _plan_skillsbench_retry(
             attempt_number=attempt_number,
             execution_report=attempt_execution_report,
@@ -650,6 +949,7 @@ def _run_skillsbench_spec(
         attempt_report = {
             "attempt_number": attempt_number,
             "attempt_label": attempt_label,
+            "summary_path": str(attempts_root / attempt_label / "summary.json"),
             "job_name": attempt_job_name,
             "job_dir": str(attempt_job_dir),
             "plan_path": str(attempt_plan_path),
@@ -661,6 +961,11 @@ def _run_skillsbench_spec(
             "imported_records": len(attempt_imported_runs),
             "success_count": sum(1 for record in attempt_imported_runs if record["success"]),
             "failure_count": sum(1 for record in attempt_imported_runs if not record["success"]),
+            "has_non_ceiling": _scores_non_ceiling(
+                [float(record.get("score", 0.0) or 0.0) for record in attempt_imported_runs]
+            ),
+            "infra_type": attempt_infra_type,
+            "failure_signatures": attempt_failure_signatures,
             "records_validation": attempt_records_validation,
             "retry_decision": retry_decision,
         }
@@ -676,6 +981,17 @@ def _run_skillsbench_spec(
 
     if final_plan_payload is None or final_imported_runs is None:
         raise RuntimeError(f"SkillsBench run {run_name} did not produce any attempt output")
+
+    infra_families = {"docker", "credentials", "network"}
+    detected_families = set(run_failure_signature_counts)
+    if not detected_families:
+        run_infra_type = "none"
+    elif detected_families <= infra_families:
+        run_infra_type = "infrastructure"
+    elif detected_families & infra_families:
+        run_infra_type = "mixed"
+    else:
+        run_infra_type = "non_infrastructure"
 
     write_json(plan_path, final_plan_payload)
     if final_execution_report:
@@ -713,6 +1029,10 @@ def _run_skillsbench_spec(
         "imported_records": len(final_imported_runs),
         "success_count": sum(1 for record in final_imported_runs if record["success"]),
         "failure_count": sum(1 for record in final_imported_runs if not record["success"]),
+        "failure_signatures": [{"family": family, "count": count} for family, count in sorted(run_failure_signature_counts.items())],
+        "has_non_ceiling": run_non_ceiling,
+        "infra_type": run_infra_type,
+        "attempt_summaries": attempt_summaries,
         "records_validation": records_validation,
     }
 

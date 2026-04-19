@@ -115,3 +115,12 @@ Strong `SIP-Bench` evidence should answer at least four questions at once:
 2. did replay retention hold?
 3. what did the gain cost?
 4. was the gain operationally and temporally stable?
+
+## What We Mean by Non-Ceiling Evidence
+
+SIP-Bench uses explicit non-ceiling criteria to avoid calling saturated tasks protocol-value.
+
+1. A suite is non-ceiling if at least one replay/heldout mean is below `1 - 0.02`.
+2. A suite is non-ceiling if `|FG| >= 0.02`, `|BR| >= 0.02`, or `|IE| >= 0.0005`.
+3. Protocol status is `Evidence` only when criteria 1/2/3 are met with at least 3 attempts across the family (repeat/recover path visibility).
+4. If only attempt depth is missing, status remains `Screening`, even when some families are clear.

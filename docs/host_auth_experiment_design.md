@@ -48,6 +48,12 @@ Treat each candidate experiment as belonging to one of three classes:
 3. `Evidence`
    - purpose: support protocol-first claims
    - success condition: non-ceiling results, interpretable replay/heldout behavior, tracked provenance, and stable reruns
+   - non-ceiling formal gate:
+     - score gate: at least one replay/heldout mean `< 1.0 - 0.02`
+     - protocol gate: `max(abs(FG), abs(BR)) >= 0.02`
+     - efficiency gate: `abs(IE) >= 0.0005`
+     - repeat gate: `attempts >= 3` for the suite family
+     - all conditions above are required for `Evidence` and can be audited with `scripts/evidence_gate.py`.
 
 ## Current Ladder
 
@@ -94,6 +100,7 @@ Screening rule:
 2. promote it only if the probe produces a nontrivial score, meaningful cost difference, or a clear operational failure mode worth tracking
 3. if the first blocker is environment drift rather than capability, apply the least invasive hardening patch first and rerun the same screening task before escalating to a different task
 4. if the rerun exposes a separate Docker build or credential-helper failure family, capture that family explicitly in checked-in retry coverage before rejecting the task as unusable
+5. classify a candidate as `Evidence` only when `scripts/evidence_gate.py` reports `evidence_status == "evidence"` for the candidate `summary.jsonl`
 
 Current patch ladder for `citation-check`:
 
@@ -127,6 +134,7 @@ Promotion rule:
 
 1. only after screening identifies at least one non-ceiling candidate should a new bundle be treated as the main prepared evidence bundle
 2. `citation-check` currently fails that promotion rule because the clean recovered path saturates again once infrastructure drift is removed
+3. the promotion gate also requires at least 3 attempts in the family summary (`attempts >= 3`) to avoid mistaking one-off reruns for stable evidence
 
 ### Stage 3: Hard Bundle
 

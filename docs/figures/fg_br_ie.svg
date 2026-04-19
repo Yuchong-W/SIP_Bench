@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+<rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+<text x="80" y="22" font-family="Arial" font-size="16" font-weight="700">FG / BR / IE Profile</text>
+<line x1="80" y1="40" x2="80" y2="340" stroke="#6b7280" stroke-width="1"/>
+<line x1="80" y1="340" x2="860" y2="340" stroke="#6b7280" stroke-width="1"/>
+<rect x="132.00" y="287.50" width="156.00" height="52.50" fill="#0369a1" opacity="0.85"/>
+<text x="210.00" y="281.50" text-anchor="middle" font-size="11" fill="#111827">0.175</text>
+<text x="210.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">FG</text>
+<rect x="392.00" y="317.50" width="156.00" height="22.50" fill="#0369a1" opacity="0.85"/>
+<text x="470.00" y="311.50" text-anchor="middle" font-size="11" fill="#111827">0.075</text>
+<text x="470.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">|BR|</text>
+<rect x="652.00" y="339.25" width="156.00" height="0.75" fill="#db2777" opacity="0.85"/>
+<text x="730.00" y="333.25" text-anchor="middle" font-size="11" fill="#111827">0.002</text>
+<text x="730.00" y="358.00" text-anchor="middle" font-size="12" fill="#374151">|IE|</text>
+<text x="14" y="392" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">0.0</text>
+<text x="870" y="342" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">1.00</text>
+<text x="450.0" y="404" text-anchor="middle" font-size="12" fill="#374151">Metric Magnitude</text>
+</svg>

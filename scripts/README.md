@@ -18,16 +18,19 @@ It can also rerun one or more named suite runs with `--run-name` while reusing t
 5. `validate_records.py`
 Validate `json` or `jsonl` artifacts against the authoritative SIP schemas.
 
-6. `harbor312.cmd`
+6. `evidence_gate.py`
+Evaluate a suite `summary.jsonl` against the same evidence threshold logic used by protocol-level reporting.
+
+7. `harbor312.cmd`
 Windows launcher for Harbor on Python `3.12`. It sets a local `UV_CACHE_DIR`, forces UTF-8 console output, and disables Docker BuildKit because the default Windows + global Harbor path on this machine is unstable.
 
-7. `harbor312`
+8. `harbor312`
 POSIX wrapper for Harbor on Python `3.12`. It mirrors the release-facing environment defaults from `harbor312.cmd` while remaining executable on the `Linux-first` path.
 
-8. `tau311.cmd`
+9. `tau311.cmd`
 Windows launcher for `tau-bench` on `py -3.11`. It prepends the repo-local dependency overlay `.pydeps311` and the local `benchmarks\tau-bench` checkout to `PYTHONPATH`, then forwards all arguments to Python.
 
-9. `run_release_checks.py`
+10. `run_release_checks.py`
 Run the release-facing local validation path used by the public quickstart and CI. It exercises unit tests, dry-run aggregation, SkillsBench Harbor job import, and schema validation for tracked artifacts.
 
 Release-facing guidance:
@@ -60,6 +63,10 @@ Operational notes:
 10. `run_release_checks.py` uses the current interpreter by default, so the same command works inside virtualenvs and CI without relying on an ambient `python` alias.
 11. The tracked `SkillsBench oracle` real-suite config now points at `scripts/harbor312`, with automatic `.cmd` fallback on Windows so the same config works on both release-facing Linux hosts and local Windows workflows.
 12. `run_protocol.py --run-name <name>` is the recovery path when a multi-run suite is interrupted or one real task needs to be rerun. The runner now allocates a fresh Harbor job directory for reruns so import does not accidentally reuse stale `result.json` files from an older attempt.
+13. `run_protocol.py run-skillsbench-suite` now prints `evidence_status`, `non_ceiling`, and `infra_type` in command output when used as a checkpoint summary.
+14. `evidence_gate.py` mirrors protocol-level gating from cached summary rows and can be used in CI or ad-hoc audits when you need an explicit JSON gate result.
+15. `build_results_gallery_artifacts.py`
+Build repo-hosted chart assets from one or more `summary.jsonl` files, and write SVGs under `docs/figures`.
 
 Planned next:
 
@@ -74,9 +81,11 @@ Execute the golden-task suite after adapter or metric changes.
 ```bash
 python3 scripts/run_release_checks.py
 python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_oracle_real_suite.json --mode subprocess --run-name t0_replay
+python3 scripts/evidence_gate.py --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/smoke_adapters.py
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture
 python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --schema runs
 python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary
+python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --summary results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl --out-dir docs/figures
 ```

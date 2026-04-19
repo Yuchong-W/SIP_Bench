@@ -25,8 +25,13 @@ from sip_bench.harbor_codex_host_agent import (
 from sip_bench.protocol_runner import (
     _allocate_attempt_job_name,
     _apply_task_patch,
+    _build_attempt_summary,
+    _classify_evidence,
     _normalize_shell_scripts,
+    _scores_non_ceiling,
     _plan_skillsbench_retry,
+    _summarize_failure_signatures,
+    _infer_failure_family,
     _resolve_command_value,
     _strip_skills_from_dockerfile_text,
     build_skillsbench_explicit_plan,
@@ -60,6 +65,70 @@ class ProtocolRunnerTests(unittest.TestCase):
         self.assertIn("`/app`", rewritten)
         self.assertIn("./task_shell", rewritten)
         self.assertIn("Write output to /app/dialogue.json", rewritten)
+
+    def test_infer_failure_family_recognizes_known_error_subclasses(self) -> None:
+        self.assertEqual(_infer_failure_family(exception_type="EnvironmentStartTimeoutError"), "docker")
+        self.assertEqual(_infer_failure_family(exception_message="curl: (22) transfer closed"), "docker")
+        self.assertEqual(_infer_failure_family(exception_message="permission denied for /tmp"), "credentials")
+        self.assertEqual(_infer_failure_family(exception_message="python3 runtime error"), "script")
+        self.assertIsNone(_infer_failure_family())
+
+    def test_summarize_failure_signatures_counts_and_provenance(self) -> None:
+        records = [
+            {
+                "run_id": "attempt01",
+                "task_id": "citation-check",
+                "success": False,
+                "metadata": {
+                    "exception_type": "EnvironmentStartTimeoutError",
+                    "exception_message": "environment startup timed out",
+                },
+            },
+            {
+                "run_id": "attempt01",
+                "task_id": "citation-check",
+                "success": False,
+                "metadata": {"exception_message": "curl: (22) failed to fetch package"},
+            },
+            {
+                "run_id": "attempt01",
+                "task_id": "court-form-filling",
+                "success": False,
+                "metadata": {"exception_message": "parser error"},
+            },
+            {"run_id": "attempt01", "task_id": "court-form-filling", "success": True},
+        ]
+        signatures, infra_type = _summarize_failure_signatures(records)
+        signature_counts = {entry["family"]: entry["count"] for entry in signatures}
+
+        self.assertEqual(signature_counts, {"docker": 2, "unknown": 1})
+        self.assertEqual(infra_type, "mixed")
+        self.assertEqual(len(signatures), 2)
+        docker_entry = next(entry for entry in signatures if entry["family"] == "docker")
+        self.assertEqual(len(docker_entry["examples"]), 2)
+        self.assertEqual(docker_entry["examples"][0]["run_id"], "attempt01")
+        self.assertEqual(docker_entry["examples"][0]["task_id"], "citation-check")
+
+    def test_build_attempt_summary_and_non_ceiling_eval(self) -> None:
+        summary = _build_attempt_summary(
+            attempt_imported_runs=[
+                {"success": True, "score": 1.0},
+                {"success": False, "score": 0.4},
+                {"success": True, "score": 1.0},
+            ]
+        )
+        self.assertEqual(summary["records"], 3)
+        self.assertEqual(summary["success_count"], 2)
+        self.assertEqual(summary["failure_count"], 1)
+        self.assertEqual(summary["score_count"], 3)
+        self.assertAlmostEqual(summary["score_mean"], 0.8)
+        self.assertEqual(summary["score_min"], 0.4)
+        self.assertEqual(summary["score_max"], 1.0)
+        self.assertTrue(summary["has_non_ceiling"])
+
+    def test_build_attempt_summary_and_scores_non_ceiling(self) -> None:
+        self.assertTrue(_scores_non_ceiling([1.0, 0.95, 1.0]))
+        self.assertFalse(_scores_non_ceiling([1.0, 0.98, 1.0]))
 
     def test_create_task_helper_scripts_writes_docker_helpers(self) -> None:
         class FakeEnvironment:
@@ -325,6 +394,12 @@ class ProtocolRunnerTests(unittest.TestCase):
             )
             self.assertTrue(report["runs_validation"]["valid"])
             self.assertTrue(report["summary"]["generated"])
+            self.assertIn("evidence", report)
+            evidence = report["evidence"]
+            self.assertEqual(evidence["evidence_status"], "screening")
+            self.assertEqual(evidence["max_repeats_observed"], 1)
+            self.assertEqual(evidence["required_repeats"], 3)
+            self.assertIn(evidence["infra_type"], {"mixed", "non_infrastructure", "infrastructure", "none"})
 
             combined_runs = load_jsonl(Path(report["combined_runs_path"]))
             self.assertEqual(len(combined_runs), 4)
@@ -332,6 +407,16 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(len(summary_rows), 1)
             self.assertEqual(summary_rows[0]["metrics"]["fg_mean"], 0.0)
             self.assertEqual(summary_rows[0]["metrics"]["br_mean"], 0.0)
+
+            run_name_map = {run["run_name"]: run for run in report["runs"]}
+            for run_name in ["t0_replay", "t1_replay", "t0_heldout", "t1_heldout"]:
+                run_report = run_name_map[run_name]
+                self.assertIn("attempt_summaries", run_report)
+                self.assertEqual(len(run_report["attempt_summaries"]), 1)
+                attempt_summary = run_report["attempt_summaries"][0]
+                self.assertEqual(attempt_summary["attempt_number"], 1)
+                self.assertEqual(attempt_summary["task_name"], run_name)
+                self.assertTrue(Path(attempt_summary["summary_path"]).exists())
 
     def test_run_skillsbench_suite_can_rerun_selected_run(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -434,6 +519,55 @@ class ProtocolRunnerTests(unittest.TestCase):
             self.assertEqual(len(t1_replay_rows), 1)
             self.assertEqual(t1_replay_rows[0]["task_id"], "citation-check")
             self.assertTrue(t1_replay_rows[0]["success"])
+
+    def test_classify_evidence_blocked_without_summary_rows(self) -> None:
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl") as handle:
+            evidence = _classify_evidence(
+                runs=[{"attempt_count": 1, "failure_signatures": []}],
+                summary_report={"generated": True, "summary_path": handle.name},
+            )
+            self.assertEqual(evidence["evidence_status"], "blocked")
+            self.assertEqual(evidence["required_repeats"], 3)
+            self.assertEqual(evidence["max_repeats_observed"], 0)
+
+    def test_classify_evidence_marks_evidence_if_repeat_and_non_ceiling(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as handle:
+            handle.write(
+                json.dumps(
+                    {
+                        "run_name": "t0_replay",
+                        "run_mode": "replay",
+                        "attempts": 3,
+                        "metrics": {
+                            "t0_replay_mean": 0.93,
+                            "fg_mean": 0.03,
+                            "br_mean": 0.01,
+                            "ie_mean": 0.001,
+                        },
+                    }
+                )
+            )
+            fake_summary_path = handle.name
+        try:
+            evidence = _classify_evidence(
+                runs=[
+                    {
+                        "attempt_count": 3,
+                        "failure_signatures": [{"family": "unknown", "count": 1}],
+                    }
+                ],
+                summary_report={
+                    "generated": True,
+                    "summary_path": fake_summary_path,
+                },
+            )
+            self.assertEqual(evidence["evidence_status"], "evidence")
+            self.assertEqual(evidence["max_repeats_observed"], 3)
+            self.assertTrue(evidence["non_ceiling"])
+            self.assertEqual(evidence["infra_type"], "non_infrastructure")
+            self.assertEqual(evidence["failure_signatures"], [{"family": "unknown", "count": 1}])
+        finally:
+            Path(fake_summary_path).unlink(missing_ok=True)
 
     @patch("sip_bench.protocol_runner.validate_data_file")
     @patch("sip_bench.protocol_runner.import_skillsbench_job")
