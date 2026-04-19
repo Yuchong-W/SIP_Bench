@@ -1,4 +1,8 @@
-# SI-Protocol Benchmark
+# SI-Protocol Benchmark (SIP-Bench)
+
+## Repository Description
+
+SIP-Bench is open-source protocol infrastructure that turns episodic benchmark runs into longitudinal, reproducible evaluations for agent self-improvement. It answers whether gains are real, retained, stable over time, and worth their cost—not just whether one final score is higher.
 
 `SIP-Bench` is a protocol layer for evaluating self-improving agents across improvement, retention, and cost.
 
@@ -64,6 +68,7 @@ Milestone, release-tracking, and post-release docs live here:
 5. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
 6. [docs/post_v0_1_execution_plan.md](docs/post_v0_1_execution_plan.md)
 7. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
+8. [docs/overview.md](docs/overview.md)
 
 ## Supported Environments
 
@@ -260,6 +265,16 @@ This layer is what enables frozen-style versus skill-enabled comparisons without
 13. [scripts/README.md](scripts/README.md)
 14. [src/sip_bench/](src/sip_bench)
 15. [tests/README.md](tests/README.md)
+
+## Repository Structure (简版)
+
+先读这一页可以快速建立全局认知：[docs/repository_structure.md](docs/repository_structure.md)
+
+你会看到三件事：
+
+1. 核心源码在 `src/` 与 `scripts/`，其余是配置、证据和实验结果；
+2. `protocol/` 和 `results/` 属于“可复现证据链”而非框架本体；
+3. 哪些目录是本地运行时产物（`.venv`、`.uv-cache`、`benchmarks/*`、`results/dryrun/artifacts/*`）。
 
 ## Operational Notes
 

@@ -122,9 +122,10 @@ Engineering docs:
 10. `docs/launch_materials_v0_1.md`
 11. `docs/support_matrix_v0_1.md`
 12. `docs/linux_validation_runbook_v0_1.md`
-13. `docs/funding_story_protocol_bench_v0_1.md`
-14. `docs/post_v0_1_backlog.md`
-15. `docs/experiment_budget_estimator_v0_1.md`
+13. `docs/overview.md`
+14. `docs/repository_structure.md`
+15. `docs/post_v0_1_backlog.md`
+16. `docs/experiment_budget_estimator_v0_1.md`
 
 Tests and fixtures:
 
