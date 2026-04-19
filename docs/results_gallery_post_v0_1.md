@@ -26,6 +26,49 @@ Primary tracked sources:
 4. `results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/runs/t0_replay.jsonl`
 5. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
 6. `results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl`
+7. `docs/results_table_data/protocol_summary_snapshot.csv`
+
+## Table and Unit Definitions
+
+The summary table in this document is generated from
+`docs/results_table_data/protocol_summary_snapshot.csv` (or `.json`) for reproducibility.
+
+Core columns:
+
+1. `source`: originating `summary.jsonl` path.
+2. `suite_name`: canonical suite identifier in protocol namespace.
+3. `benchmark_name`: benchmark family.
+4. `path_type`: `oracle`, `external`, `live`, etc.
+5. `agent_version`: configured `agent_version` string in suite or task metadata.
+6. `model_name`: model field attached to run family.
+7. `generated_at`: summary generation timestamp (ISO UTC string).
+8. `repeats`: how many repeats were aggregated for the summary row.
+9. `sample_sizes`: task-family counts map (`adapt`/`replay`/`heldout`/`drift`).
+10. `*_mean` metrics: mean over available repeatable runs; values are `n/a` if missing.
+11. `token_total_mean`, `tool_calls_mean`, `wall_clock_seconds_mean`, `cost_usd_mean`, `human_interventions_mean`: cost-layer fields and unit notes below.
+
+Cost units:
+
+1. `token_total_mean`: total token counts.
+2. `tool_calls_mean`: number of external tool/API calls.
+3. `wall_clock_seconds_mean`: elapsed wall clock time in seconds.
+4. `cost_usd_mean`: USD estimate when cost fields are emitted.
+5. `human_interventions_mean`: count of manual intervention events.
+
+Default policy:
+
+1. Any missing metric is rendered as `n/a`.
+2. Any derived metric not computable from source fields remains `n/a`.
+3. JSON output keeps raw scalar values; CSV quoting preserves map fields.
+
+## How to Read This Table
+
+1. Read mean scores (`T0`, `T1`, `T2`) together; any single value without trajectory context is incomplete.
+2. Compare `FG` and `BR` first, because they jointly describe adaptation benefit vs replay damage.
+3. Use `PDS` to detect delayed drift in held-out improvements.
+4. Interpret cost fields alongside metrics to avoid free-gain assumptions.
+5. Treat saturated rows as non-informative unless `sample_sizes` and `evidence_gate` outputs justify ceiling exceptions.
+6. If a row depends on `sample_sizes = 1`, interpret it as hypothesis-generating rather than conclusive.
 
 ## Environment Coverage Table
 

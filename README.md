@@ -144,6 +144,19 @@ Tracked example outputs and configs:
 8. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
 9. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
 
+## 我该先看什么（2-3 分钟）
+
+1. 先读框架与边界：  
+   [docs/positioning_note_post_v0_1.md](docs/positioning_note_post_v0_1.md)  
+   [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
+2. 再确认最小执行链路：  
+   `python3 scripts/run_release_checks.py`  
+   `python3 scripts/evidence_gate.py --summary results/dryrun/summary.jsonl`
+3. 再看结果链路：  
+   [docs/evidence_readme.md](docs/evidence_readme.md)  
+   `docs/results_table_data/protocol_summary_snapshot.csv`
+   `docs/figures/*.svg`
+
 ## Minimal Value Proof
 
 The smallest tracked proof that `SIP-Bench` adds value beyond a single-shot score is [results/dryrun/summary.jsonl](results/dryrun/summary.jsonl), which is derived from [results/dryrun/sample_runs.jsonl](results/dryrun/sample_runs.jsonl).
@@ -239,9 +252,14 @@ This layer is what enables frozen-style versus skill-enabled comparisons without
 5. [docs/release_manifest.md](docs/release_manifest.md)
 6. [docs/linux_validation_runbook_v0_1.md](docs/linux_validation_runbook_v0_1.md)
 7. [docs/post_v0_1_backlog.md](docs/post_v0_1_backlog.md)
-8. [scripts/README.md](scripts/README.md)
-9. [src/sip_bench/](src/sip_bench)
-10. [tests/README.md](tests/README.md)
+8. [docs/evidence_readme.md](docs/evidence_readme.md)
+9. [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
+10. [docs/figures/README.md](docs/figures/README.md)
+11. [docs/results_table_data/](docs/results_table_data)
+12. [docs/post_v0_1_extended_todo.md](docs/post_v0_1_extended_todo.md)
+13. [scripts/README.md](scripts/README.md)
+14. [src/sip_bench/](src/sip_bench)
+15. [tests/README.md](tests/README.md)
 
 ## Operational Notes
 
@@ -268,6 +286,12 @@ No. Experimental prepared-suite support exists, but `codex` connectivity is not 
 ### What should I use if I only want a stable second environment today?
 
 Use the tracked `tau-bench` historical/import-only path. It exercises the protocol layer without turning provider credentials into a blocker.
+
+### Where are the evidence artifacts and how can they be reproduced?
+
+1. Table outputs: `docs/results_table_data/protocol_summary_snapshot.csv` 和 `docs/results_table_data/protocol_summary_snapshot.json`
+2. Figure outputs: `docs/figures/*.svg`
+3. Reproduction commands: [docs/evidence_readme.md](docs/evidence_readme.md)
 
 ## License
 

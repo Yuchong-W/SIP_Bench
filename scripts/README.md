@@ -88,4 +88,5 @@ python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skil
 python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --schema runs
 python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary
 python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --summary results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl --out-dir docs/figures
+python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --out-dir docs/figures --table-dir docs/results_table_data --table-filename protocol_summary_snapshot
 ```

@@ -10,7 +10,7 @@ Release priorities:
 2. keep the public surface reviewable and reproducible
 3. anchor the release on validated artifacts that do not require `codex` connectivity or private API access
 
-Current release-critical evidence:
+Core open-source confidence set:
 
 1. `SkillsBench oracle real suite`
 2. `tau-bench historical/import-only suite`
@@ -19,6 +19,19 @@ Current experimental but non-blocking areas:
 
 1. `SkillsBench codex external prepared suite`
 2. `tau-bench` live smoke
+
+Evidence publication layer:
+
+1. Core protocol narrative: `docs/results_gallery_post_v0_1.md`
+2. Result table provenance: `docs/results_table_data/protocol_summary_snapshot.csv`, `docs/results_table_data/protocol_summary_snapshot.json`
+3. Result figure set:  
+   - `docs/figures/heldout_vs_replay_delta.svg`
+   - `docs/figures/fg_br_ie.svg`
+   - `docs/figures/cost_vs_gain.svg`
+   - `docs/figures/t0_t1_t2_stability.svg`
+   - `docs/figures/attempt_provenance.svg`
+   - `docs/figures/host_auth_progress.svg`
+4. Evidence reproduction playbook: `docs/evidence_readme.md`
 
 ## Target Repository
 
@@ -71,17 +84,21 @@ CLI and repository docs:
 12. `scripts/harbor312`
 13. `scripts/harbor312.cmd`
 14. `scripts/tau311.cmd`
-15. `.gitignore`
-16. `.gitattributes`
-17. `.editorconfig`
-18. `LICENSE`
-19. `NOTICE`
-20. `CITATION.cff`
-21. `.github/workflows/ci.yml`
-22. `.github/ISSUE_TEMPLATE/bug_report.md`
-23. `.github/ISSUE_TEMPLATE/feature_request.md`
-24. `.github/ISSUE_TEMPLATE/config.yml`
-25. `.github/PULL_REQUEST_TEMPLATE.md`
+15. `docs/evidence_readme.md`
+16. `docs/figures/README.md`
+17. `docs/results_table_data/protocol_summary_snapshot.csv`
+18. `docs/results_table_data/protocol_summary_snapshot.json`
+19. `.gitignore`
+20. `.gitattributes`
+21. `.editorconfig`
+22. `LICENSE`
+23. `NOTICE`
+24. `CITATION.cff`
+25. `.github/workflows/ci.yml`
+26. `.github/ISSUE_TEMPLATE/bug_report.md`
+27. `.github/ISSUE_TEMPLATE/feature_request.md`
+28. `.github/ISSUE_TEMPLATE/config.yml`
+29. `.github/PULL_REQUEST_TEMPLATE.md`
 
 Engineering docs:
 
@@ -150,6 +167,12 @@ Sample outputs:
 10. partial outputs under `results/protocol_runs/skillsbench_codex_external_prepared_suite/`
 11. `results/protocol_runs/**/prepared/`
 12. `.codex/`
+13. local one-off artifact trees: `results/main/`, `results/real_jobs/`, `results/real_jobs_protocol/`, `results/real_jobs_protocol_prepared_*`, `results/real_jobs_screen/`, `results/real_jobs_py312/`, `results/real_jobs_e2e/`
+
+Naming policy:
+
+1. Release versioned artifacts must follow `results/protocol_runs/<suite_slug>/...` and `results/dryrun/...` for stable tracked examples.
+2. Scratch and repeated local probes should use explicit local namespaces (`results/prepared_probes/`, `results/real_jobs*`, `results/real_jobs_protocol*`, `results/real_jobs_screen*`) and are excluded unless explicitly listed as release output.
 
 ## Real Protocol Suite Outputs
 

@@ -106,16 +106,26 @@
 
 ## P2 - 结果展示与发布打磨（优先推进）
 
-36. [ ] 将图表导出为 SVG 并统一放入 `docs/figures/`，补齐文件名与 caption。  
-37. [ ] 创建 `docs/results_table_data/`，承载生成表格的中间 JSON/CSV（可追溯原始值）。  
-38. [ ] 统一 `results_gallery_post_v0_1.md` 的表格列定义（指标含义、单位、缺省值处理）。  
-39. [ ] 增加一个简短“如何读这张表”的解读段（非指标盲人表）。  
-40. [ ] 清理 `results` 目录中的本地一次性 artifact 命名，和版本化 artifact 的命名规则对齐。  
-41. [ ] 更新 `docs/release_manifest.md`，把“高质量开源交付物”与“实验型附带文件”分开声明。  
-42. [ ] 检查所有新文件路径在仓库 map/faq 中可追踪。  
-43. [ ] 增加一个 `docs/evidence_readme.md` 专门说明每个核心图/表如何复现。  
-44. [ ] 在 `README` 中新增一段“我该先看什么”流程（2-3 分钟导览）。  
-45. [ ] 完成 1 次完整 dry-run 演示文档验证（无真实 provider，按本地 artifacts）。  
+36. [x] 将图表导出为 SVG 并统一放入 `docs/figures/`，补齐文件名与 caption。  
+    说明：`scripts/build_results_gallery_artifacts.py` 现已同步产出 `heldout_vs_replay_delta.svg`、`fg_br_ie.svg`、`cost_vs_gain.svg`、`t0_t1_t2_stability.svg`；`docs/figures/README.md` 已补齐文件名与 caption 映射。  
+37. [x] 创建 `docs/results_table_data/`，承载生成表格的中间 JSON/CSV（可追溯原始值）。  
+    说明：`protocol_summary_snapshot.json/csv` 已生成并托管在 `docs/results_table_data/`，并在证据链中引用。  
+38. [x] 统一 `results_gallery_post_v0_1.md` 的表格列定义（指标含义、单位、缺省值处理）。  
+    说明：已新增“Table and Unit Definitions”与“默认值策略”段落。  
+39. [x] 增加一个简短“如何读这张表”的解读段（非指标盲人表）。  
+    说明：已新增“How to Read This Table”段，明确指标-成本-样本量的联合解读方法。  
+40. [x] 清理 `results` 目录中的本地一次性 artifact 命名，和版本化 artifact 的命名规则对齐。  
+    说明：`docs/release_manifest.md` 已更新排除规则与命名策略，明确 release 与本地 scratch 的边界。  
+41. [x] 更新 `docs/release_manifest.md`，把“高质量开源交付物”与“实验型附带文件”分开声明。  
+    说明：已增加 Evidence publication layer，并补充了可复现表/图与复现文档的分组。  
+42. [x] 检查所有新文件路径在仓库 map/faq 中可追踪。  
+    说明：`README.md` 的仓库地图与 FAQ 已追加 `docs/evidence_readme.md`、`docs/results_table_data/`、`docs/figures/*.svg` 引用。  
+43. [x] 增加一个 `docs/evidence_readme.md` 专门说明每个核心图/表如何复现。  
+    说明：已新增文件，收集表格与图表的复现命令、源文件与检验闭环。  
+44. [x] 在 `README` 中新增一段“我该先看什么”流程（2-3 分钟导览）。  
+    说明：已新增“我该先看什么（2-3 分钟）”板块，覆盖定位、快速验证与结果链路。  
+45. [x] 完成 1 次完整 dry-run 演示文档验证（无真实 provider，按本地 artifacts）。  
+    说明：已执行 `python3 scripts/run_release_checks.py`，全量本地 dry-run/fixtures 路径通过并给出可复现摘要日志。  
 
 ## P3 - 开源项目成熟度（靠后推进）
 
