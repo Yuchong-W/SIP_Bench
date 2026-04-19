@@ -3,17 +3,17 @@
 <text x="80" y="22" font-family="Arial" font-size="16" font-weight="700">Heldout and Replay Mean Score Snapshot</text>
 <line x1="80" y1="40" x2="80" y2="340" stroke="#6b7280" stroke-width="1"/>
 <line x1="80" y1="340" x2="860" y2="340" stroke="#6b7280" stroke-width="1"/>
-<rect x="119.00" y="40.00" width="117.00" height="300.00" fill="#2563eb" opacity="0.85"/>
-<text x="177.50" y="34.00" text-anchor="middle" font-size="11" fill="#111827">1.000</text>
+<rect x="119.00" y="160.00" width="117.00" height="180.00" fill="#2563eb" opacity="0.85"/>
+<text x="177.50" y="154.00" text-anchor="middle" font-size="11" fill="#111827">0.600</text>
 <text x="177.50" y="358.00" text-anchor="middle" font-size="12" fill="#374151">T0 Replay</text>
-<rect x="314.00" y="40.00" width="117.00" height="300.00" fill="#16a34a" opacity="0.85"/>
-<text x="372.50" y="34.00" text-anchor="middle" font-size="11" fill="#111827">1.000</text>
+<rect x="314.00" y="182.50" width="117.00" height="157.50" fill="#16a34a" opacity="0.85"/>
+<text x="372.50" y="176.50" text-anchor="middle" font-size="11" fill="#111827">0.525</text>
 <text x="372.50" y="358.00" text-anchor="middle" font-size="12" fill="#374151">T1 Replay</text>
-<rect x="509.00" y="40.00" width="117.00" height="300.00" fill="#9333ea" opacity="0.85"/>
-<text x="567.50" y="34.00" text-anchor="middle" font-size="11" fill="#111827">1.000</text>
+<rect x="509.00" y="265.00" width="117.00" height="75.00" fill="#9333ea" opacity="0.85"/>
+<text x="567.50" y="259.00" text-anchor="middle" font-size="11" fill="#111827">0.250</text>
 <text x="567.50" y="358.00" text-anchor="middle" font-size="12" fill="#374151">T0 Heldout</text>
-<rect x="704.00" y="40.00" width="117.00" height="300.00" fill="#f97316" opacity="0.85"/>
-<text x="762.50" y="34.00" text-anchor="middle" font-size="11" fill="#111827">1.000</text>
+<rect x="704.00" y="212.50" width="117.00" height="127.50" fill="#f97316" opacity="0.85"/>
+<text x="762.50" y="206.50" text-anchor="middle" font-size="11" fill="#111827">0.425</text>
 <text x="762.50" y="358.00" text-anchor="middle" font-size="12" fill="#374151">T1 Heldout</text>
 <text x="14" y="392" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">0.0</text>
 <text x="870" y="342" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280" font-weight="normal">1.00</text>

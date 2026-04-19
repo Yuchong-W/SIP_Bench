@@ -264,9 +264,13 @@ def _classify_evidence(*, runs: list[dict[str, Any]], summary_report: dict[str, 
         else:
             suite_infra_type = "non_infrastructure"
 
-    repeats = [int(run.get("attempt_count", 0) or 0) for run in runs]
-    if not repeats:
-        repeats = [int(row.get("attempts", 0) or 0) for row in summary_rows if "attempts" in row]
+    attempt_repeats = [int(run.get("attempt_count", 0) or 0) for run in runs]
+    summary_repeats = [int(row.get("repeats", 0) or 0) for row in summary_rows if row.get("repeats") is not None]
+    if not summary_repeats and not attempt_repeats:
+        attempt_repeats = [int(row.get("attempts", 0) or 0) for row in summary_rows if row.get("attempts") is not None]
+    repeats = attempt_repeats
+    if summary_repeats:
+        repeats.extend(summary_repeats)
     repeats_achieved = max(repeats) if repeats else 0
     repeats_ok = repeats_achieved >= EVIDENCE_DEFAULTS["min_repeat_count"]
 

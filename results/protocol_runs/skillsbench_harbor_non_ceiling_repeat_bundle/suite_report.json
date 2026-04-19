@@ -1,0 +1,1507 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-harbor-non-ceiling-repeat-bundle",
+  "benchmark_name": "skillsbench",
+  "config_path": "/home/yuchong/Protocal_Bench/protocol/skillsbench_harbor_non_ceiling_repeat_bundle.json",
+  "out_root": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle",
+  "execute_mode": "mock",
+  "run_count": 12,
+  "runs": [
+    {
+      "run_name": "t0_replay_seed0",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_replay_seed0.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_replay_seed0.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed0.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed0",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed0",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_replay_seed0",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed0.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_replay_seed0",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_replay_seed0.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_replay_seed0.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed0.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed0",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed0/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed0",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed0/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed0/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed0/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_replay_seed0",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed0/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed0.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_heldout_seed0",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_heldout_seed0.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_heldout_seed0.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed0.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed0",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed0/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed0",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed0/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed0/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::0::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed0/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_heldout_seed0",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed0/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::0::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed0.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_heldout_seed0",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 0,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_heldout_seed0.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_heldout_seed0.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed0.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed0",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed0/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed0",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed0/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed0/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::0::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed0/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_heldout_seed0",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed0/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::0::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed0.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_replay_seed1",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 1,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_replay_seed1.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_replay_seed1.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed1.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed1",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed1/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed1",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed1/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed1/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed1/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_replay_seed1",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed1/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed1.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_replay_seed1",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 1,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_replay_seed1.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_replay_seed1.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed1.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed1",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed1/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed1",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed1/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed1/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed1/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_replay_seed1",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed1/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed1.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_heldout_seed1",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 1,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_heldout_seed1.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_heldout_seed1.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed1.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed1",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed1/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed1",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed1/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed1/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::1::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed1/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_heldout_seed1",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed1/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::1::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed1.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_heldout_seed1",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 1,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_heldout_seed1.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_heldout_seed1.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed1.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed1",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed1/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed1",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed1/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed1/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::1::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed1/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_heldout_seed1",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed1/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::1::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed1.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_replay_seed2",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 2,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_replay_seed2.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_replay_seed2.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed2.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed2",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed2/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_replay_seed2",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed2/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed2/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed2/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_replay_seed2",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed2/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_replay_seed2.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_replay_seed2",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "path_type": "external",
+      "seed": 2,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_replay_seed2.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_replay_seed2.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed2.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed2",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed2/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_replay_seed2",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed2/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed2/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "has_non_ceiling": false,
+          "infra_type": "none",
+          "failure_signatures": [],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed2/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "failure_signatures": [],
+      "has_non_ceiling": false,
+      "infra_type": "none",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 1,
+          "failure_count": 0,
+          "score_count": 1,
+          "score_mean": 1.0,
+          "score_min": 1.0,
+          "score_max": 1.0,
+          "has_non_ceiling": false,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_replay_seed2",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_replay_seed2/attempt01/summary.json",
+          "infra_type": "none",
+          "failure_signatures": []
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_replay_seed2.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t0_heldout_seed2",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 2,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t0_heldout_seed2.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t0_heldout_seed2.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed2.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed2",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed2/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t0_heldout_seed2",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed2/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed2/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::2::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed2/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t0_heldout_seed2",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_heldout_seed2/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T0::external::2::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t0_heldout_seed2.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    },
+    {
+      "run_name": "t1_heldout_seed2",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "path_type": "external",
+      "seed": 2,
+      "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/plans/t1_heldout_seed2.json",
+      "hydration_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/hydration/t1_heldout_seed2.json",
+      "execution_path": null,
+      "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed2.jsonl",
+      "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+      "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed2",
+      "task_ids": [
+        "citation-check"
+      ],
+      "hydrated_paths": [],
+      "task_preparation": {
+        "mode": "source",
+        "skill_mode": "keep",
+        "skip_hydration_if_local": true,
+        "patches": {}
+      },
+      "retry_policy": {
+        "max_attempts": 1,
+        "require_all_records_failed": true,
+        "retry_on_execution_statuses": [],
+        "retry_on_exception_types": [],
+        "retry_on_message_substrings": []
+      },
+      "attempt_count": 1,
+      "selected_attempt": 1,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed2/attempt01/summary.json",
+          "job_name": "skillsbench-harbor-non-ceiling-repeat-bundle-t1_heldout_seed2",
+          "job_dir": "/home/yuchong/Protocal_Bench/tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only",
+          "plan_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed2/attempt01.plan.json",
+          "execution_path": null,
+          "records_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed2/attempt01.runs.jsonl",
+          "execution_mode": "import-only",
+          "execution_summary": null,
+          "env_override_keys": [],
+          "imported_records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "has_non_ceiling": true,
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::2::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ],
+          "records_validation": {
+            "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed2/attempt01.runs.jsonl",
+            "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+            "input_format": "jsonl",
+            "records_checked": 1,
+            "valid": true,
+            "error_count": 0,
+            "errors": []
+          },
+          "retry_decision": {
+            "eligible": false,
+            "retry": false,
+            "reason": "retry_policy_disabled",
+            "remaining_attempts": 0,
+            "matched_failures": []
+          }
+        }
+      ],
+      "preparation_path": null,
+      "execution_mode": "import-only",
+      "execution_summary": null,
+      "env_override_keys": [],
+      "imported_records": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "failure_signatures": [
+        {
+          "family": "docker",
+          "count": 1
+        }
+      ],
+      "has_non_ceiling": true,
+      "infra_type": "infrastructure",
+      "attempt_summaries": [
+        {
+          "records": 1,
+          "success_count": 0,
+          "failure_count": 1,
+          "score_count": 1,
+          "score_mean": 0.0,
+          "score_min": 0.0,
+          "score_max": 0.0,
+          "has_non_ceiling": true,
+          "attempt_number": 1,
+          "attempt_label": "attempt01",
+          "task_name": "t1_heldout_seed2",
+          "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t1_heldout_seed2/attempt01/summary.json",
+          "infra_type": "infrastructure",
+          "failure_signatures": [
+            {
+              "family": "docker",
+              "count": 1,
+              "examples": [
+                {
+                  "run_id": "skillsbench::harbor::heldout::T1::external::2::oracle::oracle::court-form-filling::0",
+                  "task_id": "court-form-filling",
+                  "exception_type": "RuntimeError",
+                  "exception_message": "docker build failed"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "records_validation": {
+        "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/runs/t1_heldout_seed2.jsonl",
+        "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+        "input_format": "jsonl",
+        "records_checked": 1,
+        "valid": true,
+        "error_count": 0,
+        "errors": []
+      }
+    }
+  ],
+  "combined_runs_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/combined_runs.jsonl",
+  "runs_validation": {
+    "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/combined_runs.jsonl",
+    "schema_path": "/home/yuchong/Protocal_Bench/schemas/runs.schema.json",
+    "input_format": "jsonl",
+    "records_checked": 12,
+    "valid": true,
+    "error_count": 0,
+    "errors": []
+  },
+  "summary": {
+    "attempted": true,
+    "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/summary.jsonl",
+    "generated": true,
+    "records": 1,
+    "validation": {
+      "data_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/summary.jsonl",
+      "schema_path": "/home/yuchong/Protocal_Bench/schemas/summary.schema.json",
+      "input_format": "jsonl",
+      "records_checked": 1,
+      "valid": true,
+      "error_count": 0,
+      "errors": []
+    }
+  },
+  "evidence": {
+    "evidence_status": "evidence",
+    "non_ceiling": true,
+    "infra_type": "infrastructure",
+    "failure_signatures": [
+      {
+        "family": "docker",
+        "count": 6
+      }
+    ],
+    "required_repeats": 3,
+    "max_repeats_observed": 3
+  }
+}

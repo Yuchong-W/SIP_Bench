@@ -1,0 +1,61 @@
+[
+  {
+    "suite": "skillsbench",
+    "task_id": "offer-letter-generator",
+    "difficulty": "easy",
+    "category": "document-generation",
+    "records": 2,
+    "success_rate": 1.0,
+    "replay_t0_mean": null,
+    "replay_t1_mean": null,
+    "replay_t2_mean": null,
+    "heldout_t0_mean": 1.0,
+    "heldout_t1_mean": 1.0,
+    "heldout_t2_mean": null,
+    "fg": 0.0,
+    "br": null,
+    "failure_count": 0,
+    "failure_signature": "none",
+    "failure_signature_counts": {}
+  },
+  {
+    "suite": "skillsbench",
+    "task_id": "dialogue-parser",
+    "difficulty": "easy",
+    "category": "game",
+    "records": 3,
+    "success_rate": 1.0,
+    "replay_t0_mean": 0.8335,
+    "replay_t1_mean": 1.0,
+    "replay_t2_mean": null,
+    "heldout_t0_mean": null,
+    "heldout_t1_mean": null,
+    "heldout_t2_mean": null,
+    "fg": null,
+    "br": 0.1665,
+    "failure_count": 0,
+    "failure_signature": "none",
+    "failure_signature_counts": {}
+  },
+  {
+    "suite": "skillsbench",
+    "task_id": "citation-check",
+    "difficulty": "medium",
+    "category": "research",
+    "records": 4,
+    "success_rate": 0.75,
+    "replay_t0_mean": 0.5,
+    "replay_t1_mean": 1.0,
+    "replay_t2_mean": null,
+    "heldout_t0_mean": null,
+    "heldout_t1_mean": null,
+    "heldout_t2_mean": null,
+    "fg": null,
+    "br": 0.5,
+    "failure_count": 1,
+    "failure_signature": "unknown:1",
+    "failure_signature_counts": {
+      "unknown": 1
+    }
+  }
+]

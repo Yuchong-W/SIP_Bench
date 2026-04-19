@@ -52,7 +52,7 @@ Treat each candidate experiment as belonging to one of three classes:
      - score gate: at least one replay/heldout mean `< 1.0 - 0.02`
      - protocol gate: `max(abs(FG), abs(BR)) >= 0.02`
      - efficiency gate: `abs(IE) >= 0.0005`
-     - repeat gate: `attempts >= 3` for the suite family
+     - repeat gate: `repeats >= 3` for the suite family (`attempts` is kept for backward compatibility)
      - all conditions above are required for `Evidence` and can be audited with `scripts/evidence_gate.py`.
 
 ## Current Ladder
@@ -134,7 +134,7 @@ Promotion rule:
 
 1. only after screening identifies at least one non-ceiling candidate should a new bundle be treated as the main prepared evidence bundle
 2. `citation-check` currently fails that promotion rule because the clean recovered path saturates again once infrastructure drift is removed
-3. the promotion gate also requires at least 3 attempts in the family summary (`attempts >= 3`) to avoid mistaking one-off reruns for stable evidence
+3. the promotion gate also requires at least 3 repeats in the family summary (`repeats >= 3`) to avoid mistaking one-off reruns for stable evidence
 
 ### Stage 3: Hard Bundle
 
@@ -212,3 +212,24 @@ When a screening probe finishes, record:
 7. whether the result should be classified as `Smoke`, `Screening`, or `Evidence`
 
 This classification should be written into `docs/development_log.md` before the task is promoted into the results gallery.
+
+## Threat Model and Method Scope
+
+Prepared-suite evidence has three main contamination and validity risks:
+
+1. local checkout scope can bias which task families are available for screening,
+2. infra instability can mimic adaptation regressions if reruns are not split by attempt and run identity,
+3. one-off task selection can overfit protocol claims in the absence of family-level comparison.
+
+Controls required for this phase:
+
+1. fix task metadata (`difficulty`, `category`, `benchmark_split`, `seed`) in both config and logs,
+2. preserve attempt provenance and avoid reusing Harbor job directories across reruns,
+3. keep scoring tables at family level to separate protocol effects from infra failures,
+4. only claim cross-benchmark transfer when both environments run the same release-critical artifact class.
+
+Why this is not full-scale yet:
+
+1. the current objective is protocol reproducibility under constrained budget, not statistically complete adaptation coverage,
+2. we prioritize fixed-depth repeats + explicit recovery documentation as the evidence minimum,
+3. larger matched-budget studies remain the next stage once the infrastructure baseline reaches stable throughput across at least two task families.

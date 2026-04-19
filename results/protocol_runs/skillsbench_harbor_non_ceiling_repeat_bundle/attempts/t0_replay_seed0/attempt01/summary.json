@@ -1,0 +1,16 @@
+{
+  "records": 1,
+  "success_count": 1,
+  "failure_count": 0,
+  "score_count": 1,
+  "score_mean": 1.0,
+  "score_min": 1.0,
+  "score_max": 1.0,
+  "has_non_ceiling": false,
+  "attempt_number": 1,
+  "attempt_label": "attempt01",
+  "task_name": "t0_replay_seed0",
+  "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/attempts/t0_replay_seed0/attempt01/summary.json",
+  "infra_type": "none",
+  "failure_signatures": []
+}

@@ -105,8 +105,13 @@ def _evaluate_gate(*, rows: list[dict], attempts: int, ceiling_gap: float, proto
         if ie_mean is not None and abs(float(ie_mean)) >= ie_shift:
             non_ceiling = True
 
-    attempts_list = [int(row.get("attempts", 1) or 0) for row in rows if int(row.get("attempts", 0) or 0) > 0]
-    repeats_observed = max(attempts_list) if attempts_list else 0
+    repeats_list = [int(row.get("repeats", 0) or 0) for row in rows if row.get("repeats") is not None]
+    if not repeats_list:
+        repeats_list = [
+            int(row.get("attempts", 0) or 0) for row in rows if int(row.get("attempts", 0) or 0) > 0
+        ]
+
+    repeats_observed = max(repeats_list) if repeats_list else 0
     repeats_ok = repeats_observed >= attempts
 
     if repeats_ok and non_ceiling:

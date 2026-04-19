@@ -1,0 +1,4 @@
+suite,task_id,difficulty,category,records,success_rate,heldout_t0_mean,heldout_t1_mean,heldout_t2_mean,replay_t0_mean,replay_t1_mean,replay_t2_mean,fg,br,failure_count,failure_signature
+skillsbench,offer-letter-generator,easy,document-generation,2,1.0,1.0,1.0,,,,,0.0,,0,none
+skillsbench,dialogue-parser,easy,game,3,1.0,,,,0.8335,1.0,,,0.1665,0,none
+skillsbench,citation-check,medium,research,4,0.75,,,,0.5,1.0,,,0.5,1,unknown:1

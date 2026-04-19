@@ -569,6 +569,38 @@ class ProtocolRunnerTests(unittest.TestCase):
         finally:
             Path(fake_summary_path).unlink(missing_ok=True)
 
+    def test_classify_evidence_uses_summary_repeats_when_run_attempt_count_single(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as handle:
+            handle.write(
+                json.dumps(
+                    {
+                        "run_name": "t0_replay",
+                        "attempts": 1,
+                        "repeats": 3,
+                        "metrics": {
+                            "t0_replay_mean": 0.93,
+                            "fg_mean": 0.03,
+                            "br_mean": 0.01,
+                            "ie_mean": 0.001,
+                        },
+                    }
+                )
+            )
+            fake_summary_path = handle.name
+        try:
+            evidence = _classify_evidence(
+                runs=[{"attempt_count": 1, "failure_signatures": [{"family": "unknown", "count": 1}]}],
+                summary_report={
+                    "generated": True,
+                    "summary_path": fake_summary_path,
+                },
+            )
+            self.assertEqual(evidence["evidence_status"], "evidence")
+            self.assertEqual(evidence["max_repeats_observed"], 3)
+            self.assertTrue(evidence["non_ceiling"])
+        finally:
+            Path(fake_summary_path).unlink(missing_ok=True)
+
     @patch("sip_bench.protocol_runner.validate_data_file")
     @patch("sip_bench.protocol_runner.import_skillsbench_job")
     @patch("sip_bench.protocol_runner.execute_command_plan")

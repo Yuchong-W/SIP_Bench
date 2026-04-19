@@ -8,10 +8,12 @@ This document defines the exact commands for reproducing all evidence in the cur
 
 ```bash
 python3 scripts/build_results_gallery_artifacts.py \
-  --summary results/dryrun/summary.jsonl \
-  --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl \
-  --table-dir docs/results_table_data \
-  --table-filename protocol_summary_snapshot
+ --summary results/dryrun/summary.jsonl \
+ --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl \
+  --summary results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/summary.jsonl \
+  --summary results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl \
+ --table-dir docs/results_table_data \
+ --table-filename protocol_summary_snapshot
 ```
 
 Output:
@@ -27,8 +29,10 @@ The gallery is built from script-generated charts and two tracked manual SVGs.
 
 ```bash
 python3 scripts/build_results_gallery_artifacts.py \
-  --summary results/dryrun/summary.jsonl \
-  --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl \
+ --summary results/dryrun/summary.jsonl \
+ --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl \
+  --summary results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle/summary.jsonl \
+  --summary results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl \
   --out-dir docs/figures \
   --table-dir docs/results_table_data \
   --table-filename protocol_summary_snapshot
@@ -77,3 +81,21 @@ From a fresh clone, run the command above, then open:
 2. `docs/results_table_data/protocol_summary_snapshot.csv`
 3. `docs/figures/*.svg`
 
+## Family-Level Ablation Command
+
+Run family-level failure/metric ablation across combined runs:
+
+```bash
+python3 scripts/build_task_family_ablation.py \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/combined_runs.jsonl \
+  --out-dir docs/results_task_family_ablation \
+  --out-name task_family_ablation_host_focus_v0_1
+```
+
+The command writes:
+
+1. `docs/results_task_family_ablation/task_family_ablation_host_focus_v0_1.json`
+2. `docs/results_task_family_ablation/task_family_ablation_host_focus_v0_1.csv`

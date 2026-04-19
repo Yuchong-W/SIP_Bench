@@ -67,6 +67,8 @@ Operational notes:
 14. `evidence_gate.py` mirrors protocol-level gating from cached summary rows and can be used in CI or ad-hoc audits when you need an explicit JSON gate result.
 15. `build_results_gallery_artifacts.py`
 Build repo-hosted chart assets from one or more `summary.jsonl` files, and write SVGs under `docs/figures`.
+16. `build_task_family_ablation.py`
+Build task-family ablation tables from `combined_runs.jsonl` outputs, with split- and family-level FG/BR/failure summaries.
 
 Planned next:
 
@@ -89,4 +91,5 @@ python3 scripts/validate_records.py --data /tmp/skillsbench_job_runs.jsonl --sch
 python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary
 python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --summary results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl --out-dir docs/figures
 python3 scripts/build_results_gallery_artifacts.py --summary results/dryrun/summary.jsonl --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --out-dir docs/figures --table-dir docs/results_table_data --table-filename protocol_summary_snapshot
+python3 scripts/build_task_family_ablation.py --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/combined_runs.jsonl --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/combined_runs.jsonl --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/combined_runs.jsonl --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/combined_runs.jsonl --out-dir docs/results_task_family_ablation --out-name task_family_ablation_host_focus_v0_1
 ```

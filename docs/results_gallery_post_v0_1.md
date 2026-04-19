@@ -17,6 +17,7 @@ See also:
 | `SkillsBench codex host-auth custom-agent bundle` | `1.000` | `1.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `1031041` tokens, `601.54s` wall clock | A repo-local host-side `codex` agent can now produce a fully aggregated prepared-suite bundle with ChatGPT login state and no global Harbor edits; the current bundle is a real protocol artifact, but it is a ceiling-effect validation bundle rather than a tradeoff-revealing result |
 | `SkillsBench codex host-auth hard-candidate bundle` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `n/a` | `enterprise-information-search` replay and `financial-modeling-qa` heldout were attempted, but no valid summary exists yet due repeated infra-level environment-build failures |
 | `tau-bench historical/import-only` | `1.000` | `1.000` | `0.000` | `0.500` | `0.500` | `0.000` | `n/a` | `$0.01292` mean cost | Gives a second environment that is interpretable without private access, even though it is not yet a strong gain/retention stress test |
+| `SkillsBench harbor non-ceiling repeat bundle (mock)` | `0.000` | `0.000` | `0.000` | `1.000` | `1.000` | `0.000` | `n/a` | `230.0s` mean wall clock | Mock bundle now validates repeat depth (`repeats = 3`) and protocol-gate alignment (`evidence_status = evidence`) while surfacing stable heldout infra failures |
 
 Primary tracked sources:
 
@@ -27,6 +28,47 @@ Primary tracked sources:
 5. `results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/summary.jsonl`
 6. `results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl`
 7. `docs/results_table_data/protocol_summary_snapshot.csv`
+
+## Protocol-First vs Leaderboard Contrast
+
+A compact contrast case is tracked in the release notes and this gallery.
+
+| Metric lens | `T1 heldout` view | Protocol view |
+| --- | --- | --- |
+| `results/dryrun/summary.jsonl` | `0.425` | `FG = +0.175`, `BR = -0.075`, `IE = +0.0025`, `PDS = -0.020` |
+| Interpretation | suggests only one gain number | shows replay loss and drift in the same family, so leaderboard-only reporting is incomplete |
+
+Source:
+
+1. `results/dryrun/summary.jsonl`
+2. `docs/release_notes_v0_1.md`
+
+## Task-Family Ablation Snapshot
+
+A reproducible family-level check is now tracked in:
+
+1. `docs/results_task_family_ablation/task_family_ablation_host_focus_v0_1.json`
+2. `docs/results_task_family_ablation/task_family_ablation_host_focus_v0_1.csv`
+
+It compares easy vs medium host-auth families across replay and heldout tracks:
+
+| suite | difficulty | category | task_id | records | success | replay_t0 | replay_t1 | heldout_t0 | heldout_t1 | FG | BR | failures |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `skillsbench` | `easy` | `document-generation` | `offer-letter-generator` | `2` | `1.0` | `n/a` | `n/a` | `1.0` | `1.0` | `0.0` | `n/a` | `none` |
+| `skillsbench` | `easy` | `game` | `dialogue-parser` | `3` | `1.0` | `0.8335` | `1.0` | `n/a` | `n/a` | `n/a` | `0.1665` | `none` |
+| `skillsbench` | `medium` | `research` | `citation-check` | `4` | `0.75` | `0.5` | `1.0` | `n/a` | `n/a` | `n/a` | `0.5` | `unknown:1` |
+
+Repro command:
+
+```bash
+python3 scripts/build_task_family_ablation.py \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_bundle/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/combined_runs.jsonl \
+  --combined-runs results/protocol_runs/skillsbench_codex_external_prepared_t0_replay_host_agent_probe2/combined_runs.jsonl \
+  --out-dir docs/results_task_family_ablation \
+  --out-name task_family_ablation_host_focus_v0_1
+```
 
 ## Table and Unit Definitions
 

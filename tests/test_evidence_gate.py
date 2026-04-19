@@ -66,6 +66,30 @@ class EvidenceGateTests(unittest.TestCase):
         self.assertTrue(gate["required_repeats_ok"])
         self.assertEqual(gate["max_repeats_observed"], 3)
 
+    def test_evaluate_gate_uses_summary_repeats_when_attempts_is_missing(self) -> None:
+        rows = [
+            {
+                "run_name": "t0_replay",
+                "repeats": 3,
+                "metrics": {
+                    "t0_replay_mean": 0.93,
+                    "fg_mean": 0.03,
+                    "br_mean": 0.0,
+                    "ie_mean": 0.001,
+                },
+            }
+        ]
+        gate = evidence_gate._evaluate_gate(
+            rows=rows,
+            attempts=3,
+            ceiling_gap=0.02,
+            protocol_shift=0.02,
+            ie_shift=0.0005,
+        )
+        self.assertEqual(gate["evidence_status"], "evidence")
+        self.assertTrue(gate["required_repeats_ok"])
+        self.assertEqual(gate["max_repeats_observed"], 3)
+
     def test_evaluate_gate_screening_when_repeats_short(self) -> None:
         rows = [
             {

@@ -1,0 +1,126 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-harbor-non-ceiling-repeat-bundle",
+  "benchmark_name": "skillsbench",
+  "repo_root": "../benchmarks/skillsbench",
+  "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "out_root": "../results/protocol_runs/skillsbench_harbor_non_ceiling_repeat_bundle",
+  "execution": {
+    "agent": "codex",
+    "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+    "model": "gpt-5.4",
+    "harbor_bin": "../scripts/harbor312",
+    "jobs_dir": "../results/real_jobs_protocol_repeat_bundle",
+    "path_type": "external",
+    "agent_version": "fixture-non-ceiling-repeat-v0",
+    "task_preparation": {
+      "skip_hydration_if_local": true
+    },
+    "seed": 0,
+    "retry_policy": {
+      "max_attempts": 1,
+      "retry_on_execution_statuses": [],
+      "retry_on_exception_types": [],
+      "retry_on_message_substrings": []
+    },
+    "extra_args": []
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay_seed0",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 0,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t1_replay_seed0",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 0,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t0_heldout_seed0",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 0,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    },
+    {
+      "run_name": "t1_heldout_seed0",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 0,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    },
+    {
+      "run_name": "t0_replay_seed1",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 1,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t1_replay_seed1",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 1,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t0_heldout_seed1",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 1,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    },
+    {
+      "run_name": "t1_heldout_seed1",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 1,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    },
+    {
+      "run_name": "t0_replay_seed2",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 2,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t1_replay_seed2",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": ["citation-check"],
+      "seed": 2,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/replay_only"
+    },
+    {
+      "run_name": "t0_heldout_seed2",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 2,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    },
+    {
+      "run_name": "t1_heldout_seed2",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": ["citation-check"],
+      "seed": 2,
+      "source_job_dir": "../tests/fixtures/skillsbench_harbor_job_sample_nested/heldout_only"
+    }
+  ]
+}

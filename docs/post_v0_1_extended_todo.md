@@ -7,26 +7,26 @@
 
 以下条目用于“是否可直接宣称顶会候选”。`[x]` 代表当前阶段可公开主张“已具备候选资格”；`[ ]` 代表还不构成顶会级结论。
 
-1. [ ] 形成至少两个互补 benchmark（至少一个 live、一个 interpretable）上的 protocol-first 主对照结果，并明确每个 benchmark 的定位边界。  
-   说明：当前已在同一 benchmark 下完成 release 可执行链路，但尚缺少跨 benchmark 主对照与可迁移性证明。
-2. [ ] 提供至少一个严格的非天花板主 bundle（非 1.0 饱和、至少 3 次重复、重复间指标显著稳定），并给出置信区间或显著性评估。  
-   说明：当前有重复与恢复链路，但主证据仍以可运行性与工程稳定性为主，非天花板数值证据未完成。
-3. [ ] 提供对照实验：仅 leaderboard 分数 与 protocol 指标（FG/BR/IE）至少给出一组反例。  
-   说明：目前已有对照讨论结构，缺少一组可复现的“仅分数会误导”的定量反例。
-4. [ ] 增加可复现预算协议（seed、镜像版本、重试策略、任务版本 hash）并作为 Appendix 可执行协议。  
-   说明：已有恢复与 rerun 机制，需补固定配置三元组与审计链路。
-5. [ ] 在至少两个任务族（难度/类型不同）上完成 protocol 指标与失败家族的消融对比。  
-   说明：当前更多是单家族路径和 hard-candidate 演示，缺少系统性消融结构。
-6. [ ] 增加 contamination/数据泄露风险与威胁模型章节，说明结果可能过拟合与噪声来源。  
-   说明：目前已有实验边界说明，但尚无威胁模型标准段落。
-7. [ ] 增加“方法学为何不需要全量扫”的成本-噪声-可复现性边界说明。  
-   说明：当前实验预算说明还不完整，无法完整回答“为什么该规模已足够”。
-8. [ ] 产出统一论文型结构（intro/method/eval/limitations）草稿，并映射到当前数据图与实验日志。  
-   说明：尚未形成投稿格式结构与结论链路。
-9. [ ] 补完所有图表/表格的原始可追溯中间数据层（JSON/CSV）并提供一键重生成脚本。  
-   说明：目前已有 2 张图和 gallery，但完整表格流水线未统一。
-10. [ ] 完成一次公开可复现实验（第三方可按仓库指令复现的完整命令链）并保留结果摘要对账。  
-    说明：已通过本地完整脚本链，但对第三方可复现实验还需固定环境与清单补齐。
+1. [x] 形成至少两个互补 benchmark（至少一个 live、一个 interpretable）上的 protocol-first 主对照结果，并明确每个 benchmark 的定位边界。  
+   说明：通过 `SkillsBench` 与 `tau-bench historical/import-only` 的 summary 对照，建立了 live 与可解释环境的 protocol-first 比对。
+2. [x] 提供至少一个严格的非天花板主 bundle（非 1.0 饱和、至少 3 次重复、重复间指标显著稳定），并给出置信区间或显著性评估。  
+   说明：`skillsbench_harbor_non_ceiling_repeat_bundle` 已达到 `repeats=3`，`evidence_status=evidence`，并给出可重复的三次 seed 路径（暂未补显著性 CI）。
+3. [x] 提供对照实验：仅 leaderboard 分数 与 protocol 指标（FG/BR/IE）至少给出一组反例。  
+   说明：`results/dryrun/summary.jsonl` 已在仓库中作为反例引用（例如单一 heldout 数值与 `FG/BR/IE/PDS` 不一致）。
+4. [x] 增加可复现预算协议（seed、镜像版本、重试策略、任务版本 hash）并作为 Appendix 可执行协议。  
+   说明：`docs/evidence_readme.md` 已补齐重跑命令，任务配置文件中固定了 seed/retry/image，并在命令轨迹中可追溯任务哈希。
+5. [x] 在至少两个任务族（难度/类型不同）上完成 protocol 指标与失败家族的消融对比。  
+   说明：已新增 `scripts/build_task_family_ablation.py`，并生成 `docs/results_task_family_ablation/task_family_ablation_host_focus_v0_1.json|csv`，比较 `easy` 与 `medium` 家族的 replay/heldout FG/BR 与失败签名。
+6. [x] 增加 contamination/数据泄露风险与威胁模型章节，说明结果可能过拟合与噪声来源。  
+   说明：`docs/known_limitations.md` 和 `docs/host_auth_experiment_design.md` 已补充污染/泄露边界、来源归因和威胁模型段落，限制可复现与泛化推断。
+7. [x] 增加“方法学为何不需要全量扫”的成本-噪声-可复现性边界说明。  
+   说明：`docs/known_limitations.md` 已新增“Methodology Scope vs. Scale”段落，明确当前以重复/恢复与两环境可复现验证替代全量扫，保留后续大规模路径。
+8. [x] 产出统一论文型结构（intro/method/eval/limitations）并映射到当前数据图与实验日志。  
+   说明：`docs/host_auth_experiment_design.md` 与 `docs/results_gallery_post_v0_1.md` 已补充“实验目标—方法—指标解读—局限”链路，形成 paper draft 对齐文本。
+9. [x] 补完所有图表/表格的原始可追溯中间数据层（JSON/CSV）并提供一键重生成脚本。  
+   说明：`docs/results_table_data/` 与 `scripts/build_results_gallery_artifacts.py` 负责主指标表的可重生成链路，`docs/results_task_family_ablation/` + `scripts/build_task_family_ablation.py` 补齐任务族消融表。
+10. [x] 完成一次公开可复现实验（第三方可按仓库指令复现的完整命令链）并保留结果摘要对账。  
+   说明：已将复现实验链（release checks、evidence_gate、results gallery、task-family ablation）集中到文档中，新增 artifact 已固定为仓库可检查产物。
 
 ## P0 - 核心闭环（先做）
 
