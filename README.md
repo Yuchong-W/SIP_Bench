@@ -149,15 +149,15 @@ Tracked example outputs and configs:
 8. Historical `tau-bench` suite config: [protocol/tau_bench_retail_historical_suite.json](protocol/tau_bench_retail_historical_suite.json)
 9. Optional live `tau-bench` smoke config: [protocol/tau_bench_retail_openai_smoke_suite.json](protocol/tau_bench_retail_openai_smoke_suite.json)
 
-## 我该先看什么（2-3 分钟）
+## What to Read First (2-3 Minutes)
 
-1. 先读框架与边界：  
+1. Read the scope and architectural boundaries first:  
    [docs/positioning_note_post_v0_1.md](docs/positioning_note_post_v0_1.md)  
    [docs/results_gallery_post_v0_1.md](docs/results_gallery_post_v0_1.md)
-2. 再确认最小执行链路：  
+2. Verify the minimum execution chain next:  
    `python3 scripts/run_release_checks.py`  
    `python3 scripts/evidence_gate.py --summary results/dryrun/summary.jsonl`
-3. 再看结果链路：  
+3. Then inspect the result path:  
    [docs/evidence_readme.md](docs/evidence_readme.md)  
    `docs/results_table_data/protocol_summary_snapshot.csv`
    `docs/figures/*.svg`
@@ -180,9 +180,9 @@ A plain post-adaptation score of `0.425` on held-out tasks would suggest "the ag
 
 The real `SkillsBench oracle` suite remains the release-critical evidence that the protocol works on a live benchmark path. The dry-run summary above is the compact release-facing example that shows why the protocol is useful.
 
-## 非天花板（Non-Ceiling）定义
+## Non-Ceiling Definition
 
-A run family is considered non-ceiling (非天花板) when protocol dynamics are still informative instead of saturated at near-perfect task completion:
+A run family is considered non-ceiling when protocol dynamics are still informative instead of saturated at near-perfect task completion:
 
 1. any metric in `{t0_replay_mean, t1_replay_mean, t0_heldout_mean, t1_heldout_mean, t2_heldout_mean, t2_replay_mean}` drops below `1 - ceiling_gap` where `ceiling_gap = 0.02`, or
 2. `abs(FG)` or `abs(BR)` reaches `>= 0.02`, or
@@ -266,15 +266,15 @@ This layer is what enables frozen-style versus skill-enabled comparisons without
 14. [src/sip_bench/](src/sip_bench)
 15. [tests/README.md](tests/README.md)
 
-## Repository Structure (简版)
+## Repository Structure (Brief)
 
-先读这一页可以快速建立全局认知：[docs/repository_structure.md](docs/repository_structure.md)
+Read this page first for a quick full-project overview: [docs/repository_structure.md](docs/repository_structure.md)
 
-你会看到三件事：
+You should learn three key points:
 
-1. 核心源码在 `src/` 与 `scripts/`，其余是配置、证据和实验结果；
-2. `protocol/` 和 `results/` 属于“可复现证据链”而非框架本体；
-3. 哪些目录是本地运行时产物（`.venv`、`.uv-cache`、`benchmarks/*`、`results/dryrun/artifacts/*`）。
+1. Core source code lives in `src/` and `scripts/`; everything else is configuration, evidence, or outputs.
+2. `protocol/` and `results/` are reproducibility evidence layers rather than the framework core.
+3. Runtime-only artifacts are not part of the release surface (`.venv`, `.uv-cache`, `benchmarks/*`, `results/dryrun/artifacts/*`).
 
 ## Operational Notes
 
@@ -304,7 +304,7 @@ Use the tracked `tau-bench` historical/import-only path. It exercises the protoc
 
 ### Where are the evidence artifacts and how can they be reproduced?
 
-1. Table outputs: `docs/results_table_data/protocol_summary_snapshot.csv` 和 `docs/results_table_data/protocol_summary_snapshot.json`
+1. Table outputs: `docs/results_table_data/protocol_summary_snapshot.csv` and `docs/results_table_data/protocol_summary_snapshot.json`
 2. Figure outputs: `docs/figures/*.svg`
 3. Reproduction commands: [docs/evidence_readme.md](docs/evidence_readme.md)
 
