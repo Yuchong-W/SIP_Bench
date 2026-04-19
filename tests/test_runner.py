@@ -18,6 +18,7 @@ from sip_bench.runner import (
     build_skillsbench_plan,
     execute_command_plan,
     hydrate_skillsbench_checkout,
+    import_mock_results,
     import_skillsbench_job,
     import_skillsbench_results,
     import_tau_results,
@@ -189,6 +190,28 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(written[0]["phase"], "T1")
             self.assertEqual(written[0]["path_type"], "external")
             self.assertEqual(written[0]["benchmark_split"], "heldout")
+
+    def test_import_mock_results_writes_runs_jsonl(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "mock_runs.jsonl"
+            runs = import_mock_results(
+                source=ROOT / "tests" / "fixtures" / "mock_results_sample.json",
+                out=output_path,
+                benchmark_split="replay",
+                phase="T0",
+                path_type="oracle",
+                seed=3,
+                model_name="gpt-5-mini",
+                agent_name="mock-import",
+                agent_version="mock-import",
+            )
+            self.assertEqual(len(runs), 4)
+            written = load_jsonl(output_path)
+            self.assertEqual(len(written), 4)
+            self.assertEqual(written[0]["benchmark_name"], "mock-bench")
+            self.assertEqual(written[1]["task_id"], "mock-qa")
+            self.assertEqual(written[1]["attempt_index"], 1)
+            self.assertEqual(written[1]["path_type"], "external")
 
     def test_import_skillsbench_results_writes_runs_jsonl(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

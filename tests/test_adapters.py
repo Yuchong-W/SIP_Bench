@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import sys
 import unittest
 from pathlib import Path
@@ -9,7 +10,8 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from sip_bench.adapters import SkillsBenchAdapter, TauBenchAdapter
+import sip_bench.adapters as adapters
+from sip_bench.adapters import BenchmarkAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
 
 
 class SkillsBenchAdapterTests(unittest.TestCase):
@@ -173,5 +175,90 @@ class TauBenchAdapterTests(unittest.TestCase):
         self.assertEqual(runs[1]["metadata"]["traj_length"], 1)
 
 
+class MockBenchAdapterTests(unittest.TestCase):
+    def test_discover_tasks_supports_dict_and_list_inputs(self) -> None:
+        adapter = MockBenchAdapter()
+        tasks = adapter.discover_tasks(ROOT / "tests" / "fixtures" / "mock_tasks_sample.json")
+        self.assertEqual(len(tasks), 3)
+        self.assertEqual(tasks[0].task_id, "mock-qa")
+
+    def test_build_run_command_includes_import_path(self) -> None:
+        adapter = MockBenchAdapter()
+        task = adapter.discover_tasks(ROOT / "tests" / "fixtures" / "mock_tasks_sample.json")[0]
+        command = adapter.build_run_command(
+            repo_root=".",
+            task=task,
+            model="gpt-5.4",
+            python_bin="python3",
+            agent_import_path="mock.module:Agent",
+            extra_args=["--max-steps", "4"],
+        )
+        self.assertEqual(command[:2], ["python3", "-c"])
+        self.assertIn("mock-bench task=mock-qa model=gpt-5.4", command[2])
+        self.assertIn("--agent-import-path", command)
+        self.assertIn("mock.module:Agent", command)
+
+    def test_parse_result_file_filters_and_assigns_attempt_indices(self) -> None:
+        adapter = MockBenchAdapter()
+        runs = adapter.parse_result_file(
+            ROOT / "tests" / "fixtures" / "mock_results_sample.json",
+            benchmark_split="replay",
+            phase="T0",
+            seed=17,
+            path_type="oracle",
+            task_ids={"mock-qa"},
+            model_name="fixture-model",
+            agent_name="fixture-agent",
+        )
+        self.assertEqual(len(runs), 2)
+        self.assertEqual(runs[0]["task_id"], "mock-qa")
+        self.assertEqual(runs[0]["attempt_index"], 0)
+        self.assertEqual(runs[1]["attempt_index"], 1)
+        self.assertEqual(runs[0]["model_name"], "fixture-model")
+        self.assertEqual(runs[1]["path_type"], "external")
+        self.assertFalse(runs[1]["success"])
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
+class AdapterAgnosticContractTests(unittest.TestCase):
+    def test_adapters_expose_protocol_contract_methods(self) -> None:
+        adapter_names = [
+            name
+            for name in adapters.__all__
+            if name.endswith("Adapter") and name != "BenchmarkAdapter"
+        ]
+
+        for name in adapter_names:
+            adapter_cls = getattr(adapters, name)
+            self.assertTrue(inspect.isclass(adapter_cls), f"{name} should be a class")
+            self.assertTrue(
+                issubclass(adapter_cls, BenchmarkAdapter),
+                f"{name} should inherit BenchmarkAdapter",
+            )
+
+            adapter = adapter_cls()
+            self.assertTrue(hasattr(adapter, "discover_tasks"))
+            self.assertTrue(callable(getattr(adapter, "discover_tasks")))
+            self.assertTrue(hasattr(adapter, "build_manifest"))
+            self.assertTrue(callable(getattr(adapter, "build_manifest")))
+            self.assertTrue(hasattr(adapter, "validate_manifest"))
+
+            has_build_plan = hasattr(adapter, "build_harbor_command") and callable(getattr(adapter, "build_harbor_command"))
+            has_build_run = hasattr(adapter, "build_run_command") and callable(getattr(adapter, "build_run_command"))
+            self.assertTrue(
+                has_build_plan or has_build_run,
+                f"{name} must expose build_harbor_command or build_run_command",
+            )
+
+            has_importer = (
+                hasattr(adapter, "parse_result_file") and callable(getattr(adapter, "parse_result_file"))
+                or hasattr(adapter, "parse_harbor_job_dir")
+                and callable(getattr(adapter, "parse_harbor_job_dir"))
+            )
+            self.assertTrue(
+                has_importer,
+                f"{name} must expose parse_result_file or parse_harbor_job_dir",
+            )

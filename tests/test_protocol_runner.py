@@ -34,9 +34,11 @@ from sip_bench.protocol_runner import (
     _infer_failure_family,
     _resolve_command_value,
     _strip_skills_from_dockerfile_text,
+    build_mock_bench_explicit_plan,
     build_skillsbench_explicit_plan,
     build_tau_explicit_plan,
     load_protocol_suite_config,
+    run_mock_bench_suite,
     run_skillsbench_suite,
     run_tau_bench_suite,
 )
@@ -315,6 +317,136 @@ class ProtocolRunnerTests(unittest.TestCase):
             "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
         )
         self.assertIn("--agent-import-path", plan["commands"]["replay"][0])
+
+    def test_build_mock_bench_explicit_plan_preserves_split_assignment(self) -> None:
+        plan = build_mock_bench_explicit_plan(
+            task_source=ROOT / "tests" / "fixtures" / "mock_tasks_sample.json",
+            repo_root=".",
+            split_task_ids={
+                "replay": ["mock-qa"],
+                "adapt": [],
+                "heldout": ["mock-retrieve"],
+                "drift": ["mock-code"],
+            },
+            agent="mock-agent",
+            model="gpt-5.4",
+            python_bin="python3",
+            extra_args=["--max-steps", "3"],
+        )
+        self.assertEqual(plan["manifest"]["counts"]["replay"], 1)
+        self.assertEqual(plan["manifest"]["counts"]["heldout"], 1)
+        self.assertEqual(plan["manifest"]["counts"]["drift"], 1)
+        self.assertEqual(plan["manifest"]["replay"][0]["task_id"], "mock-qa")
+        self.assertEqual(plan["manifest"]["heldout"][0]["task_id"], "mock-retrieve")
+        self.assertEqual(plan["manifest"]["drift"][0]["task_id"], "mock-code")
+        self.assertIn("--max-steps", plan["commands"]["replay"][0])
+        self.assertEqual(plan["execution"]["agent"], "mock-agent")
+        self.assertEqual(plan["execution"]["model"], "gpt-5.4")
+
+    def test_run_mock_bench_suite_import_only_aggregates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "mock-fixture-suite",
+                "benchmark_name": "mock-bench",
+                "repo_root": ".",
+                "registry_path": str((ROOT / "tests" / "fixtures" / "mock_tasks_sample.json").resolve()),
+                "out_root": str(tmp_path / "mock_suite_out"),
+                "execution": {
+                    "agent": "mock-agent",
+                    "path_type": "oracle",
+                    "agent_version": "mock-suite",
+                    "seed": 9,
+                    "extra_args": [],
+                },
+                "runs": [
+                    {
+                        "run_name": "t0_replay",
+                        "phase": "T0",
+                        "benchmark_split": "replay",
+                        "task_ids": ["mock-code"],
+                        "source_result_file": str((ROOT / "tests" / "fixtures" / "mock_results_sample.json").resolve()),
+                    },
+                    {
+                        "run_name": "t1_replay",
+                        "phase": "T1",
+                        "benchmark_split": "replay",
+                        "task_ids": ["mock-code"],
+                        "source_result_file": str((ROOT / "tests" / "fixtures" / "mock_results_sample.json").resolve()),
+                    },
+                    {
+                        "run_name": "t1_heldout",
+                        "phase": "T1",
+                        "benchmark_split": "heldout",
+                        "task_ids": ["mock-retrieve"],
+                        "source_result_file": str((ROOT / "tests" / "fixtures" / "mock_results_sample.json").resolve()),
+                    },
+                    {
+                        "run_name": "t0_heldout",
+                        "phase": "T0",
+                        "benchmark_split": "heldout",
+                        "task_ids": ["mock-retrieve"],
+                        "source_result_file": str((ROOT / "tests" / "fixtures" / "mock_results_sample.json").resolve()),
+                    },
+                ],
+            }
+            config_path = tmp_path / "mock_fixture_suite.json"
+            config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+
+            report = run_mock_bench_suite(
+                config_path=config_path,
+                execute_mode="subprocess",
+                aggregate=True,
+            )
+            self.assertTrue(report["runs_validation"]["valid"])
+            self.assertTrue(report["summary"]["generated"])
+            self.assertIn("evidence", report)
+            self.assertEqual(report["benchmark_name"], "mock-bench")
+            self.assertEqual(report["run_count"], 4)
+            self.assertEqual(len(load_jsonl(Path(report["combined_runs_path"]))), 4)
+            run_name_map = {run["run_name"]: run for run in report["runs"]}
+            self.assertIn("t0_replay", run_name_map)
+            self.assertIn("t1_heldout", run_name_map)
+            self.assertEqual(run_name_map["t0_replay"]["execution_mode"], "import-only")
+            self.assertEqual(run_name_map["t0_replay"]["imported_records"], 1)
+            self.assertEqual(run_name_map["t1_replay"]["imported_records"], 1)
+            self.assertEqual(run_name_map["t1_heldout"]["imported_records"], 1)
+            self.assertEqual(run_name_map["t0_heldout"]["imported_records"], 1)
+
+    def test_load_protocol_suite_config_rejects_invalid_mock_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "bad_mock_suite.json"
+            config_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "0.1.0",
+                        "suite_name": "bad-mock",
+                        "benchmark_name": "mock-bench",
+                        "repo_root": "benchmarks/mock",
+                        "out_root": "results/bad",
+                        "execution": {
+                            "path_type": "oracle",
+                            "seed": 1,
+                        },
+                        "runs": [
+                            {
+                                "run_name": "t0_replay",
+                                "phase": "T0",
+                                "benchmark_split": "replay",
+                                "task_ids": ["mock-qa"],
+                                "source_result_file": "tests/fixtures/mock_results_sample.json",
+                            }
+                        ],
+                    },
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                load_protocol_suite_config(config_path)
+
 
     def test_run_skillsbench_suite_import_only_aggregates(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
