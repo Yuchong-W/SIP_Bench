@@ -1,0 +1,30 @@
+[
+  {
+    "source": "results/protocol_runs/skillsbench_host_auth_evidence_replay_probe/summary.jsonl",
+    "suite_name": "skillsbench::be06b49::external::gpt-5.4::codex-local-auth::harbor312-codex-host-auth-v0",
+    "benchmark_name": "skillsbench",
+    "path_type": "external",
+    "agent_version": "harbor312-codex-host-auth-v0",
+    "model_name": "gpt-5.4",
+    "generated_at": "2026-04-19T11:09:55Z",
+    "repeats": 1,
+    "sample_sizes": "{\"adapt\": 0, \"drift\": 0, \"heldout\": 2, \"replay\": 2}",
+    "t0_replay_mean": 0.3335,
+    "t1_replay_mean": 1.0,
+    "t2_replay_mean": "n/a",
+    "t0_heldout_mean": 0.5,
+    "t1_heldout_mean": 1.0,
+    "t2_heldout_mean": 0.0,
+    "fg_mean": 0.5,
+    "br_mean": 0.6665,
+    "ie_mean": 0.0,
+    "pds_mean": -1.0,
+    "nis_mean": 0.5,
+    "br_ratio_mean": 2.998501,
+    "token_total_mean": 2040001.0,
+    "tool_calls_mean": 0.0,
+    "wall_clock_seconds_mean": 1333.325177,
+    "cost_usd_mean": 0.0,
+    "human_interventions_mean": 0.0
+  }
+]

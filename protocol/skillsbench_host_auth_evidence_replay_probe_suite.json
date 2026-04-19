@@ -1,0 +1,105 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "skillsbench-host-auth-evidence-replay-probe",
+  "benchmark_name": "skillsbench",
+  "repo_root": "../benchmarks/skillsbench",
+  "registry_path": "../benchmarks/skillsbench/website/src/data/tasks-registry.json",
+  "out_root": "../results/protocol_runs/skillsbench_host_auth_evidence_replay_probe",
+  "execution": {
+    "agent": "codex",
+    "agent_import_path": "sip_bench.harbor_codex_host_agent:CodexLocalAuthAgent",
+    "model": "gpt-5.4",
+    "harbor_bin": "../scripts/harbor312",
+    "jobs_dir": "../results/real_jobs_protocol_host_auth_evidence_replay_probe",
+    "path_type": "external",
+    "agent_version": "harbor312-codex-host-auth-v0",
+    "seed": 0,
+    "extra_args": [
+      "--artifact",
+      "/logs/verifier"
+    ]
+  },
+  "runs": [
+    {
+      "run_name": "t0_replay_dialogue",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_t0_replay_host_agent_probe2/skillsbench-codex-external-prepared-t0-replay-host-agent-probe2-t0_replay"
+    },
+    {
+      "run_name": "t0_replay_citation",
+      "phase": "T0",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "citation-check"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02"
+    },
+    {
+      "run_name": "t1_replay_dialogue",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "dialogue-parser"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_bundle/skillsbench-codex-external-prepared-host-auth-bundle-t1_replay-attempt01"
+    },
+    {
+      "run_name": "t1_replay_citation",
+      "phase": "T1",
+      "benchmark_split": "replay",
+      "task_ids": [
+        "citation-check"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01"
+    },
+    {
+      "run_name": "t0_heldout_offer",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "offer-letter-generator"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_bundle/skillsbench-codex-external-prepared-host-auth-bundle-t0_heldout-attempt01"
+    },
+    {
+      "run_name": "t0_heldout_citation",
+      "phase": "T0",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "citation-check"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t0_replay-attempt02"
+    },
+    {
+      "run_name": "t1_heldout_offer",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "offer-letter-generator"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_bundle/skillsbench-codex-external-prepared-host-auth-bundle-t1_heldout-attempt01"
+    },
+    {
+      "run_name": "t1_heldout_citation",
+      "phase": "T1",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "citation-check"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-t1_replay-attempt01"
+    },
+    {
+      "run_name": "t2_heldout_citation",
+      "phase": "T2",
+      "benchmark_split": "heldout",
+      "task_ids": [
+        "citation-check"
+      ],
+      "source_job_dir": "../results/real_jobs_protocol_prepared_host_auth_citation_replay_probe_runtime_hardened/skillsbench-codex-external-prepared-host-auth-citation-replay-probe-runtime-hardened-t0_replay-attempt01-rerun02"
+    }
+  ]
+}

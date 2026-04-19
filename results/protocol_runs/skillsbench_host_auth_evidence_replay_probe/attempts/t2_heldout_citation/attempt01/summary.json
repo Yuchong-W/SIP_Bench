@@ -1,0 +1,29 @@
+{
+  "records": 1,
+  "success_count": 0,
+  "failure_count": 1,
+  "score_count": 1,
+  "score_mean": 0.0,
+  "score_min": 0.0,
+  "score_max": 0.0,
+  "has_non_ceiling": true,
+  "attempt_number": 1,
+  "attempt_label": "attempt01",
+  "task_name": "t2_heldout_citation",
+  "summary_path": "/home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_host_auth_evidence_replay_probe/attempts/t2_heldout_citation/attempt01/summary.json",
+  "infra_type": "infrastructure",
+  "failure_signatures": [
+    {
+      "family": "docker",
+      "count": 1,
+      "examples": [
+        {
+          "run_id": "skillsbench::harbor::heldout::T2::external::0::codex-local-auth::gpt-5.4::citation-check::0",
+          "task_id": "citation-check",
+          "exception_type": "RuntimeError",
+          "exception_message": "Docker compose command failed for environment citation-check. Command: docker compose -p citation-check__j4gwop7 --project-directory /home/yuchong/Protocal_Bench/results/protocol_runs/skillsbench_codex_external_prepared_host_auth_citation_replay_probe_runtime_hardened/prepared/t0_replay/tasks/citation-check/environment -f /home/yuchong/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/docker/docker-compose-base.yaml -f /home/yuchong/.local/share/uv/tools/harbor/lib/python3.12/site-packages/harbor/environments/docker/docker-compose-build.yaml build. Return code: 1. Stdout:  Image hb__citation-check Building \n Image hb__citation-check Building \nSending build context to Docker daemon  5.662kB\r\r\nStep 1/12 : FROM python:3.12.8-slim\n ---> 2199a62885a1\nStep 2/12 : WORKDIR /root\n ---> Using cache\n ---> 9937d56a07d7\nStep 3/12 : RUN pip install --no-cache-dir     requests==2.32.3     bibtexparser==1.4.2\n ---> Using cache\n ---> 60392751f479\nStep 4/12 : COPY test.bib /root/test.bib\n ---> Using cache\n ---> f542e8160157\nStep 5/12 : COPY skills /root/.claude/skills\nCOPY failed: file not found in build context or excluded by .dockerignore: stat skills: file does not exist\n. Stderr: None. "
+        }
+      ]
+    }
+  ]
+}
