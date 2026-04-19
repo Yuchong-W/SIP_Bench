@@ -1,0 +1,23 @@
+[
+  {
+    "task_id": "mock-qa",
+    "source_path": "tasks/mock-qa",
+    "title": "Mock QA",
+    "category": "qa",
+    "difficulty": "easy"
+  },
+  {
+    "task_id": "mock-retrieve",
+    "source_path": "tasks/mock-retrieve",
+    "title": "Mock Retrieve",
+    "category": "retrieval",
+    "difficulty": "medium"
+  },
+  {
+    "task_id": "mock-code",
+    "source_path": "tasks/mock-code",
+    "title": "Mock Code",
+    "category": "coding",
+    "difficulty": "hard"
+  }
+]

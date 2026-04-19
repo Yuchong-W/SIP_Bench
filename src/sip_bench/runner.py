@@ -10,7 +10,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 
-from sip_bench.adapters import SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.adapters import MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
 from sip_bench.metrics import write_jsonl
 
 
@@ -212,6 +212,37 @@ def import_tau_results(
         agent_name=agent_name,
         agent_version=agent_version,
         seed=seed,
+        benchmark_version=benchmark_version,
+        task_ids=task_ids,
+    )
+    write_jsonl(out, runs)
+    return runs
+
+
+def import_mock_results(
+    *,
+    source: str | Path,
+    out: str | Path,
+    benchmark_split: str,
+    phase: str,
+    path_type: str,
+    seed: int,
+    model_name: str | None = None,
+    agent_name: str | None = None,
+    agent_version: str = "mock-bench-import",
+    benchmark_version: str = "mock-bench-upstream",
+    task_ids: set[str] | set[int] | None = None,
+) -> list[dict[str, Any]]:
+    adapter = MockBenchAdapter()
+    runs = adapter.parse_result_file(
+        source,
+        benchmark_split=benchmark_split,
+        phase=phase,
+        path_type=path_type,
+        seed=seed,
+        model_name=model_name,
+        agent_name=agent_name,
+        agent_version=agent_version,
         benchmark_version=benchmark_version,
         task_ids=task_ids,
     )

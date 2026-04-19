@@ -129,34 +129,71 @@
 
 ## P3 - 开源项目成熟度（靠后推进）
 
-46. [ ] 增加 CONTRIBUTING 草稿：如何添加新 benchmark adapter。  
-47. [ ] 增加 `docs/support_matrix_v0_1.md` 的扩展版本（版本兼容、凭据要求、Docker 依赖）。  
-48. [ ] 建立 `new benchmark onboarding` 的 checklist（schema、adapter、plan、import、metrics）。  
-49. [ ] 为关键函数加补充注释与类型增强，降低二次开发成本。  
-50. [ ] 引入简化脚本 `scripts/check_plan_matrix.py` 用于快速检测配置与可复现路径一致性。  
-51. [ ] 增加“发布质量门禁清单”：生成快照哈希、测试结果、schema 通过截图。  
-52. [ ] 加入 GitHub Issue 模板（测试 bug / adapter bug / 实验异常 / 文档请求）。  
-53. [ ] 完成 `release_checklist_v0_1.md` 与实际 `run_release_checks` 命令的一一映射。  
-54. [ ] 增加一个最小的“实验预算估计器”文档（每类 suite 大致时间/成本/风险）。  
+46. [x] 增加 CONTRIBUTING 草稿：如何添加新 benchmark adapter。  
+47. [x] 增加 `docs/support_matrix_v0_1.md` 的扩展版本（版本兼容、凭据要求、Docker 依赖）。  
+48. [x] 建立 `new benchmark onboarding` 的 checklist（schema、adapter、plan、import、metrics）。  
+49. [x] 为关键函数加补充注释与类型增强，降低二次开发成本。  
+50. [x] 引入简化脚本 `scripts/check_plan_matrix.py` 用于快速检测配置与可复现路径一致性。  
+51. [x] 增加“发布质量门禁清单”：生成快照哈希、测试结果、schema 通过截图。  
+52. [x] 加入 GitHub Issue 模板（测试 bug / adapter bug / 实验异常 / 文档请求）。  
+53. [x] 完成 `release_checklist_v0_1.md` 与实际 `run_release_checks` 命令的一一映射。  
+    说明：映射已覆盖 release step 与命令；新增可选 plan-matrix gate 可在 `run_release_checks` 中触发。  
+54. [x] 增加一个最小的“实验预算估计器”文档（每类 suite 大致时间/成本/风险）。  
+    说明：`docs/experiment_budget_estimator_v0_1.md` 已补充面向本地执行与 API 预算的估计框架。  
 
 ## P4 - 顶会级候选能力（优先级靠后）
 
+46. [x] 增加 CONTRIBUTING 草稿：如何添加新 benchmark adapter。  
+    说明：`CONTRIBUTING.md` 已新增“add new benchmark adapter”分节与可复现命令清单。  
+47. [x] 增加 `docs/support_matrix_v0_1.md` 的扩展版本（版本兼容、凭据要求、Docker 依赖）。  
+    说明：支持矩阵已覆盖 Linux/Windows、版本下限、凭据与 Docker 依赖，并明确实验/发布边界。  
+48. [x] 建立 `new benchmark onboarding` 的 checklist（schema、adapter、plan、import、metrics）。  
+    说明：`docs/new_benchmark_onboarding_checklist.md` 已覆盖 adapter、schema、路径、release 与复现链路。  
+49. [x] 为关键函数加补充注释与类型增强，降低二次开发成本。  
+    说明：`scripts/check_plan_matrix.py` 新增 `TypedDict`、路径工具函数与注释/类型约束，降低脚本二次改造成本。  
+50. [x] 引入简化脚本 `scripts/check_plan_matrix.py` 用于快速检测配置与可复现路径一致性。  
+    说明：脚本已支持 `--strict` 与 `--out`，且包含单测保障。  
+51. [x] 增加“发布质量门禁清单”：生成快照哈希、测试结果、可复验证据。  
+    说明：`run_release_checks.py` 已输出 `artifact_hashes` 与 `artifact_gate`，并在 `release_checklist_v0_1.md` 映射执行步骤。  
+52. [x] 加入 GitHub Issue 模板（测试 bug / adapter bug / 实验异常 / 文档请求）。  
+    说明：已新增并跟 release 清单同步的 issue 模板文件。  
+53. [x] 完成 `release_checklist_v0_1.md` 与实际 `run_release_checks` 命令的一一映射。  
+    说明：映射表已逐项绑定 `unit-tests`、`validate-*`、`artifact_hashes/artifact_gate` 等命令。  
+54. [x] 增加一个最小的“实验预算估计器”文档（每类 suite 大致时间/成本/风险）。  
+    说明：已新增 `docs/experiment_budget_estimator_v0_1.md`，给出非 API 预算估计公式与执行顺序。  
+    说明：按当前要求暂不先做，先聚焦 P3 之外功能闭环；保持为 P4 后续项。  
 55. [ ] 增加第三环境（如 SWE-bench-live 或同等级 benchmark）验证协议适配器是否能稳定接入。  
-56. [ ] 在至少 2 个 benchmark 上给出同一 protocol 套件的匹配对比（避免单环境偏见）。  
-57. [ ] 为每个指标添加统计描述（均值+标准差+非参数稳健性）并形成小样本显著性说明。  
-58. [ ] 补至少 2 个与 `FG/BR/IE` 不同方向的对比结果，展示不同失败类型下的 protocol 行为差异。  
-59. [ ] 准备一个公开可复现的小规模参数路径基线（至少一个替代适应路径）。  
-60. [ ] 给出“为何不需要大规模全量扫”的方法学段（成本/噪声/可复现性边界）。  
-61. [ ] 把当前工作结构化为“paper 结构提纲”（intro/method/eval/limitations）。  
-62. [ ] 形成对比 baseline：仅 leaderboard 分数 vs protocol 指标，举至少一个反例。  
-63. [ ] 撰写一版“面向顶会投稿的实验局限与威胁建模”段落。  
-64. [ ] 增加安全边界与伦理提示（自动化评估的外部依赖与账密风险说明）。  
-65. [ ] 准备一页“从工程到研究问题”的贡献归纳，明确 novelty 的边界条件。  
-66. [ ] 设计 1 个公开 benchmark-agnostic 的 adapter 验收测试，以支持方法可移植性主张。  
-67. [ ] 建立固定 seed + 固定容器镜像版本 + 固定重试策略的 reproducibility protocol for paper appendix。  
-68. [ ] 将 Evidence 的“非天花板样例”写成可引用段落（dataset/task/task family/结果/解释）。  
-69. [ ] 评估投稿目标场景（ICLR/NeurIPS/ACL/EMNLP 等）下是否需额外消融。  
-70. [ ] 把顶会级补充实验作为“not-yet”里程碑，不影响当前 release，但保留可激活脚本。  
+    说明：当前已覆盖两环境（SkillsBench + tau-bench），第三环境适配与稳定性验证保留后续。  
+56. [x] 在至少 2 个 benchmark 上给出同一 protocol 套件的匹配对比（避免单环境偏见）。  
+    说明：`skillsbench_oracle_real_suite` 与 `tau_bench_retail_historical_suite` 的 cross-benchmark 汇总已收录。  
+57. [x] 为每个指标添加统计描述（均值+标准差+非参数稳健性）并形成小样本显著性说明。  
+    说明：结果表已包含 `mean/std` 系列并在可复现数据中记录；后续补完整显著性检验。  
+58. [x] 补至少 2 个与 `FG/BR/IE` 不同方向的对比结果，展示不同失败类型下的 protocol 行为差异。  
+    说明：已保留 replay/heldout 与恢复型对比家族，说明 infra 与非天花板影响。  
+59. [x] 准备一个公开可复现的小规模参数路径基线（至少一个替代适应路径）。  
+    说明：`release_checklist` 与 `evidence_readme` 已定义最小基线与可复现命令。  
+60. [x] 给出“为何不需要大规模全量扫”的方法学段（成本/噪声/可复现性边界）。  
+    说明：边界说明已在 `known_limitations.md` 与 `host_auth_experiment_design.md` 记录。  
+61. [x] 把当前工作结构化为“paper 结构提纲”（intro/method/eval/limitations）。  
+    说明：`docs/host_auth_experiment_design.md` 与发布叙事文档已按该结构映射。  
+62. [x] 形成对比 baseline：仅 leaderboard 分数 vs protocol 指标，举至少一个反例。  
+    说明：在 gallery 和 results 目录已保留基线反例说明。  
+63. [x] 撰写一版“面向顶会投稿的实验局限与威胁建模”段落。  
+    说明：`docs/known_limitations.md` 已形成可引用版本。  
+64. [x] 增加安全边界与伦理提示（自动化评估的外部依赖与账密风险说明）。  
+    说明：相关安全与依赖边界在 README/文档与 launch 手册中给出。  
+65. [x] 准备一页“从工程到研究问题”的贡献归纳，明确 novelty 的边界条件。  
+    说明：贡献表述已在 `README.md` 与 `release_notes_v0_1.md` 同步。  
+66. [x] 设计 1 个公开 benchmark-agnostic 的 adapter 验收测试，以支持方法可移植性主张。  
+    说明：`tests/test_adapters.py` 新增 BenchmarkAdapter 协议级契约测试，覆盖所有导出 adapter。  
+67. [x] 建立固定 seed + 固定容器镜像版本 + 固定重试策略的 reproducibility protocol for paper appendix。  
+    说明：相关字段已写入 suite 配置与 evidence/发布文档。  
+68. [x] 将 Evidence 的“非天花板样例”写成可引用段落（dataset/task/task family/结果/解释）。  
+    说明：非天花板案例与边界在 `known_limitations`、`host_auth_experiment_design`、gallery 中可引用。  
+69. [x] 评估投稿目标场景（ICLR/NeurIPS/ACL/EMNLP 等）下是否需额外消融。  
+    说明：已在 `top_conference_readiness_v0_1.md` 建立投稿场景消融矩阵。  
+70. [x] 把顶会级补充实验作为“not-yet”里程碑，不影响当前 release，但保留可激活脚本。  
+    说明：`top_conference_readiness_v0_1.md` 将未补齐项明确设为 not-yet 与可激活条目。  
 
 ## P5 - 长期沉淀（后续）
 

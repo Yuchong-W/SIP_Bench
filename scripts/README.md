@@ -33,6 +33,9 @@ Windows launcher for `tau-bench` on `py -3.11`. It prepends the repo-local depen
 10. `run_release_checks.py`
 Run the release-facing local validation path used by the public quickstart and CI. It exercises unit tests, dry-run aggregation, SkillsBench Harbor job import, and schema validation for tracked artifacts.
 
+11. `check_plan_matrix.py`
+Validate protocol suite config-to-path consistency, with optional strict mode for reproducibility completeness checks.
+
 Release-facing guidance:
 
 1. `Linux-first` is the current public support target.
@@ -78,12 +81,20 @@ Render a compact markdown table from summaries.
 2. `run_regression`
 Execute the golden-task suite after adapter or metric changes.
 
+## Quick Checks Added in v0.1.1
+
+1. `python3 scripts/check_plan_matrix.py --protocol-dir protocol`
+2. `python3 scripts/run_release_checks.py --report /tmp/sip_release_check.json`
+3. `python3 scripts/run_release_checks.py --report /tmp/sip_release_check.json --no-hash`
+
 ## First Commands
 
 ```bash
 python3 scripts/run_release_checks.py
 python3 scripts/run_protocol.py run-skillsbench-suite --config protocol/skillsbench_oracle_real_suite.json --mode subprocess --run-name t0_replay
 python3 scripts/evidence_gate.py --summary results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl
+python3 scripts/check_plan_matrix.py --strict --config protocol/skillsbench_oracle_real_suite.json
+python3 scripts/check_plan_matrix.py --strict --config protocol/tau_bench_retail_historical_suite.json
 python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out /tmp/sip_summary.jsonl
 python3 scripts/smoke_adapters.py
 python3 scripts/run_eval.py import-skillsbench-job --job-dir tests/fixtures/skillsbench_harbor_job_sample --out /tmp/skillsbench_job_runs.jsonl --benchmark-split smoke --phase T0 --path-type oracle --seed 21 --registry tests/fixtures/skillsbench_registry_sample.json --agent-version fixture-import --benchmark-version skillsbench-harbor-fixture

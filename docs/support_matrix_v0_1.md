@@ -1,39 +1,47 @@
-# SIP-Bench v0.1 Support Matrix
+# SIP-Bench v0.1 Support Matrix (Extended)
 
-This matrix describes the intended public support posture for `v0.1.0`.
+## High-Level Support Posture
 
-## Platform Support
+This matrix is scoped to the public `v0.1.0` release target:
 
-| Area | Linux | Windows | Notes |
-| --- | --- | --- | --- |
-| Unit tests | Supported | Best effort | `Linux-first` is the official support target |
-| Dry-run CLI paths | Supported | Best effort | Quickstart and CI are centered on Linux |
-| `SkillsBench` protocol logic | Supported | Best effort | Real-task stability still depends on local Docker behavior and upstream package-network reliability |
-| `tau-bench` historical/import-only | Supported | Best effort | No provider credentials required |
-| `tau-bench` live preflight | Supported | Best effort | Requires provider credentials |
-| `codex` prepared-suite path | Experimental | Experimental | Not release-critical |
+1. `Linux-first` support target.
+2. Release-critical paths avoid private credentials by default.
+3. Additional paths are documented as optional or experimental.
 
-## Benchmark Support
+## Platform and Runtime Compatibility
 
-| Benchmark path | Status | Release role | Notes |
-| --- | --- | --- | --- |
-| `SkillsBench oracle real suite` | Supported | Release-critical | Main real-suite evidence path; Linux probe closes the full suite loop and tracked config includes explicit transient retry artifacts |
-| `SkillsBench Harbor job import` | Supported | Release-critical | Imports both success and failure outcomes |
-| `SkillsBench prepared task copies` | Experimental | Optional | Useful for frozen vs skill-enabled comparisons |
-| `tau-bench historical/import-only` | Supported | Release-critical | Current second-environment evidence path |
-| `tau-bench` live provider-backed execution | Experimental | Optional | Requires provider credentials |
+| Component | Version / compatibility baseline | Notes |
+| --- | --- | --- |
+| Python | `3.10+` | `jsonschema` runtime schema checks are required. |
+| Git | `2.30+` | used for sparse-checkout on SkillsBench task hydration. |
+| Docker | Local install required for SkillsBench execution; daemon must be available for real runs. | Host auth and prepared-suite flows are still Docker-reliant unless using import-only modes. |
+| `harbor` | wrapper entrypoints in `scripts/harbor312`, `scripts/harbor312.cmd` | Prefer wrapper script for explicit command/timeout defaults. |
+| `tau_bench` | Python package pinned by local project environment in `scripts/tau311.cmd` and `.pydeps311`. | Use wrapper to keep CLI behavior stable across machines. |
+
+## Benchmark Support Matrix
+
+| Benchmark path | Status | Version | Release role | Credentials | Docker dependencies | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `SkillsBench` protocol (oracle + prepared variants) | Supported (execution) | `protocol/` JSON schema v0.1.0 | Release-critical for oracle path; prepared path is experimental | Optional for some prepared flows | Required for `subprocess` execution (`local_jobs` + task containers) | `SkillsBench` release-critical path requires only local registry/task checks and can run in import-free smoke mode with tracked fixtures. |
+| `SkillsBench codex prepared (host-auth)` | Supported as experimental adapter path | `protocol/skillsbench_codex_external_prepared_*` | Experimental | Uses account-auth path by default; no global Harbor edit required | Required | Real path currently produces stable artifacts but remains ceiling-limited for some task pairs. |
+| `tau-bench` historical/import-only | Supported | `protocol/` JSON schema v0.1.0 | Release-critical (interpretable second environment) | No private provider key required | Not required (import-only) | Uses local historical trajectories under benchmark checkout. |
+| `tau-bench` live smoke | Experimental / optional | `protocol/tau_bench_retail_openai_smoke_suite.json` | Optional | Required if executed (`OPENAI_API_KEY` + OpenAI env) | Optional | Useful for end-to-end realism, intentionally outside release-critical path. |
 
 ## Execution Modes
 
 | Mode | Status | Notes |
 | --- | --- | --- |
-| `mock` | Supported | Stable for dry-run protocol validation |
-| `subprocess` | Supported | Officially supported on Linux-first path |
-| import-only suite mode | Supported | Especially important for deterministic historical or fixture-backed runs |
+| `mock` | Supported | Offline smoke for adapter and schema-level checks. |
+| `subprocess` | Supported | Default for Linux-first reproducible execution. |
+| import-only | Supported | Used for fixture/historical replay and for CI-friendly validation. |
 
-## What Is Not Promised In v0.1
+## What Is Not Promised in v0.1
 
-1. Full parity between Linux and Windows
-2. Stable public `codex` validation on every machine
-3. Credential-free live `tau-bench` execution
-4. Large-scale matched-budget empirical comparisons across all path types
+1. full parity between Linux and Windows execution behavior.
+2. no-docker mode for prepared-suite real execution.
+3. fully credential-free execution for all benchmark variants (especially `tau-bench` live).
+4. guaranteed non-ceiling evidence on every new benchmark pair.
+
+## Planned Extension
+
+`v0.2+` should add an explicit third benchmark class and publish a strict adapter matrix across all paths (currently one of P3/P4 goals).

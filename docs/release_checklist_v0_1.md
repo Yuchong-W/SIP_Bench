@@ -7,6 +7,25 @@ This checklist is for the first public open-source release. It assumes:
 3. `codex` connectivity is not required on the release machine
 4. `tau-bench` live runs are optional
 
+## 0. Release-Check Mapping (Executable Audit)
+
+`scripts/run_release_checks.py` now emits a JSON report with per-step status.  
+Use this mapping when reviewing the output:
+
+| Run-release step | Mapping | Command |
+| --- | --- | --- |
+| `unit-tests` | Validation section: "Unit tests pass on the supported environment." | `python3 -m unittest discover -s tests -p test_*.py` |
+| `aggregate-dryrun-sample` | Validation section: dry-run aggregation and schema path preparation | `python3 scripts/aggregate_metrics.py --runs results/dryrun/sample_runs.jsonl --out <temp>/sip_summary.jsonl` |
+| `import-skillsbench-harbor-job` | Validation section: import smoke path (fixture-backed) | `python3 scripts/run_eval.py import-skillsbench-job ...` |
+| `validate-imported-skillsbench-runs` | Validation section: imported fixture schema check | `python3 scripts/validate_records.py --data <temp>/skillsbench_job_runs.jsonl --schema runs` |
+| `validate-dryrun-runs` | Validation section: schema validation on tracked dry-run runs | `python3 scripts/validate_records.py --data results/dryrun/sample_runs.jsonl --schema runs` |
+| `validate-dryrun-summary` | Validation section: schema validation on tracked dry-run summary | `python3 scripts/validate_records.py --data results/dryrun/summary.jsonl --schema summary` |
+| `validate-real-suite-runs` | Validation section: real suite schema check | `python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/combined_runs.jsonl --schema runs` |
+| `validate-real-suite-summary` | Validation section: real suite summary validation | `python3 scripts/validate_records.py --data results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl --schema summary` |
+| `artifact_hashes` / `artifact_gate` | Release package stability evidence | `python3 scripts/run_release_checks.py` |
+| `plan-matrix` | Protocol suite configuration consistency evidence | `python3 scripts/check_plan_matrix.py --protocol-dir protocol --out /tmp/plan_matrix_report.json` |
+| `plan-matrix (strict)` | Release blocker variant for missing critical artifacts | `python3 scripts/run_release_checks.py --plan-matrix --plan-matrix-strict --plan-matrix-protocol-dir protocol --plan-matrix-config protocol/skillsbench_oracle_real_suite.json --plan-matrix-config protocol/tau_bench_retail_historical_suite.json --report /tmp/release_check.json` |
+
 ## 1. Release Narrative
 
 - [x] README headline states the protocol-layer positioning clearly.

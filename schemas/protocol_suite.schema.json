@@ -22,11 +22,12 @@
       "type": "string",
       "minLength": 1
     },
-    "benchmark_name": {
+      "benchmark_name": {
       "type": "string",
       "enum": [
         "skillsbench",
-        "tau-bench"
+        "tau-bench",
+        "mock-bench"
       ]
     },
     "repo_root": {

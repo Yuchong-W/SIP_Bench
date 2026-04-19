@@ -8,13 +8,14 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from sip_bench.adapters import SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.adapters import MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
 from sip_bench.adapters.base import SplitManifest, TaskDescriptor
 from sip_bench.metrics import aggregate_runs, load_jsonl, write_jsonl
 from sip_bench.runner import (
     execute_command_plan,
     hydrate_skillsbench_checkout,
     import_skillsbench_job,
+    import_mock_results,
     import_tau_results,
     load_env_file,
     tau_bench_preflight,
@@ -514,6 +515,116 @@ def run_tau_bench_suite(
     return report
 
 
+def run_mock_bench_suite(
+    *,
+    config_path: str | Path,
+    out_root: str | Path | None = None,
+    execute_mode: str = "subprocess",
+    aggregate: bool = True,
+    selected_run_names: set[str] | None = None,
+) -> dict[str, Any]:
+    config_file = Path(config_path).resolve()
+    config = load_protocol_suite_config(config_file)
+    if config["benchmark_name"] != "mock-bench":
+        raise ValueError("run_mock_bench_suite expects a mock-bench config")
+
+    base_dir = config_file.parent
+    repo_root = _resolve_path(base_dir, config["repo_root"])
+    registry_path = config.get("registry_path")
+    if not registry_path:
+        raise ValueError("mock-bench suites require registry_path for explicit task selection")
+    task_source = _resolve_path(base_dir, registry_path)
+    suite_root = _resolve_path(base_dir, out_root) if out_root else _resolve_path(base_dir, config["out_root"])
+    suite_root.mkdir(parents=True, exist_ok=True)
+
+    execution_defaults = config["execution"]
+    selected_run_specs, selected_names = _select_suite_run_specs(
+        config["runs"],
+        selected_run_names,
+    )
+    existing_run_reports = _load_existing_suite_run_reports(suite_root / "suite_report.json")
+    unselected_names = {
+        str(run_spec["run_name"]) for run_spec in config["runs"] if str(run_spec["run_name"]) not in selected_names
+    }
+    if unselected_names:
+        missing_reports = sorted(name for name in unselected_names if name not in existing_run_reports)
+        if missing_reports:
+            missing_text = ", ".join(missing_reports)
+            raise ValueError(
+                "Cannot update only part of the suite without reusable prior run reports. "
+                f"Missing existing runs in {suite_root / 'suite_report.json'}: {missing_text}. "
+                "Run the full suite first or use a different out_root for the subset run."
+            )
+
+    suite_env_overrides = _resolve_suite_env(
+        base_dir=base_dir,
+        repo_root=repo_root,
+        env_file_value=execution_defaults.get("env_file"),
+    )
+
+    combined_runs: list[dict[str, Any]] = []
+    run_reports_by_name = dict(existing_run_reports)
+    for run_spec in selected_run_specs:
+        run_report = _run_mock_spec(
+            suite_name=config["suite_name"],
+            base_dir=base_dir,
+            suite_root=suite_root,
+            task_source=task_source,
+            execution_defaults=execution_defaults,
+            run_spec=run_spec,
+            repo_root=repo_root,
+            execute_mode=execute_mode,
+            env_overrides=suite_env_overrides,
+        )
+        run_reports_by_name[str(run_report["run_name"])] = run_report
+
+    run_reports: list[dict[str, Any]] = []
+    for run_spec in config["runs"]:
+        run_name = str(run_spec["run_name"])
+        run_report = run_reports_by_name.get(run_name)
+        if run_report is None:
+            continue
+        run_reports.append(run_report)
+        combined_runs.extend(load_jsonl(_resolve_suite_records_path(run_report, suite_root=suite_root, run_name=run_name)))
+
+    combined_runs_path = suite_root / "combined_runs.jsonl"
+    write_jsonl(combined_runs_path, combined_runs)
+    runs_validation = validate_data_file(
+        data_path=combined_runs_path,
+        schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+    )
+
+    summary_path = suite_root / "summary.jsonl"
+    summary_report = _aggregate_suite_records(
+        records=combined_runs,
+        out_path=summary_path,
+        aggregate=aggregate,
+    )
+    evidence_report = _classify_evidence(runs=run_reports, summary_report=summary_report)
+
+    report = {
+        "schema_version": SUITE_SCHEMA_VERSION,
+        "suite_name": config["suite_name"],
+        "benchmark_name": config["benchmark_name"],
+        "config_path": str(config_file),
+        "out_root": str(suite_root),
+        "execute_mode": execute_mode,
+        "run_count": len(run_reports),
+        "runs": run_reports,
+        "combined_runs_path": str(combined_runs_path),
+        "runs_validation": runs_validation,
+        "summary": summary_report,
+        "evidence": evidence_report,
+        "preflight": {
+            "schema_version": SUITE_SCHEMA_VERSION,
+            "action": "mock-bench-env",
+            "env_override_keys": sorted(suite_env_overrides.keys()),
+        },
+    }
+    write_json(suite_root / "suite_report.json", report)
+    return report
+
+
 def build_skillsbench_explicit_plan(
     *,
     registry_path: str | Path,
@@ -659,6 +770,67 @@ def build_tau_explicit_plan(
             "max_concurrency": max_concurrency,
             "log_dir": log_dir,
             "few_shot_displays_path": few_shot_displays_path,
+            "extra_args": extra_args or [],
+        },
+        "manifest": manifest.to_dict(),
+        "commands": commands,
+    }
+
+
+def build_mock_bench_explicit_plan(
+    *,
+    task_source: str | Path,
+    repo_root: str | Path,
+    split_task_ids: dict[str, list[str]],
+    agent: str = "mock-agent",
+    model: str | None = None,
+    agent_import_path: str | None = None,
+    python_bin: str = "python",
+    extra_args: list[str] | None = None,
+) -> dict[str, Any]:
+    adapter = MockBenchAdapter()
+    tasks = adapter.discover_tasks(task_source)
+    task_index = {task.task_id: task for task in tasks}
+
+    manifest = SplitManifest(
+        replay=_resolve_explicit_tasks(task_index=task_index, task_ids=split_task_ids.get("replay", [])),
+        adapt=_resolve_explicit_tasks(task_index=task_index, task_ids=split_task_ids.get("adapt", [])),
+        heldout=_resolve_explicit_tasks(task_index=task_index, task_ids=split_task_ids.get("heldout", [])),
+        drift=_resolve_explicit_tasks(task_index=task_index, task_ids=split_task_ids.get("drift", [])),
+    )
+    adapter.validate_manifest(manifest)
+
+    commands: dict[str, list[list[str]]] = {}
+    for split_name in DEFAULT_SPLITS:
+        tasks_for_split = getattr(manifest, split_name)
+        commands[split_name] = [
+            adapter.build_run_command(
+                repo_root=repo_root,
+                task=task,
+                model=model,
+                agent_import_path=agent_import_path,
+                python_bin=python_bin,
+                extra_args=extra_args,
+            )
+            for task in tasks_for_split
+        ]
+
+    return {
+        "benchmark_name": adapter.benchmark_name,
+        "registry_path": str(task_source),
+        "repo_root": str(repo_root),
+        "selection": {
+            "selection_mode": "explicit",
+            "total_tasks": len(tasks),
+            "filtered_tasks": len(manifest.all_task_ids()),
+            "task_ids": {split: split_task_ids.get(split, []) for split in DEFAULT_SPLITS},
+            "seed": None,
+        },
+        "execution": {
+            "agent": agent,
+            "model": model,
+            "python_bin": python_bin,
+            "agent_import_path": agent_import_path,
             "extra_args": extra_args or [],
         },
         "manifest": manifest.to_dict(),
@@ -1201,6 +1373,100 @@ def _run_tau_spec(
     }
 
 
+def _run_mock_spec(
+    *,
+    suite_name: str,
+    base_dir: Path,
+    suite_root: Path,
+    task_source: Path,
+    execution_defaults: dict[str, Any],
+    run_spec: dict[str, Any],
+    repo_root: Path,
+    execute_mode: str,
+    env_overrides: dict[str, str],
+) -> dict[str, Any]:
+    run_name = run_spec["run_name"]
+    split_name = run_spec["benchmark_split"]
+    phase = run_spec["phase"]
+    path_type = run_spec.get("path_type", execution_defaults["path_type"])
+    seed = int(run_spec.get("seed", execution_defaults.get("seed", 0)))
+    agent = run_spec.get("agent", execution_defaults.get("agent", "mock-agent"))
+    model = run_spec.get("model", execution_defaults.get("model"))
+    agent_import_path = run_spec.get("agent_import_path", execution_defaults.get("agent_import_path"))
+    python_bin = _resolve_command_value(base_dir, run_spec.get("python_bin", execution_defaults.get("python_bin", "python")))
+    agent_version = run_spec.get("agent_version", execution_defaults["agent_version"])
+    agent_name = run_spec.get("agent_name", agent)
+    model_name = run_spec.get("model_name", model or "mock-model")
+    source_result_value = run_spec.get("source_result_file")
+    extra_args = [*execution_defaults.get("extra_args", []), *run_spec.get("extra_args", [])]
+
+    split_task_ids = {name: [] for name in DEFAULT_SPLITS}
+    split_task_ids[split_name] = [str(task_id) for task_id in run_spec["task_ids"]]
+
+    if not source_result_value:
+        raise ValueError(
+            "mock-bench protocol runs currently require source_result_file for deterministic reproducible execution."
+        )
+
+    plan_path = suite_root / "plans" / f"{run_name}.json"
+    records_path = suite_root / "runs" / f"{run_name}.jsonl"
+
+    plan_payload = build_mock_bench_explicit_plan(
+        task_source=task_source,
+        repo_root=repo_root,
+        split_task_ids=split_task_ids,
+        agent=agent,
+        model=model,
+        python_bin=python_bin,
+        agent_import_path=agent_import_path,
+        extra_args=extra_args,
+    )
+    write_json(plan_path, plan_payload)
+
+    result_file = _resolve_path(base_dir, source_result_value)
+    imported_runs = import_mock_results(
+        source=result_file,
+        out=records_path,
+        benchmark_split=split_name,
+        phase=phase,
+        path_type=path_type,
+        seed=seed,
+        model_name=model_name,
+        agent_name=agent_name,
+        agent_version=agent_version,
+        benchmark_version=_resolve_git_or_default(repo_root, "mock-bench-upstream"),
+        task_ids=set(split_task_ids[split_name]),
+    )
+    records_validation = validate_data_file(
+        data_path=records_path,
+        schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+    )
+
+    return {
+        "run_name": run_name,
+        "phase": phase,
+        "benchmark_split": split_name,
+        "path_type": path_type,
+        "seed": seed,
+        "task_ids": list(split_task_ids[split_name]),
+        "plan_path": str(plan_path),
+        "execution_path": None,
+        "records_path": str(records_path),
+        "result_file": str(result_file),
+        "task_preparation": _merge_task_preparation(
+            execution_defaults.get("task_preparation"),
+            run_spec.get("task_preparation"),
+        ),
+        "env_override_keys": sorted(env_overrides.keys()),
+        "execution_mode": "import-only",
+        "execution_summary": None,
+        "imported_records": len(imported_runs),
+        "success_count": sum(1 for record in imported_runs if record["success"]),
+        "failure_count": sum(1 for record in imported_runs if not record["success"]),
+        "records_validation": records_validation,
+    }
+
+
 def prepare_skillsbench_tasks(
     *,
     source_repo_root: Path,
@@ -1321,6 +1587,21 @@ def _validate_protocol_suite_semantics(config: dict[str, Any]) -> None:
             raise ValueError(f"Invalid tau-bench suite config, missing execution fields: {missing}")
         if any("source_job_dir" in run_spec for run_spec in config["runs"]):
             raise ValueError("tau-bench suite runs do not support source_job_dir; use source_result_file")
+    elif benchmark_name == "mock-bench":
+        missing = [
+            field
+            for field in (
+                "path_type",
+                "agent_version",
+            )
+            if not execution.get(field)
+        ]
+        if "registry_path" not in config:
+            missing.append("registry_path")
+        if missing:
+            raise ValueError(f"Invalid mock-bench suite config, missing required fields: {missing}")
+        if any("source_job_dir" in run_spec for run_spec in config["runs"]):
+            raise ValueError("mock-bench suite runs do not support source_job_dir; use source_result_file")
     else:
         raise ValueError(f"Unsupported benchmark_name in protocol suite config: {benchmark_name}")
 
@@ -1333,6 +1614,8 @@ def _normalize_protocol_suite_config(config: dict[str, Any]) -> dict[str, Any]:
             run_spec["task_ids"] = [str(task_id) for task_id in run_spec["task_ids"]]
         elif benchmark_name == "tau-bench":
             run_spec["task_ids"] = [int(task_id) for task_id in run_spec["task_ids"]]
+        elif benchmark_name == "mock-bench":
+            run_spec["task_ids"] = [str(task_id) for task_id in run_spec["task_ids"]]
     return normalized
 
 

@@ -12,10 +12,9 @@ Work completed:
 
 Key outputs:
 
-1. `06_protocol_benchmark_plan.md`
-2. `protocol/protocol_spec_v0.md`
-3. `schemas/runs.schema.json`
-4. `schemas/summary.schema.json`
+1. `protocol/protocol_spec_v0.md`
+2. `schemas/runs.schema.json`
+3. `schemas/summary.schema.json`
 
 ### Metric Engine
 

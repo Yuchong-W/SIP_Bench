@@ -94,3 +94,54 @@ A good contribution usually includes:
 4. whether any tracked artifacts were regenerated
 
 If a change is intentionally documentation-only or cleanup-only, say that explicitly.
+
+## Adding a New Benchmark Adapter
+
+SIP-Bench is benchmark-agnostic by design, so new benchmark support should enter through the adapter interface.
+
+### 1) Add a Data Adapter
+
+1. create a class in `src/sip_bench/adapters/` that subclasses `BenchmarkAdapter`.
+2. implement the following methods:
+   - `discover_tasks(source)`
+   - `build_manifest(tasks, replay_count, adapt_count, heldout_count, drift_count, seed)`
+   - `build_harbor_command(...)` (for command-driven adapters like SkillsBench) or the equivalent task-builder
+   - `parse_result_file(...)` (for import-only adapters)
+3. keep task IDs and metadata schema-consistent:
+   - include `benchmark_name`, `task_id`, `source_path`, `title`, `category`, `difficulty` when available.
+4. export the adapter in `src/sip_bench/adapters/__init__.py`.
+
+### 2) Validate Schema Compatibility
+
+1. add/extend tests in `tests/test_adapters.py` and `tests/test_protocol_runner.py`.
+2. ensure suite and run records still validate:
+   - `python3 scripts/validate_records.py --data <runs>.jsonl --schema runs`
+   - `python3 scripts/validate_records.py --data <summary>.jsonl --schema summary`
+3. keep import paths and registry assumptions explicit in docs.
+
+### 3) Add Execution Paths
+
+1. add example protocol suite config under `protocol/`.
+2. add/extend smoke fixtures under `tests/fixtures/`.
+3. update docs:
+   - `docs/support_matrix_v0_1.md`
+   - `docs/release_manifest.md`
+   - this contributing checklist.
+4. validate plan-to-path consistency with:
+   - `python3 scripts/check_plan_matrix.py --config protocol/<suite>.json --strict`
+
+### 4) Reproducibility and Release Readiness
+
+1. define a stable default for:
+   - seed
+   - retry policy
+   - environment/exec command path
+2. run `python3 scripts/run_release_checks.py --skip-import-check` (local smoke) and
+   `python3 scripts/run_release_checks.py` (with fixture import) before opening the PR.
+3. include the command block in the PR description so reviewers can replay exactly.
+
+## New Benchmark Onboarding
+
+For a concrete end-to-end checklist with examples, use:
+
+- `docs/new_benchmark_onboarding_checklist.md`
