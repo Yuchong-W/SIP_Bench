@@ -1,5 +1,7 @@
 # SI-Protocol Benchmark (SIP-Bench)
 
+![SIP-Bench Figure](.cover.png)
+
 ## Repository Description
 
 SIP-Bench is open-source protocol infrastructure that turns episodic benchmark runs into longitudinal, reproducible evaluations for agent self-improvement. It answers whether gains are real, retained, stable over time, and worth their cost—not just whether one final score is higher.
