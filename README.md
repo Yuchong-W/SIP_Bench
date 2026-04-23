@@ -1,6 +1,6 @@
 # SI-Protocol Benchmark (SIP-Bench)
 
-![SIP-Bench Figure](.cover.png)
+![SIP-Bench Figure](cover.png)
 
 ## Repository Description
 
