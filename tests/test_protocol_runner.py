@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from sip_bench.metrics import load_jsonl
+from sip_bench.adapters import EVOAGENTBENCH_AVAILABLE
 from sip_bench.harbor_codex_bridge import build_codex_agent_env, build_codex_auth_setup_command
 from sip_bench.harbor_codex_host_agent import (
     create_task_helper_scripts,
@@ -41,12 +42,158 @@ from sip_bench.protocol_runner import (
     load_protocol_suite_config,
     run_evoagentbench_suite,
     run_mock_bench_suite,
+    run_medical_suite,
     run_skillsbench_suite,
     run_tau_bench_suite,
 )
 
 
 class ProtocolRunnerTests(unittest.TestCase):
+    def test_result_only_config_declares_expected_artifacts(self) -> None:
+        config = load_protocol_suite_config(ROOT / "protocol" / "medical_synthetic_suite.json")
+        self.assertEqual(config["suite_kind"], "result-only")
+        self.assertEqual(config["expected_artifacts"]["runs_per_suite"], 12)
+        self.assertEqual(config["expected_artifacts"]["records"], 24)
+
+    def test_run_medical_suite_writes_protocol_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            cases_path = root / "cases.json"
+            original_cases = (ROOT / "benchmarks" / "medical" / "cases.json").read_text(encoding="utf-8")
+            cases_path.write_text(original_cases, encoding="utf-8")
+            config = {
+                "schema_version": "0.1.0",
+                "suite_name": "medical-fixture-suite",
+                "benchmark_name": "medical-synthea",
+                "repo_root": ".",
+                "registry_path": str(cases_path),
+                "out_root": str(root / "out"),
+                "execution": {"path_type": "external", "agent_version": "fixture", "seed": 7},
+                "runs": [
+                    {"run_name": f"{phase.lower()}_{split}", "phase": phase, "benchmark_split": split, "task_ids": ids}
+                    for phase in ("T2", "T0", "T1")
+                    for split, ids in (("replay", ["c07", "c08"]), ("adapt", ["c03", "c05"]), ("heldout", ["c01", "c04"]), ("drift", ["c02", "c06"]))
+                ],
+            }
+            config_path = root / "medical_suite.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Partial medical suite execution requires existing artifacts"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            report = run_medical_suite(config_path=config_path)
+            records = load_jsonl(Path(report["combined_runs_path"]))
+
+            self.assertEqual(report["benchmark_name"], "medical-synthea")
+            self.assertEqual(report["run_count"], 12)
+            self.assertEqual(len(records), 24)
+            self.assertTrue(report["runs_validation"]["valid"])
+            self.assertTrue(report["summary"]["validation"]["valid"])
+            t0_adapt = next(record for record in records if record["phase"] == "T0" and record["task_id"] == "c03")
+            t1_adapt = next(record for record in records if record["phase"] == "T1" and record["task_id"] == "c03")
+            self.assertEqual(t0_adapt["metadata"]["prediction"], "unknown")
+            self.assertEqual(t1_adapt["metadata"]["prediction"], "uti")
+            self.assertEqual(t0_adapt["memory_writes"], 0)
+            self.assertEqual(t1_adapt["memory_writes"], 1)
+            self.assertEqual(t1_adapt["memory_reads"], 1)
+            self.assertEqual(report["evidence"]["infra_type"], "non_infrastructure")
+            self.assertEqual(report["evidence"]["failure_signatures"], [{"family": "unknown", "count": 13}])
+
+            unselected_path = root / "out" / "runs" / "t0_replay.jsonl"
+            unselected_before = unselected_path.read_bytes()
+            partial_report = run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            self.assertEqual(partial_report["run_count"], 12)
+            self.assertEqual(unselected_path.read_bytes(), unselected_before)
+
+            cases = json.loads(cases_path.read_text(encoding="utf-8"))
+            next(case for case in cases["cases"] if case["encounter_id"] == "c01")["diagnosis"] = "unknown"
+            cases_path.write_text(json.dumps(cases), encoding="utf-8")
+            config["out_root"] = str(root / "label_changed")
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            changed_label_report = run_medical_suite(config_path=config_path)
+            changed_label_records = load_jsonl(Path(changed_label_report["combined_runs_path"]))
+            mutated_c01 = next(record for record in changed_label_records if record["run_id"] == "medical::T0::heldout::c01")
+            self.assertEqual(mutated_c01["metadata"]["prediction"], "unknown")
+            self.assertTrue(mutated_c01["success"])
+
+            config["out_root"] = str(root / "out")
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "matching suite identity"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+
+            standard_ids = {
+                "replay": ["c07", "c08"], "adapt": ["c03", "c05"],
+                "heldout": ["c01", "c04"], "drift": ["c02", "c06"],
+            }
+            for run_spec in config["runs"]:
+                run_spec["task_ids"] = standard_ids[run_spec["benchmark_split"]]
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            run_medical_suite(config_path=config_path)
+            unselected_before = unselected_path.read_bytes()
+            selected_path = root / "out" / "runs" / "t0_heldout.jsonl"
+            selected_before = selected_path.read_bytes()
+
+            unselected_path.write_bytes(unselected_before + unselected_before.splitlines()[0] + b"\n")
+            with self.assertRaisesRegex(ValueError, "t0_replay records do not match"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            self.assertEqual(selected_path.read_bytes(), selected_before)
+
+            unselected_path.write_bytes(unselected_before)
+            corrupted_records = [json.loads(line) for line in unselected_before.splitlines()]
+            corrupted_records[0]["phase"] = "T1"
+            unselected_path.write_text("\n".join(json.dumps(record) for record in corrupted_records) + "\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "t0_replay records do not match"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            self.assertEqual(selected_path.read_bytes(), selected_before)
+
+            unselected_path.unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "Expected records for suite run t0_replay"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            self.assertEqual(selected_path.read_bytes(), selected_before)
+
+            unselected_path.write_bytes(unselected_before)
+            suite_report_path = root / "out" / "suite_report.json"
+            original_report = json.loads(suite_report_path.read_text(encoding="utf-8"))
+            legacy_report = dict(original_report)
+            legacy_report.pop("suite_identity")
+            suite_report_path.write_text(json.dumps(legacy_report), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "matching suite identity"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+            self.assertEqual(selected_path.read_bytes(), selected_before)
+
+            cases_path.write_text(original_cases, encoding="utf-8")
+            config["execution"]["agent_version"] = "fixture-v2"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "matching suite identity"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+
+            config["execution"]["agent_version"] = "fixture"
+            for run_spec in config["runs"]:
+                if run_spec["benchmark_split"] == "heldout":
+                    run_spec["task_ids"] = ["c01", "c06"]
+                elif run_spec["benchmark_split"] == "drift":
+                    run_spec["task_ids"] = ["c02", "c04"]
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "matching suite identity"):
+                run_medical_suite(config_path=config_path, selected_run_names={"t0_heldout"})
+
+    def test_medical_suite_rejects_overlapping_splits_before_writing_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            config = {
+                "schema_version": "0.1.0", "suite_name": "medical-invalid", "benchmark_name": "medical-synthea",
+                "repo_root": ".", "registry_path": str((ROOT / "benchmarks" / "medical" / "cases.json").resolve()),
+                "out_root": str(root / "out"), "execution": {"path_type": "external", "agent_version": "fixture"},
+                "runs": [
+                    {"run_name": f"{phase.lower()}_{split}", "phase": phase, "benchmark_split": split, "task_ids": ids}
+                    for phase in ("T2", "T0", "T1")
+                    for split, ids in (("replay", ["c07", "c08"]), ("adapt", ["c03", "c05"]), ("heldout", ["c01", "c03"]), ("drift", ["c02", "c06"]))
+                ],
+            }
+            config_path = root / "medical_invalid.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "overlapping task ids"):
+                run_medical_suite(config_path=config_path)
+            self.assertFalse((root / "out").exists())
+
     def test_build_codex_auth_setup_command_prefers_repo_login_auth_when_key_missing(self) -> None:
         command = build_codex_auth_setup_command(auth_source="/tmp/codex-auth.json")
         self.assertIn('if [ -n "${OPENAI_API_KEY}" ]; then', command)
@@ -134,6 +281,7 @@ class ProtocolRunnerTests(unittest.TestCase):
         self.assertTrue(_scores_non_ceiling([1.0, 0.95, 1.0]))
         self.assertFalse(_scores_non_ceiling([1.0, 0.98, 1.0]))
 
+    @unittest.skipUnless(EVOAGENTBENCH_AVAILABLE, "optional EvoAgentBench adapter is not installed")
     def test_build_evoagentbench_explicit_plan(self) -> None:
         plan = build_evoagentbench_explicit_plan(
             repo_root="benchmarks/EvoAgentBench",
@@ -240,6 +388,7 @@ class ProtocolRunnerTests(unittest.TestCase):
 
             self.assertEqual(allocated, "retry-suite-t0_replay-attempt01-rerun03")
 
+    @unittest.skipUnless(EVOAGENTBENCH_AVAILABLE, "optional EvoAgentBench adapter is not installed")
     def test_run_evoagentbench_suite_import_only_aggregates_multiple_strategies(self) -> None:
         def write_result(root: Path, task_id: str, reward: float, *, total_tokens: int) -> None:
             root.mkdir(parents=True, exist_ok=True)
@@ -392,7 +541,8 @@ class ProtocolRunnerTests(unittest.TestCase):
             cmd_wrapper.write_text("@echo off\r\n", encoding="utf-8")
 
             resolved = _resolve_command_value(tmp_path, "scripts/harbor312.cmd")
-            self.assertEqual(resolved, str(wrapper))
+            self.assertEqual(Path(resolved).resolve(), wrapper.resolve())
+            self.assertEqual(Path(resolved).name, wrapper.name)
 
     def test_resolve_command_value_prefers_cmd_wrapper_on_windows(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -406,7 +556,8 @@ class ProtocolRunnerTests(unittest.TestCase):
 
             with patch("sip_bench.protocol_runner.os.name", "nt"):
                 resolved = _resolve_command_value(tmp_path, "scripts/harbor312")
-            self.assertEqual(resolved, str(cmd_wrapper))
+            self.assertEqual(Path(resolved).resolve(), cmd_wrapper.resolve())
+            self.assertEqual(Path(resolved).name, cmd_wrapper.name)
 
     def test_build_skillsbench_explicit_plan_preserves_split_assignment(self) -> None:
         plan = build_skillsbench_explicit_plan(

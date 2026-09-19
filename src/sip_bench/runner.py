@@ -10,7 +10,7 @@ from pathlib import Path
 from time import perf_counter, sleep
 from typing import Any
 
-from sip_bench.adapters import EvoAgentBenchAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.adapters import MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter, require_evoagentbench_adapter
 from sip_bench.metrics import write_jsonl
 
 
@@ -767,7 +767,7 @@ def import_evoagentbench_results(
     job_name: str | None = None,
     task_ids: set[str] | None = None,
 ) -> list[dict[str, Any]]:
-    adapter = EvoAgentBenchAdapter()
+    adapter = require_evoagentbench_adapter()()
     runs = adapter.parse_result_file(
         source,
         domain=domain,

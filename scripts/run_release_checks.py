@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import shlex
@@ -12,6 +13,94 @@ import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+REQUIRED_RELEASE_SCHEMA_ASSETS = (
+    Path("results/dryrun/sample_runs.jsonl"),
+    Path("results/dryrun/summary.jsonl"),
+    Path("results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl"),
+)
+OPTIONAL_HISTORICAL_ARTIFACTS = (
+    Path("results/protocol_runs/tau_bench_retail_historical_suite/combined_runs.jsonl"),
+    Path("results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl"),
+)
+
+
+def _result_only_configs(protocol_dir: Path = ROOT / "protocol") -> list[Path]:
+    configs: list[Path] = []
+    for config_path in sorted(protocol_dir.glob("*.json")):
+        try:
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if config.get("suite_kind") == "result-only":
+            configs.append(config_path)
+    return configs
+
+
+def _run_result_only_suite_check(*, config_path: Path, output_root: Path, python_bin: str) -> dict[str, object]:
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    suite_name = str(config["suite_name"])
+    suite_output = output_root / suite_name
+    command = [
+        python_bin,
+        "scripts/run_protocol.py",
+        "run-medical-suite",
+        "--config",
+        str(config_path),
+        "--out-root",
+        str(suite_output),
+    ]
+    completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    if completed.returncode != 0:
+        raise RuntimeError(f"result-only suite {suite_name} failed: {completed.stderr.strip() or completed.stdout.strip()}")
+    cli_report = json.loads(completed.stdout)
+    combined_path = suite_output / "combined_runs.jsonl"
+    summary_path = suite_output / "summary.jsonl"
+    suite_report_path = suite_output / "suite_report.json"
+    validation_commands = [
+        [python_bin, "scripts/validate_records.py", "--data", str(combined_path), "--schema", "runs"],
+        [python_bin, "scripts/validate_records.py", "--data", str(summary_path), "--schema", "summary"],
+    ]
+    for validation_command in validation_commands:
+        validation = subprocess.run(validation_command, cwd=ROOT, capture_output=True, text=True)
+        if validation.returncode != 0:
+            raise RuntimeError(f"result-only artifact validation failed: {validation.stderr.strip() or validation.stdout.strip()}")
+
+    records = []
+    with combined_path.open("r", encoding="utf-8") as handle:
+        records = [json.loads(line) for line in handle if line.strip()]
+    suite_report = json.loads(suite_report_path.read_text(encoding="utf-8"))
+    expected = config.get("expected_artifacts", {})
+    expected_records = int(expected.get("records", len(records)))
+    expected_runs = int(expected.get("runs_per_suite", len(suite_report.get("runs", []))))
+    if len(records) != expected_records or len(suite_report.get("runs", [])) != expected_runs:
+        raise RuntimeError(
+            f"result-only suite {suite_name} expected {expected_runs} runs/{expected_records} records, "
+            f"got {len(suite_report.get('runs', []))} runs/{len(records)} records"
+        )
+
+    failure_families = Counter(
+        str((record.get("metadata") or {}).get("failure_reason") or "unknown")
+        for record in records
+        if not record.get("success")
+    )
+    cost_fields = ("token_total", "tool_calls_total", "wall_clock_seconds", "cost_usd", "human_interventions")
+    costs = {field: sum(float(record.get(field, 0) or 0) for record in records) for field in cost_fields}
+    artifact_paths = [combined_path, summary_path, suite_report_path]
+    return {
+        "suite_name": suite_name,
+        "config": str(config_path.relative_to(ROOT)),
+        "command": command,
+        "run_count": len(suite_report.get("runs", [])),
+        "record_count": len(records),
+        "expected_runs": expected_runs,
+        "expected_records": expected_records,
+        "costs": costs,
+        "failure_families": dict(sorted(failure_families.items())),
+        "artifact_hashes": {path.name: _file_sha256(path) for path in artifact_paths},
+        "out_root": str(suite_output),
+        "cli_report": cli_report,
+        "status": "passed",
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -119,6 +208,17 @@ def _artifact_hashes(paths: list[Path]) -> list[dict[str, object]]:
     return rows
 
 
+def release_artifact_gate(root: Path = ROOT) -> dict[str, object]:
+    """Classify release-required schema records separately from optional history."""
+    missing_required = [str(path) for path in REQUIRED_RELEASE_SCHEMA_ASSETS if not (root / path).exists()]
+    missing_optional = [str(path) for path in OPTIONAL_HISTORICAL_ARTIFACTS if not (root / path).exists()]
+    return {
+        "required_schema_assets_present": not missing_required,
+        "missing_required": missing_required,
+        "missing_optional_historical": missing_optional,
+    }
+
+
 
 def _load_check_plan_matrix_module() -> object:
     module_path = ROOT / "scripts" / "check_plan_matrix.py"
@@ -138,6 +238,7 @@ def main() -> int:
     import_path = temp_dir / "skillsbench_job_runs.jsonl"
 
     steps: list[dict[str, object]] = []
+    result_only_reports: list[dict[str, object]] = []
 
     try:
         if not args.skip_tests:
@@ -156,6 +257,35 @@ def main() -> int:
                     ],
                 )
             )
+
+        result_only_root = (Path(args.report).resolve().parent / "result_only") if args.report else temp_dir / "result_only"
+        for config_path in _result_only_configs():
+            try:
+                native_report = _run_result_only_suite_check(
+                    config_path=config_path,
+                    output_root=result_only_root,
+                    python_bin=python_bin,
+                )
+                result_only_reports.append(native_report)
+                steps.append(
+                    {
+                        "name": f"result-only:{native_report['suite_name']}",
+                        "command": native_report["command"],
+                        "returncode": 0,
+                        "status": "passed",
+                        "result_only": native_report,
+                    }
+                )
+            except Exception as exc:
+                steps.append(
+                    {
+                        "name": f"result-only:{config_path.stem}",
+                        "command": [python_bin, "scripts/run_protocol.py", "run-medical-suite", "--config", str(config_path)],
+                        "returncode": 1,
+                        "status": "failed",
+                        "error": str(exc),
+                    }
+                )
 
         steps.append(
             run_step(
@@ -297,6 +427,7 @@ def main() -> int:
             "python_bin": python_bin,
             "temp_dir": str(temp_dir),
             "steps": steps,
+            "result_only_suites": result_only_reports,
             "passed": sum(step["status"] == "passed" for step in steps),
             "failed": sum(step["status"] == "failed" for step in steps),
         }
@@ -315,17 +446,7 @@ def main() -> int:
                 ]
             )
 
-            report["artifact_gate"] = {
-                "required_schema_assets_present": all(
-                    Path(path).exists()
-                    for path in [
-                        ROOT / "results/dryrun/sample_runs.jsonl",
-                        ROOT / "results/dryrun/summary.jsonl",
-                        ROOT / "results/protocol_runs/skillsbench_oracle_real_suite/summary.jsonl",
-                        ROOT / "results/protocol_runs/tau_bench_retail_historical_suite/summary.jsonl",
-                    ]
-                )
-            }
+            report["artifact_gate"] = release_artifact_gate()
 
         print(json.dumps(report, indent=2), flush=True)
         if args.report:

@@ -150,6 +150,51 @@ class CheckPlanMatrixTests(unittest.TestCase):
         self.assertNotIn("run:t0_replay:execution", status_map)
         self.assertNotIn("run:t0_replay:source_plan", status_map)
 
+    def test_result_only_suite_checks_declared_artifacts_without_external_plan(self) -> None:
+        self.config_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "0.1.0",
+                    "suite_name": "native-suite",
+                    "suite_kind": "result-only",
+                    "benchmark_name": "medical-synthea",
+                    "repo_root": ".",
+                    "registry_path": "cases.json",
+                    "out_root": str(self.out_root.relative_to(self.root)),
+                    "expected_artifacts": {
+                        "runs_per_suite": 1,
+                        "records": 1,
+                        "artifacts": ["combined_runs.jsonl", "summary.jsonl", "suite_report.json"],
+                    },
+                    "execution": {"path_type": "external", "agent_version": "fixture"},
+                    "runs": [
+                        {"run_name": "t0_replay", "phase": "T0", "benchmark_split": "replay", "task_ids": ["c01"]}
+                    ],
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        for relative_path in (
+            "runs/t0_replay.jsonl",
+            "combined_runs.jsonl",
+            "summary.jsonl",
+            "suite_report.json",
+        ):
+            target = self.out_root / relative_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("{}\n", encoding="utf-8")
+
+        checks: list[dict] = []
+        suite_checks = [check_plan_matrix._run_suite_check(self.config_path, strict=True, checks=checks)]
+        labels = {entry["label"] for entry in checks}
+        self.assertEqual([check for check in checks if check["status"] == "fail"], [])
+        self.assertEqual(suite_checks[0]["status"], "pass")
+        self.assertNotIn("run:t0_replay:plan", labels)
+        self.assertNotIn("run:t0_replay:hydration", labels)
+        self.assertNotIn("run:t0_replay:execution", labels)
+        self.assertIn("suite:combined_runs", labels)
+
 
 if __name__ == "__main__":
     unittest.main()

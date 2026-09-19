@@ -15,6 +15,7 @@ Their roles are different:
 1. `SkillsBench` is the clearest real execution-backed path.
 2. `EvoAgentBench` is the clearest demonstration that the protocol can wrap a substantially different self-improvement workflow.
 3. `tau-bench` is a useful supplementary path that proves the same normalization and protocol layer can also work in an import-oriented environment.
+4. `medical-synthea` is a small, native offline diagnosis fixture used to exercise the full protocol lifecycle without an external runtime.
 
 The published `v0.1.0` release posture is `Linux-first` and open-source-release-oriented. The public evidence path is:
 
@@ -117,6 +118,26 @@ Base class for task discovery and split construction.
 This keeps benchmark-specific knowledge out of the metric engine and out of the CLI.
 
 This separation is the main extensibility lever in the project. In practice, if a new benchmark can be discovered, split, and imported through a `BenchmarkAdapter`, it can be evaluated under the same SI protocol without changing the metric layer.
+
+## Native Medical Fixture Suite
+
+`protocol/medical_synthetic_suite.json` configures all twelve combinations of
+`T0`/`T1`/`T2` and `replay`/`adapt`/`heldout`/`drift`. The `run-medical-suite`
+command uses `MedicalAdapter` to discover the checked-in Synthea-compatible cases,
+validates that all four split assignments are disjoint, and emits the standard
+`runs/*.jsonl`, `combined_runs.jsonl`, `summary.jsonl`, and `suite_report.json`
+artifacts. A phase is evaluated from its declared state rather than config ordering:
+`T0` performs no adaptation, while `T1` and `T2` each train a fresh rule memory from
+the configured `adapt` cases. This preserves the diagnosis task boundary established
+by the adapter, which rejects Navilia timeline-event prediction records.
+
+The config is marked `suite_kind: result-only` and declares its expected 12 runs,
+24 records, combined JSONL, summary, and suite report. `run_release_checks.py`
+executes this lane in a temporary output directory, validates both shared schemas,
+records artifact hashes, and reports aggregate cost fields and failure families.
+The CI workflow uploads that report and generated artifacts without credentials,
+Docker, Harbor, or an upstream checkout. External suite configs keep their existing
+plan, hydration, execution, and source-artifact checks.
 
 ## SkillsBench Adapter
 
@@ -296,6 +317,12 @@ Current release-facing constraints:
 ## Release Surface
 
 Tracked release assets should focus on protocol code, schemas, CLI entrypoints, docs, tests, and representative validated artifacts.
+
+`scripts/run_release_checks.py` requires the dry-run run and summary records
+and the `SkillsBench oracle` summary because they are schema-validation inputs
+for the supported release path. The tau-bench historical result files are
+supplementary import evidence: their absence is reported in the release report
+as `missing_optional_historical`, but does not fail the release asset gate.
 
 The following are intentionally not part of the current release-critical surface:
 

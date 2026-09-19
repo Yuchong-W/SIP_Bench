@@ -4,12 +4,16 @@ import json
 import os
 import shutil
 import stat
+import hashlib
+from datetime import datetime, timezone
+from time import perf_counter
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from sip_bench.adapters import EvoAgentBenchAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.adapters import MedicalAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter, require_evoagentbench_adapter
 from sip_bench.adapters.base import SplitManifest, TaskDescriptor
+from sip_bench.medical_runtime import RuleMemory, observations
 from sip_bench.metrics import aggregate_runs, load_jsonl, write_jsonl
 from sip_bench.runner import (
     execute_command_plan,
@@ -655,6 +659,290 @@ def run_mock_bench_suite(
     return report
 
 
+def run_medical_suite(
+    *,
+    config_path: str | Path,
+    out_root: str | Path | None = None,
+    aggregate: bool = True,
+    selected_run_names: set[str] | None = None,
+) -> dict[str, Any]:
+    """Run the deterministic synthetic diagnosis fixture through SIP protocol artifacts."""
+    config_file = Path(config_path).resolve()
+    config = load_protocol_suite_config(config_file)
+    if config["benchmark_name"] != "medical-synthea":
+        raise ValueError("run_medical_suite expects a medical-synthea config")
+    base_dir = config_file.parent
+    cases_path = _resolve_path(base_dir, config["registry_path"])
+    suite_root = _resolve_path(base_dir, out_root) if out_root else _resolve_path(base_dir, config["out_root"])
+    adapter = MedicalAdapter()
+    tasks = adapter.discover_tasks(cases_path)
+    manifest = _build_medical_manifest(adapter=adapter, tasks=tasks, run_specs=config["runs"])
+    suite_identity = _medical_suite_identity(cases_path=cases_path, config=config, adapter=adapter)
+    selected_specs, selected_names = _select_suite_run_specs(config["runs"], selected_run_names)
+    existing_report_path = suite_root / "suite_report.json"
+    existing_report = json.loads(existing_report_path.read_text(encoding="utf-8")) if existing_report_path.exists() else {}
+    existing_run_reports = {
+        str(run_report["run_name"]): run_report
+        for run_report in existing_report.get("runs", [])
+        if run_report.get("run_name")
+    }
+    unselected_names = {
+        str(run_spec["run_name"]) for run_spec in config["runs"] if str(run_spec["run_name"]) not in selected_names
+    }
+    if unselected_names:
+        missing_reports = sorted(name for name in unselected_names if name not in existing_run_reports)
+        if missing_reports:
+            raise ValueError(
+                "Partial medical suite execution requires existing artifacts for unselected runs: "
+                + ", ".join(missing_reports)
+            )
+        if existing_report.get("suite_identity") != suite_identity:
+            raise ValueError("Partial medical suite execution requires matching suite identity; run the full suite again")
+        _validate_medical_reused_runs(
+            suite_root=suite_root,
+            run_specs=config["runs"],
+            existing_run_reports=existing_run_reports,
+            unselected_names=unselected_names,
+            execution=config["execution"],
+        )
+
+    records_by_phase = {
+        phase: _evaluate_medical_phase(adapter=adapter, manifest=manifest, phase=phase, execution=config["execution"])
+        for phase in ("T0", "T1", "T2")
+    }
+    suite_root.mkdir(parents=True, exist_ok=True)
+    runs_root = suite_root / "runs"
+    runs_root.mkdir(parents=True, exist_ok=True)
+    run_reports_by_name = dict(existing_run_reports)
+    for run_spec in selected_specs:
+        phase = str(run_spec["phase"])
+        split = str(run_spec["benchmark_split"])
+        task_ids = [str(task_id) for task_id in run_spec["task_ids"]]
+        records = [record for record in records_by_phase[phase] if record["benchmark_split"] == split and record["task_id"] in task_ids]
+        if len(records) != len(task_ids):
+            raise ValueError(f"Medical suite run {run_spec['run_name']} did not resolve every configured task")
+        records_path = runs_root / f"{run_spec['run_name']}.jsonl"
+        write_jsonl(records_path, records)
+        records_validation = validate_data_file(
+            data_path=records_path,
+            schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+        )
+        failure_signatures, infra_type = _summarize_failure_signatures(records)
+        run_report = {
+            "run_name": str(run_spec["run_name"]),
+            "phase": phase,
+            "benchmark_split": split,
+            "task_ids": task_ids,
+            "records_path": str(records_path),
+            "execution_mode": "offline-deterministic",
+            "imported_records": len(records),
+            "success_count": sum(record["success"] for record in records),
+            "failure_count": sum(not record["success"] for record in records),
+            "attempt_count": 1,
+            "failure_signatures": failure_signatures,
+            "infra_type": infra_type,
+            "records_validation": records_validation,
+        }
+        run_reports_by_name[str(run_spec["run_name"])] = run_report
+
+    run_reports = [run_reports_by_name[str(run_spec["run_name"])] for run_spec in config["runs"]]
+    combined_runs: list[dict[str, Any]] = []
+    for run_report in run_reports:
+        combined_runs.extend(
+            load_jsonl(_resolve_suite_records_path(
+                run_report,
+                suite_root=suite_root,
+                run_name=str(run_report["run_name"]),
+            ))
+        )
+
+    combined_runs_path = suite_root / "combined_runs.jsonl"
+    write_jsonl(combined_runs_path, combined_runs)
+    runs_validation = validate_data_file(
+        data_path=combined_runs_path,
+        schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+    )
+    summary_report = _aggregate_suite_records(records=combined_runs, out_path=suite_root / "summary.jsonl", aggregate=aggregate)
+    report = {
+        "schema_version": SUITE_SCHEMA_VERSION,
+        "suite_name": config["suite_name"],
+        "benchmark_name": config["benchmark_name"],
+        "config_path": str(config_file),
+        "out_root": str(suite_root),
+        "run_count": len(run_reports),
+        "manifest": manifest.to_dict(),
+        "suite_identity": suite_identity,
+        "runs": run_reports,
+        "combined_runs_path": str(combined_runs_path),
+        "runs_validation": runs_validation,
+        "summary": summary_report,
+        "evidence": _classify_evidence(runs=run_reports, summary_report=summary_report),
+    }
+    write_json(suite_root / "suite_report.json", report)
+    return report
+
+
+def _medical_suite_identity(*, cases_path: Path, config: dict[str, Any], adapter: MedicalAdapter) -> dict[str, Any]:
+    """Fingerprint inputs that determine medical records, excluding output-only fields."""
+    semantic_runs = sorted(
+        [
+            {
+                "phase": str(run_spec["phase"]),
+                "benchmark_split": str(run_spec["benchmark_split"]),
+                "task_ids": sorted(str(task_id) for task_id in run_spec["task_ids"]),
+            }
+            for run_spec in config["runs"]
+        ],
+        key=lambda item: (item["phase"], item["benchmark_split"]),
+    )
+    return {
+        "version": 1,
+        "benchmark_name": adapter.benchmark_name,
+        "benchmark_version": adapter.benchmark_version,
+        "cases_sha256": hashlib.sha256(cases_path.read_bytes()).hexdigest(),
+        "execution": config["execution"],
+        "runs": semantic_runs,
+    }
+
+
+def _validate_medical_reused_runs(
+    *,
+    suite_root: Path,
+    run_specs: list[dict[str, Any]],
+    existing_run_reports: dict[str, dict[str, Any]],
+    unselected_names: set[str],
+    execution: dict[str, Any],
+) -> None:
+    for run_spec in run_specs:
+        run_name = str(run_spec["run_name"])
+        if run_name not in unselected_names:
+            continue
+        report = existing_run_reports[run_name]
+        expected_task_ids = [str(task_id) for task_id in run_spec["task_ids"]]
+        if (
+            report.get("phase") != run_spec["phase"]
+            or report.get("benchmark_split") != run_spec["benchmark_split"]
+            or report.get("task_ids") != expected_task_ids
+        ):
+            raise ValueError(f"Reused medical run {run_name} does not match the configured phase, split, or task IDs")
+        records_path = _resolve_suite_records_path(report, suite_root=suite_root, run_name=run_name)
+        records_validation = validate_data_file(
+            data_path=records_path,
+            schema_path=Path(__file__).resolve().parents[2] / "schemas" / "runs.schema.json",
+        )
+        if not records_validation["valid"]:
+            raise ValueError(f"Reused medical run {run_name} has invalid records")
+        records = load_jsonl(records_path)
+        expected_run_ids = {f"medical::{run_spec['phase']}::{run_spec['benchmark_split']}::{task_id}" for task_id in expected_task_ids}
+        if len(records) != len(expected_task_ids) or {record.get("run_id") for record in records} != expected_run_ids:
+            raise ValueError(f"Reused medical run {run_name} records do not match its configured tasks")
+        for record in records:
+            if (
+                record.get("benchmark_name") != "medical-synthea"
+                or record.get("phase") != run_spec["phase"]
+                or record.get("benchmark_split") != run_spec["benchmark_split"]
+                or record.get("task_id") not in expected_task_ids
+                or record.get("run_id") != f"medical::{run_spec['phase']}::{run_spec['benchmark_split']}::{record.get('task_id')}"
+                or record.get("path_type") != execution["path_type"]
+                or record.get("agent_version") != execution["agent_version"]
+                or int(record.get("seed", 0)) != int(execution.get("seed", 0))
+            ):
+                raise ValueError(f"Reused medical run {run_name} records do not match execution settings")
+
+
+def _build_medical_manifest(
+    *,
+    adapter: MedicalAdapter,
+    tasks: list[TaskDescriptor],
+    run_specs: list[dict[str, Any]],
+) -> SplitManifest:
+    expected = {(phase, split) for phase in ("T0", "T1", "T2") for split in DEFAULT_SPLITS}
+    observed = {(str(spec["phase"]), str(spec["benchmark_split"])) for spec in run_specs}
+    if observed != expected or len(run_specs) != len(expected):
+        raise ValueError("Medical suite config requires exactly one run for each T0/T1/T2 and replay/adapt/heldout/drift pair")
+    task_index = {task.task_id: task for task in tasks}
+    split_ids: dict[str, list[str]] = {}
+    for split in DEFAULT_SPLITS:
+        split_specs = [spec for spec in run_specs if spec["benchmark_split"] == split]
+        task_id_lists = [[str(task_id) for task_id in spec["task_ids"]] for spec in split_specs]
+        if any(task_ids != task_id_lists[0] for task_ids in task_id_lists[1:]):
+            raise ValueError(f"Medical suite split {split} must use the same task IDs at every phase")
+        split_ids[split] = task_id_lists[0]
+        if len(split_ids[split]) != len(set(split_ids[split])):
+            raise ValueError(f"Medical suite split {split} contains duplicate task IDs")
+    missing = sorted({task_id for task_ids in split_ids.values() for task_id in task_ids} - task_index.keys())
+    if missing:
+        raise ValueError(f"Unknown medical task IDs in suite config: {missing}")
+    manifest = SplitManifest(**{split: [task_index[task_id] for task_id in split_ids[split]] for split in DEFAULT_SPLITS})
+    adapter.validate_manifest(manifest)
+    return manifest
+
+
+def _evaluate_medical_phase(
+    *,
+    adapter: MedicalAdapter,
+    manifest: SplitManifest,
+    phase: str,
+    execution: dict[str, Any],
+) -> list[dict[str, Any]]:
+    memory = RuleMemory()
+    adaptation_elapsed = 0.0
+    if phase in {"T1", "T2"}:
+        adaptation_clock = perf_counter()
+        for task in manifest.adapt:
+            clinical = task.metadata["clinical"]
+            memory.adapt(observations(clinical), clinical["diagnosis"])
+        adaptation_elapsed = perf_counter() - adaptation_clock
+    records: list[dict[str, Any]] = []
+    for split in DEFAULT_SPLITS:
+        for task in getattr(manifest, split):
+            clinical = task.metadata["clinical"]
+            started_at = datetime.now(timezone.utc).isoformat()
+            clock = perf_counter()
+            prediction = memory.predict(observations(clinical))
+            elapsed = perf_counter() - clock
+            if phase in {"T1", "T2"} and split == "adapt":
+                elapsed += adaptation_elapsed / len(manifest.adapt)
+            safe, reason = adapter.safety_gate(clinical, prediction)
+            success = prediction == clinical["diagnosis"] and safe
+            records.append({
+                "schema_version": "0.1.0",
+                "run_id": f"medical::{phase}::{split}::{task.task_id}",
+                "benchmark_name": adapter.benchmark_name,
+                "benchmark_version": adapter.benchmark_version,
+                "benchmark_split": split,
+                "phase": phase,
+                "path_type": execution["path_type"],
+                "model_name": "deterministic-baseline",
+                "agent_name": "medical-rule-agent",
+                "agent_version": execution["agent_version"],
+                "task_id": task.task_id,
+                "attempt_index": 0,
+                "score": float(success),
+                "success": success,
+                "token_input": 0,
+                "token_output": 0,
+                "token_total": 0,
+                "tool_calls_total": 0,
+                "memory_reads": int(phase != "T0"),
+                "memory_writes": int(phase in {"T1", "T2"} and split == "adapt"),
+                "wall_clock_seconds": elapsed,
+                "human_interventions": 0,
+                "seed": int(execution.get("seed", 0)),
+                "started_at": started_at,
+                "finished_at": datetime.now(timezone.utc).isoformat(),
+                "metadata": {
+                    "prediction": prediction,
+                    "safety_gate_passed": safe,
+                    "failure_reason": reason or (None if success else "wrong_or_unknown"),
+                    "execution": "offline_rule_suite",
+                    "training_split": "adapt",
+                    "adaptation_examples": len(manifest.adapt) if phase != "T0" else 0,
+                },
+            })
+    return records
+
+
 def run_evoagentbench_suite(
     *,
     config_path: str | Path,
@@ -985,7 +1273,7 @@ def build_evoagentbench_explicit_plan(
     job_name: str | None = None,
     extra_args: list[str] | None = None,
 ) -> dict[str, Any]:
-    adapter = EvoAgentBenchAdapter()
+    adapter = require_evoagentbench_adapter()()
     manifest = SplitManifest(
         replay=[
             TaskDescriptor(
@@ -1091,6 +1379,7 @@ def load_protocol_suite_config(config_path: str | Path) -> dict[str, Any]:
         )
         raise ValueError(f"Invalid protocol suite config: {message}")
     _validate_protocol_suite_semantics(config)
+    config.setdefault("suite_kind", "external")
     return _normalize_protocol_suite_config(config)
 
 
@@ -1910,6 +2199,14 @@ def _aggregate_suite_records(
 def _validate_protocol_suite_semantics(config: dict[str, Any]) -> None:
     benchmark_name = config["benchmark_name"]
     execution = config["execution"]
+    suite_kind = config.get("suite_kind", "external")
+    if suite_kind == "result-only":
+        expected = config.get("expected_artifacts") or {}
+        missing = [field for field in ("runs_per_suite", "records", "artifacts") if field not in expected]
+        if missing:
+            raise ValueError(f"Invalid result-only suite config, missing expected_artifacts fields: {missing}")
+    elif suite_kind != "external":
+        raise ValueError(f"Unsupported suite_kind in protocol suite config: {suite_kind}")
     if benchmark_name == "skillsbench":
         missing: list[str] = []
         for field in ("agent", "harbor_bin", "jobs_dir", "path_type", "agent_version"):
@@ -1968,6 +2265,18 @@ def _validate_protocol_suite_semantics(config: dict[str, Any]) -> None:
             raise ValueError(f"Invalid evoagentbench suite config, missing required fields: {missing}")
         if any("source_job_dir" in run_spec for run_spec in config["runs"]):
             raise ValueError("evoagentbench suite runs do not support source_job_dir; use source_result_file")
+    elif benchmark_name == "medical-synthea":
+        missing = [
+            field
+            for field in ("path_type", "agent_version")
+            if not execution.get(field)
+        ]
+        if not config.get("registry_path"):
+            missing.append("registry_path")
+        if missing:
+            raise ValueError(f"Invalid medical suite config, missing required fields: {missing}")
+        if any("source_job_dir" in run_spec or "source_result_file" in run_spec for run_spec in config["runs"]):
+            raise ValueError("medical-synthea suite runs are offline evaluators and do not support source result imports")
     else:
         raise ValueError(f"Unsupported benchmark_name in protocol suite config: {benchmark_name}")
 
@@ -1980,7 +2289,7 @@ def _normalize_protocol_suite_config(config: dict[str, Any]) -> dict[str, Any]:
             run_spec["task_ids"] = [str(task_id) for task_id in run_spec["task_ids"]]
         elif benchmark_name == "tau-bench":
             run_spec["task_ids"] = [int(task_id) for task_id in run_spec["task_ids"]]
-        elif benchmark_name in {"mock-bench", "evoagentbench"}:
+        elif benchmark_name in {"mock-bench", "evoagentbench", "medical-synthea"}:
             run_spec["task_ids"] = [str(task_id) for task_id in run_spec["task_ids"]]
     return normalized
 
