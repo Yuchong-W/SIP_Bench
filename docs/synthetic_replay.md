@@ -18,8 +18,9 @@ python3 scripts/run_synthetic_replay.py \
 
 The default split requests one **patient** per split. Set `--adapt-patients`,
 `--replay-patients`, `--heldout-patients` and `--drift-patients` for a larger source;
-their sum must cover every source patient exactly. Every encounter for a patient
-stays in the same split. Patient groups are ordered by SHA-256 of the canonical
+their sum must cover every discovered diagnosis-task patient exactly. Every
+discovered encounter for a patient stays in the same split. Patient groups are
+ordered by SHA-256 of the canonical
 JSON `[partition_seed, patient_id]`; input case order does not affect assignment.
 At least one adaptation patient and one evaluation patient are required.
 
@@ -51,8 +52,10 @@ Supported formats are `compact-json`, `compact-jsonl` and `fhir-r4`. Compact cas
 use the existing MedicalAdapter diagnosis contract and require canonical,
 nonempty patient IDs. FHIR Bundles require Patient entries and an unambiguous
 Encounter/Condition diagnosis pair. Patient subject references resolve through
-`Patient/id` and Bundle `fullUrl` aliases. Unlabeled or ambiguous bundles and
-timeline event prediction are rejected. Duplicate local Patient IDs are rejected
+`Patient/id` and Bundle `fullUrl` aliases. Bundles without labeled diagnosis pairs,
+ambiguous labels and timeline event prediction are rejected. Unlabeled encounters
+do not become tasks; only patients with discovered diagnosis tasks enter splits.
+Duplicate local Patient IDs are rejected
 even with distinct fullUrls; this compact contract cannot resolve their relative
 aliases safely. It validates the task contract, not full FHIR conformance.
 This path does not extract symptoms or
