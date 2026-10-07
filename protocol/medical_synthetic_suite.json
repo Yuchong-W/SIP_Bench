@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1.0",
+  "suite_name": "medical-synthetic-v1",
+  "suite_kind": "result-only",
+  "benchmark_name": "medical-synthea",
+  "repo_root": "..",
+  "registry_path": "../benchmarks/medical/cases.json",
+  "out_root": "../results/protocol_runs/medical_synthetic_suite",
+  "expected_artifacts": {
+    "runs_per_suite": 12,
+    "records": 24,
+    "artifacts": ["combined_runs.jsonl", "summary.jsonl", "suite_report.json"]
+  },
+  "execution": {
+    "path_type": "external",
+    "agent_version": "synthetic-v1",
+    "seed": 7
+  },
+  "runs": [
+    {"run_name": "t0_replay", "phase": "T0", "benchmark_split": "replay", "task_ids": ["c07", "c08"]},
+    {"run_name": "t0_adapt", "phase": "T0", "benchmark_split": "adapt", "task_ids": ["c03", "c05"]},
+    {"run_name": "t0_heldout", "phase": "T0", "benchmark_split": "heldout", "task_ids": ["c01", "c04"]},
+    {"run_name": "t0_drift", "phase": "T0", "benchmark_split": "drift", "task_ids": ["c02", "c06"]},
+    {"run_name": "t1_replay", "phase": "T1", "benchmark_split": "replay", "task_ids": ["c07", "c08"]},
+    {"run_name": "t1_adapt", "phase": "T1", "benchmark_split": "adapt", "task_ids": ["c03", "c05"]},
+    {"run_name": "t1_heldout", "phase": "T1", "benchmark_split": "heldout", "task_ids": ["c01", "c04"]},
+    {"run_name": "t1_drift", "phase": "T1", "benchmark_split": "drift", "task_ids": ["c02", "c06"]},
+    {"run_name": "t2_replay", "phase": "T2", "benchmark_split": "replay", "task_ids": ["c07", "c08"]},
+    {"run_name": "t2_adapt", "phase": "T2", "benchmark_split": "adapt", "task_ids": ["c03", "c05"]},
+    {"run_name": "t2_heldout", "phase": "T2", "benchmark_split": "heldout", "task_ids": ["c01", "c04"]},
+    {"run_name": "t2_drift", "phase": "T2", "benchmark_split": "drift", "task_ids": ["c02", "c06"]}
+  ]
+}

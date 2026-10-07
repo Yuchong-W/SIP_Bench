@@ -1,0 +1,179 @@
+{
+  "counts": {
+    "replay": 2,
+    "adapt": 2,
+    "heldout": 2,
+    "drift": 2
+  },
+  "replay": [
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c07",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "gastro",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p07",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "abdominal_pain"
+          ],
+          "vitals": {},
+          "diagnosis": "gastroenteritis"
+        }
+      }
+    },
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c08",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "trauma",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p08",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "severe_bleeding"
+          ],
+          "vitals": {
+            "heart_rate": 130
+          },
+          "diagnosis": "emergency"
+        }
+      }
+    }
+  ],
+  "adapt": [
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c03",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "urinary",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p03",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "dysuria"
+          ],
+          "vitals": {},
+          "diagnosis": "uti"
+        }
+      }
+    },
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c05",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "neurology",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p05",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "headache",
+            "stroke_signs"
+          ],
+          "vitals": {
+            "blood_pressure": "190/110"
+          },
+          "diagnosis": "urgent"
+        }
+      }
+    }
+  ],
+  "heldout": [
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c01",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "respiratory",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p01",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "fever",
+            "cough"
+          ],
+          "vitals": {
+            "temperature_c": 38.2
+          },
+          "diagnosis": "viral_uri"
+        }
+      }
+    },
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c04",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "dermatology",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p04",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "rash",
+            "itching"
+          ],
+          "vitals": {},
+          "diagnosis": "dermatitis"
+        }
+      }
+    }
+  ],
+  "drift": [
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c02",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "cardiac",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p02",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "chest_pain"
+          ],
+          "vitals": {
+            "heart_rate": 118
+          },
+          "diagnosis": "emergency"
+        }
+      }
+    },
+    {
+      "benchmark_name": "medical-synthea",
+      "task_id": "c06",
+      "source_path": "benchmarks/medical/cases.json",
+      "title": "Clinical case",
+      "category": "respiratory",
+      "difficulty": "synthetic",
+      "metadata": {
+        "patient_id": "p06",
+        "case_id": null,
+        "clinical": {
+          "symptoms": [
+            "sore_throat"
+          ],
+          "vitals": {},
+          "diagnosis": "pharyngitis"
+        }
+      }
+    }
+  ]
+}

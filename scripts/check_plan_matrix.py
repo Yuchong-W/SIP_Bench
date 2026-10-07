@@ -121,6 +121,7 @@ def _run_suite_check(
         "errors": 0,
         "warnings": 0,
     }
+    suite_kind = str(config.get("suite_kind", "external"))
 
     for run in config.get("runs", []):
         run_name = str(run.get("run_name"))
@@ -141,15 +142,18 @@ def _run_suite_check(
         run_has_source_job = "source_job_dir" in run
         has_import_inputs = run_has_source_job or "source_result_file" in run
         planned_artifacts: list[tuple[str, Path]] = []
-        planned_artifacts.append(("plan", out_root / "plans" / f"{run_name}.json"))
+        if suite_kind != "result-only":
+            planned_artifacts.append(("plan", out_root / "plans" / f"{run_name}.json"))
 
-        if not run.get("source_result_file"):
+        if suite_kind != "result-only" and not run.get("source_result_file"):
             planned_artifacts.append(("hydration", out_root / "hydration" / f"{run_name}.json"))
             planned_artifacts.append(("execution", out_root / "execution" / f"{run_name}.json"))
 
         planned_artifacts.append(("runs", out_root / "runs" / f"{run_name}.jsonl"))
 
-        if has_import_inputs:
+        if suite_kind == "result-only":
+            pass
+        elif has_import_inputs:
             if "source_job_dir" in run:
                 _check_required_path(
                     label=f"run:{run_name}:source_job_dir",
@@ -203,27 +207,16 @@ def _run_suite_check(
 
         suite_check["run_rows"].append(run_row)
 
-    _check_required_path(
-        label="suite:combined_runs",
-        suite_name=suite_name,
-        path=out_root / "combined_runs.jsonl",
-        strict=strict,
-        checks=checks,
-    )
-    _check_required_path(
-        label="suite:summary",
-        suite_name=suite_name,
-        path=out_root / "summary.jsonl",
-        strict=strict,
-        checks=checks,
-    )
-    _check_required_path(
-        label="suite:suite_report",
-        suite_name=suite_name,
-        path=out_root / "suite_report.json",
-        strict=strict,
-        checks=checks,
-    )
+    expected_artifacts = config.get("expected_artifacts", {}).get("artifacts")
+    suite_artifacts = expected_artifacts or ["combined_runs.jsonl", "summary.jsonl", "suite_report.json"]
+    for artifact_name in suite_artifacts:
+        _check_required_path(
+            label=f"suite:{Path(artifact_name).stem}",
+            suite_name=suite_name,
+            path=out_root / artifact_name,
+            strict=strict,
+            checks=checks,
+        )
 
     return suite_check
 

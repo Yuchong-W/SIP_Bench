@@ -1,0 +1,10 @@
+{"cases":[
+ {"encounter_id":"c01","patient_id":"p01","symptoms":["fever","cough"],"vitals":{"temperature_c":38.2},"diagnosis":"viral_uri","category":"respiratory"},
+ {"encounter_id":"c02","patient_id":"p02","symptoms":["chest_pain"],"vitals":{"heart_rate":118},"diagnosis":"emergency","category":"cardiac"},
+ {"encounter_id":"c03","patient_id":"p03","symptoms":["dysuria"],"vitals":{},"diagnosis":"uti","category":"urinary"},
+ {"encounter_id":"c04","patient_id":"p04","symptoms":["rash","itching"],"vitals":{},"diagnosis":"dermatitis","category":"dermatology"},
+ {"encounter_id":"c05","patient_id":"p05","symptoms":["headache","stroke_signs"],"vitals":{"blood_pressure":"190/110"},"diagnosis":"urgent","category":"neurology"},
+ {"encounter_id":"c06","patient_id":"p06","symptoms":["sore_throat"],"vitals":{},"diagnosis":"pharyngitis","category":"respiratory"},
+ {"encounter_id":"c07","patient_id":"p07","symptoms":["abdominal_pain"],"vitals":{},"diagnosis":"gastroenteritis","category":"gastro"},
+ {"encounter_id":"c08","patient_id":"p08","symptoms":["severe_bleeding"],"vitals":{"heart_rate":130},"diagnosis":"emergency","category":"trauma"}
+]}

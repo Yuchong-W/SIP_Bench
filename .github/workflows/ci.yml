@@ -23,5 +23,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
 
-      - name: Run CI checks
-        run: make ci
+      - name: Run CI checks and credential-free native suite lane
+        run: |
+          mkdir -p ci-artifacts
+          python scripts/run_release_checks.py \
+            --plan-matrix \
+            --report ci-artifacts/release-report.json
+      - name: Upload native suite report and artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sip-bench-native-suite-report
+          path: ci-artifacts/
+          if-no-files-found: error

@@ -1,0 +1,179 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:patient-1",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "fixture-p1-e1",
+        "subject": {
+          "reference": "Patient/p1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-fixture-p1-e1",
+        "subject": {
+          "reference": "Patient/p1"
+        },
+        "encounter": {
+          "reference": "Encounter/fixture-p1-e1"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:sip-bench:synthetic-label",
+              "code": "fixture-label-1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "fixture-p1-e2",
+        "subject": {
+          "reference": "urn:uuid:patient-1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-fixture-p1-e2",
+        "subject": {
+          "reference": "urn:uuid:patient-1"
+        },
+        "encounter": {
+          "reference": "Encounter/fixture-p1-e2"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:sip-bench:synthetic-label",
+              "code": "fixture-label-2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:patient-2",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p2"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "fixture-p2-e1",
+        "subject": {
+          "reference": "Patient/p2"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-fixture-p2-e1",
+        "subject": {
+          "reference": "Patient/p2"
+        },
+        "encounter": {
+          "reference": "Encounter/fixture-p2-e1"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:sip-bench:synthetic-label",
+              "code": "fixture-label-1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:patient-3",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p3"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "fixture-p3-e1",
+        "subject": {
+          "reference": "Patient/p3"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-fixture-p3-e1",
+        "subject": {
+          "reference": "Patient/p3"
+        },
+        "encounter": {
+          "reference": "Encounter/fixture-p3-e1"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:sip-bench:synthetic-label",
+              "code": "fixture-label-1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:patient-4",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p4"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "fixture-p4-e1",
+        "subject": {
+          "reference": "Patient/p4"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "condition-fixture-p4-e1",
+        "subject": {
+          "reference": "Patient/p4"
+        },
+        "encounter": {
+          "reference": "Encounter/fixture-p4-e1"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:sip-bench:synthetic-label",
+              "code": "fixture-label-1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

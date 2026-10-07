@@ -3,8 +3,10 @@ from __future__ import annotations
 import inspect
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -12,7 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 import sip_bench.adapters as adapters
-from sip_bench.adapters import BenchmarkAdapter, EvoAgentBenchAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
+from sip_bench.adapters import BenchmarkAdapter, MockBenchAdapter, SkillsBenchAdapter, TauBenchAdapter
 
 
 class SkillsBenchAdapterTests(unittest.TestCase):
@@ -220,9 +222,10 @@ class MockBenchAdapterTests(unittest.TestCase):
         self.assertFalse(runs[1]["success"])
 
 
+@unittest.skipUnless(adapters.EVOAGENTBENCH_AVAILABLE, "optional EvoAgentBench adapter is not installed")
 class EvoAgentBenchAdapterTests(unittest.TestCase):
     def test_build_run_command_and_parse_result_filter(self) -> None:
-        adapter = EvoAgentBenchAdapter()
+        adapter = adapters.require_evoagentbench_adapter()()
         command = adapter.build_run_command(
             repo_root="benchmarks/EvoAgentBench",
             domain="omni_math",
@@ -273,7 +276,7 @@ class EvoAgentBenchAdapterTests(unittest.TestCase):
         self.assertEqual(runs[0]["token_total"], 30)
 
     def test_parse_result_file_prefers_completed_attempt_and_falls_back_to_top_level_usage(self) -> None:
-        adapter = EvoAgentBenchAdapter()
+        adapter = adapters.require_evoagentbench_adapter()()
         with tempfile.TemporaryDirectory() as tmpdir:
             task_dir = Path(tmpdir) / "omni_demo_03"
             task_dir.mkdir()
@@ -319,7 +322,7 @@ class EvoAgentBenchAdapterTests(unittest.TestCase):
         self.assertEqual(runs[0]["token_total"], 18)
 
     def test_parse_result_file_falls_back_to_session_usage_when_result_omits_tokens(self) -> None:
-        adapter = EvoAgentBenchAdapter()
+        adapter = adapters.require_evoagentbench_adapter()()
         with tempfile.TemporaryDirectory() as tmpdir:
             task_dir = Path(tmpdir) / "omni_demo_04"
             task_dir.mkdir()
@@ -387,17 +390,46 @@ class AdapterAgnosticContractTests(unittest.TestCase):
 
             has_build_plan = hasattr(adapter, "build_harbor_command") and callable(getattr(adapter, "build_harbor_command"))
             has_build_run = hasattr(adapter, "build_run_command") and callable(getattr(adapter, "build_run_command"))
+            has_local_evaluator = hasattr(adapter, "trajectory") and callable(getattr(adapter, "trajectory"))
             self.assertTrue(
-                has_build_plan or has_build_run,
-                f"{name} must expose build_harbor_command or build_run_command",
+                has_build_plan or has_build_run or has_local_evaluator,
+                f"{name} must expose a command builder or local trajectory evaluator",
             )
 
             has_importer = (
                 hasattr(adapter, "parse_result_file") and callable(getattr(adapter, "parse_result_file"))
                 or hasattr(adapter, "parse_harbor_job_dir")
                 and callable(getattr(adapter, "parse_harbor_job_dir"))
+                or has_local_evaluator
             )
             self.assertTrue(
                 has_importer,
-                f"{name} must expose parse_result_file or parse_harbor_job_dir",
+                f"{name} must expose an importer or local trajectory evaluator",
             )
+
+    def test_missing_optional_adapter_has_actionable_error(self) -> None:
+        if adapters.EVOAGENTBENCH_AVAILABLE:
+            self.skipTest("optional adapter is installed")
+        with self.assertRaisesRegex(RuntimeError, "optional adapter package"):
+            adapters.require_evoagentbench_adapter()
+
+    def test_optional_adapter_loader_distinguishes_absence_from_internal_failure(self) -> None:
+        module_name = "sip_bench.adapters.evoagentbench"
+        absent = ModuleNotFoundError("module absent")
+        absent.name = module_name
+        with patch.object(adapters, "import_module", side_effect=absent):
+            self.assertIsNone(adapters._load_evoagentbench_adapter())
+
+        installed = types.SimpleNamespace(EvoAgentBenchAdapter=MockBenchAdapter)
+        with patch.object(adapters, "import_module", return_value=installed):
+            self.assertIs(adapters._load_evoagentbench_adapter(), MockBenchAdapter)
+
+        internal = ModuleNotFoundError("jsonschema missing")
+        internal.name = "jsonschema"
+        with patch.object(adapters, "import_module", side_effect=internal):
+            with self.assertRaisesRegex(ModuleNotFoundError, "jsonschema missing"):
+                adapters._load_evoagentbench_adapter()
+
+    def test_optional_adapter_is_exported_when_available(self) -> None:
+        self.assertIn("EvoAgentBenchAdapter", adapters._public_adapter_exports(True))
+        self.assertNotIn("EvoAgentBenchAdapter", adapters._public_adapter_exports(False))

@@ -36,3 +36,6 @@ python3 scripts/run_release_checks.py
 1. `Linux-first` is the maintained path for public validation.
 2. Tests are written against tracked fixtures so they do not require private benchmark credentials.
 3. If you add a new adapter or importer path, include at least one fixture-backed regression test.
+4. `test_synthetic_replay.py` checks frozen source/output hashes, deterministic replay,
+   patient isolation, held-out label independence and FHIR patient alias resolution
+   with original synthetic fixtures. It requires no model or simulator runtime.

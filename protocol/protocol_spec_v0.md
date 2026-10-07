@@ -16,6 +16,7 @@ The MVP protocol supports:
 
 1. `skillsbench`
 2. `tau-bench`
+3. `medical-synthea` synthetic diagnosis fixture
 
 Optional later extension:
 
@@ -188,6 +189,30 @@ Aggregated outputs must conform to:
 1. [summary.schema.json](E:\Protocal_Bench\schemas\summary.schema.json)
 
 ## Benchmark-Specific Adapter Contract
+
+### Suite kinds and artifact contracts
+
+Protocol suite configs may declare `suite_kind` as `external` or `result-only`.
+External suites use benchmark plans, hydration, execution, or imported source
+artifacts. Result-only suites declare `expected_artifacts` and can be generated and
+schema-validated without credentials or an external benchmark runtime. The release
+checker keeps these contracts separate so a native suite does not require external
+plan or execution files.
+
+### `medical-synthea` fixture suite
+
+The checked-in medical fixture is a native, offline protocol suite. Run it with:
+
+```bash
+python scripts/run_protocol.py run-medical-suite --config protocol/medical_synthetic_suite.json
+```
+
+The runner validates all twelve phase/split entries and the four mutually exclusive
+splits before it creates output. `T0` has no adaptation memory; `T1` and `T2` train
+only from the configured `adapt` cases. The task remains diagnosis prediction from
+symptoms and vitals; it does not convert timeline-event fixtures into diagnoses.
+When `--run-name` is used, the runner requires the prior artifacts for every
+unselected run and regenerates the combined suite report from both sets.
 
 Each adapter must implement:
 
