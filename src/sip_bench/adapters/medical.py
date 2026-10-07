@@ -18,6 +18,10 @@ class MedicalAdapter(BenchmarkAdapter):
     def discover_tasks(self, source: str | Path) -> list[TaskDescriptor]:
         source_path = Path(source)
         text = source_path.read_text(encoding="utf-8")
+        return self.discover_tasks_from_text(text, source=str(source))
+
+    def discover_tasks_from_text(self, text: str, *, source: str = "<memory>") -> list[TaskDescriptor]:
+        """Discover from a frozen snapshot so its provenance hash covers parsed bytes."""
         try:
             payload = json.loads(text)
         except json.JSONDecodeError:

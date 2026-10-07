@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "source": {
+    "sha256": "dc15d05f49258d387adcfd8aaa272ffe6526707e650700eea6d8d350939b2e70",
+    "format": "compact-json",
+    "generator": "sip-bench-authored-fixture",
+    "version": "1",
+    "seed": 0
+  }
+}

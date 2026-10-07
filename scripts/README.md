@@ -38,6 +38,9 @@ Most users only need these commands:
 1. `run_eval.py`
 2. `run_protocol.py`
 3. `smoke_adapters.py`
+4. `run_synthetic_replay.py`
+   Experimental frozen synthetic diagnosis export and byte-for-byte verification.
+   See [the source and artifact contract](../docs/synthetic_replay.md).
 
 ### Result Rendering
 

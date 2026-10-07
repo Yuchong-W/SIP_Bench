@@ -17,6 +17,11 @@ Their roles are different:
 3. `tau-bench` is a useful supplementary path that proves the same normalization and protocol layer can also work in an import-oriented environment.
 4. `medical-synthea` is a small, native offline diagnosis fixture used to exercise the full protocol lifecycle without an external runtime.
 
+The experimental [synthetic replay bridge](synthetic_replay.md) adds frozen source
+declarations, patient-isolated split assignment and a versioned offline memory
+interchange artifact. Its fixture replay records are separate from normalized
+SIP run records and do not establish clinical quality.
+
 The published `v0.1.0` release posture is `Linux-first` and open-source-release-oriented. The public evidence path is:
 
 1. real `SkillsBench oracle` suite artifacts
